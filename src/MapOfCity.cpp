@@ -27,8 +27,10 @@ class MapOfCity{
 	visualization_msgs::Marker points, line_strip;
         ros::Rate loop_rate(10000);
   	
-	while (ros::ok())
+	while (visualization_marker.getNumSubscribers() < 1 )
   	{
+                loop_rate.sleep();
+        }
        	    
 	    visualization_msgs::Marker points, line_strip, line_list;
             points.header.frame_id = line_strip.header.frame_id = line_list.header.frame_id = "/my_frame";
@@ -230,8 +232,7 @@ class MapOfCity{
     marker_pub.publish(points);
     marker_pub.publish(line_strip);
 
-   loop_rate.sleep();
-   }
+   
      
   }
   
@@ -251,7 +252,7 @@ class MapOfCity{
          // wysylanie informacji o polozeniu skrzyzowan
         
          // czekaj poki nie bedzie trzech subskrypji (lights, turns, model)
-         while (map_info.getNumSubscribers() < 1 )
+         while (map_info.getNumSubscribers() < 3 )
     	 {
       		
       	       ROS_WARN_ONCE("Please create a subscriber to the marker");
