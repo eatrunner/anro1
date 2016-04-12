@@ -1,0 +1,124 @@
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+#include <stdio.h>
+#include "anro1/mapMessage.h"
+#include <cstdlib>
+#include <visualization_msgs/Marker.h>
+using namespace std;
+
+class MapOfCity{
+  
+  public:
+  
+  MapOfCity()
+  {
+      sendCrossroadsInfo();
+      sendMapVisualization();             
+  };
+  
+  
+  void sendMapVisualization()
+  {
+
+    
+     
+  }
+  
+  // metoda sendCrossroadsInfo wysyła w topicu map_info message mapMessage zawierajace pola okreslajace polozenie oraz typ skrzyzownia/zakretu
+  void sendCrossroadsInfo()
+  {      
+         //konfiguracja polaczenia
+         ros::NodeHandle n;
+         ros::Publisher map_info = n.advertise<anro1::mapMessage>("map_info", 1000);
+         anro1::mapMessage crossroad1;
+         anro1::mapMessage turning;
+         
+         //petla czeka okolo 10sek na listener
+         ros::Rate loop_rate(10);
+         
+         ROS_INFO("I heard: ");
+         // wysylanie informacji o polozeniu skrzyzowan
+        
+         // czekaj poki nie bedzie trzech subskrypji (lights, turns, model)
+         while (map_info.getNumSubscribers() < 1 )
+    	 {
+      		
+      	       ROS_WARN_ONCE("Please create a subscriber to the marker");
+         	loop_rate.sleep();
+        }
+        
+        int counter=1;
+        ROS_WARN_ONCE("Subscribed");
+        while(counter>0)
+           {
+                counter--; 
+                ROS_INFO("I heard: ");
+	         
+	         crossroad1.x = 50 ;
+	         crossroad1.y = 50 ;
+	         crossroad1.type = "fourLanes";
+	         map_info.publish(crossroad1);
+         
+	         crossroad1.x = 100 ;
+	         crossroad1.y = 50 ;
+	         crossroad1.type = "fourLanes";
+	         map_info.publish(crossroad1);
+
+
+                 turning.x = 150 ;
+	         turning.y = 50 ;
+	         turning.type = "turningUpLeft";
+	         map_info.publish(turning);
+
+                 turning.x = 150 ;
+	         turning.y = 100 ;
+	         turning.type = "turningDownLeft";
+	         map_info.publish(turning);
+	         
+                 turning.x = 100 ;
+	         turning.y = 100 ;
+	         turning.type = "turningDownRight";
+	         map_info.publish(turning); 
+
+                 turning.x = 100 ;
+	         turning.y = 0 ;
+	         turning.type = "turningUpLeft";
+	         map_info.publish(turning); 
+                
+	         turning.x = 50 ;
+	         turning.y = 0 ;
+	         turning.type = "turningUpRight";
+	         map_info.publish(turning);   
+	         
+	                     
+	         
+	         turning.x = 50 ;
+	         turning.y = 100 ;
+	         turning.type = "turningDownLeft";
+	         map_info.publish(turning);     
+	         
+	         turning.x = 0 ;
+	         turning.y = 100 ;
+	         turning.type = "turningDownRight";
+	         map_info.publish(turning);  
+	       
+	         turning.x = 0 ;
+	         turning.y = 50 ;
+	         turning.type = "turningUpRight";
+	         map_info.publish(turning);  
+                 loop_rate.sleep();
+	}
+	         
+  }
+
+};
+
+
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "MapOfCity");
+  new MapOfCity();
+  ROS_INFO("Exiting..");
+  return 0;
+}
