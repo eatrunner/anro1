@@ -37,7 +37,6 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
 #include "std_msgs/String.h"
-#include <sstream>
 #include "anro1/carMessage.h"
 #include "anro1/lightsMessage.h"
 #include "anro1/turnsMessage.h"
@@ -99,8 +98,8 @@ void moveMarker(visualization_msgs::Marker& marker, int& state, float move){
       marker.pose.position.y -= move;
   }
 
-  ROS_WARN_STREAM("Marker ID : " << marker.id << " x = " << (float)marker.pose.position.x
-                  << " y = " << (float) marker.pose.position.y);
+  //ROS_WARN_STREAM("Marker ID : " << marker.id << " x = " << (float)marker.pose.position.x
+                //  << " y = " << (float) marker.pose.position.y);
 }
 
 int main( int argc, char** argv )
@@ -116,11 +115,12 @@ int main( int argc, char** argv )
   ros::Subscriber turns_info_pub = n.subscribe("turns_info", 1000, turns_infoCallback);
   visualization_msgs::Marker m1;
 
+  int state_m1 = 0;
+  float move_m1 = 0.01;
+  
   m1.id = 1;
   initMarker(m1);
 
-  int state_m1 = 0;
-  float move_m1 = 0.01;
 
   while (ros::ok())
   {
