@@ -24,15 +24,15 @@ class MapOfCity{
         
         ros::NodeHandle n;
 	ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
-	visualization_msgs::Marker points, line_strip;
+	visualization_msgs::Marker points, line_strip, line_list;
         ros::Rate loop_rate(10000);
-  	
-	while (visualization_marker.getNumSubscribers() < 1 )
-  	{
-                loop_rate.sleep();
+  	while(marker_pub.getNumSubscribers() < 1 )
+        {
+		loop_rate.sleep();
         }
+	
        	    
-	    visualization_msgs::Marker points, line_strip, line_list;
+	    
             points.header.frame_id = line_strip.header.frame_id = line_list.header.frame_id = "/my_frame";
     	    points.header.stamp = line_strip.header.stamp = line_list.header.stamp = ros::Time::now();
     	    points.ns = line_strip.ns = line_list.ns = "MapOfCity";
@@ -252,7 +252,7 @@ class MapOfCity{
          // wysylanie informacji o polozeniu skrzyzowan
         
          // czekaj poki nie bedzie trzech subskrypji (lights, turns, model)
-         while (map_info.getNumSubscribers() < 3 )
+         while (map_info.getNumSubscribers() < 1 )
     	 {
       		
       	       ROS_WARN_ONCE("Please create a subscriber to the marker");
