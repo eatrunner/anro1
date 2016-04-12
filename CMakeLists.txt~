@@ -188,3 +188,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(car src/car.cpp)
+target_link_libraries(car ${catkin_LIBRARIES})

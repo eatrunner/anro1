@@ -39,6 +39,8 @@
 #include "std_msgs/String.h"
 #include <sstream>
 #include "anro1/carMessage.h"
+#include "anro1/lightsMessage.h"
+#include "anro1/turnsMessage.h"
 
 void initMarker(visualization_msgs::Marker& marker){
   marker.type = visualization_msgs::Marker::CUBE;
@@ -61,14 +63,14 @@ void initMarker(visualization_msgs::Marker& marker){
 /**
  * Subskrybenci swiatel i zakretow
  */
-void lights_infoCallback(const std_msgs::String::ConstPtr& msg)
+void lights_infoCallback(const anro1::lightsMessage::ConstPtr& msg)
 {
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
+  ROS_INFO("I heard color: [%d]", (int)(msg->color));
 }
 
-void turns_infoCallback(const std_msgs::String::ConstPtr& msg)
+void turns_infoCallback(const anro1::turnsMessage::ConstPtr& msg)
 {
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
+  ROS_INFO("I heard direction: [%d]", (int)(msg->direction));
 }
 
 void moveMarker(visualization_msgs::Marker& marker, int& state, float move){
