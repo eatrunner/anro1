@@ -49,7 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    DIRECTORY
    FILES
-   carMessage.msg
+   car.msg
    lightsVector.msg
    light.msg
    turn.msg
@@ -193,8 +193,8 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-add_executable(car src/car.cpp)
-target_link_libraries(car ${catkin_LIBRARIES})
-
 add_executable(Car src/Car.cpp)
 target_link_libraries(Car ${catkin_LIBRARIES})
+
+add_executable(talker src/talker.cpp)
+target_link_libraries(talker ${catkin_LIBRARIES})

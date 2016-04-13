@@ -5,6 +5,7 @@
 #include "anro1/lightsVector.h"
 #include "anro1/turn.h"
 #include "anro1/turnsVector.h"
+#include "anro1/car.h"
 
 class Car{
 public:
@@ -21,6 +22,8 @@ public:
   double getScale();
   bool isMoving();
   void setMoving(bool move);
+  bool checkCoordinates(double x, double y);
+  anro1::car getMsg();
   
 private:
   double x;
