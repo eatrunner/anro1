@@ -195,3 +195,6 @@ include_directories(
 
 add_executable(car src/car.cpp)
 target_link_libraries(car ${catkin_LIBRARIES})
+
+add_executable(Car src/Car.cpp)
+target_link_libraries(Car ${catkin_LIBRARIES})
