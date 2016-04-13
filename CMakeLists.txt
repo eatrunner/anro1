@@ -15,6 +15,11 @@ find_package(catkin REQUIRED COMPONENTS
    DIRECTORY
    FILES
    mapMessage.msg
+   carMessage.msg
+   lightsVector.msg
+   light.msg
+   turn.msg
+   turnsVector.msg
  )
 
 
@@ -31,7 +36,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES anro1
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs 
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
   DEPENDS system_lib
 )
 
@@ -49,3 +54,9 @@ add_dependencies(MapOfCity anro1_generate_messages_cpp)
 add_executable(listener src/listener.cpp)
 target_link_libraries(listener ${catkin_LIBRARIES})
 add_dependencies(listener anro1_generate_messages_cpp)
+
+add_executable(car src/car.cpp)
+target_link_libraries(car ${catkin_LIBRARIES})
+
+add_executable(Car src/Car.cpp)
+target_link_libraries(Car ${catkin_LIBRARIES})
