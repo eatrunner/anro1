@@ -50,8 +50,10 @@ find_package(catkin REQUIRED COMPONENTS
    DIRECTORY
    FILES
    carMessage.msg
-   lightsMessage.msg
-   turnsMessage.msg
+   lightsVector.msg
+   light.msg
+   turn.msg
+   turnsVector.msg
  )
 
 ## Generate services in the 'srv' folder
