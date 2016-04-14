@@ -80,7 +80,7 @@ void process(const anro1::mapMessage::ConstPtr& msg){
 }
 int main(int argc, char **argv)
 {
-  bool ready = false;
+  
   ros::init(argc, argv, "Lights");
 
  
@@ -97,8 +97,6 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     ros::spinOnce();
-    if(!ready)
-	continue;
 	
 turnVector = new anro1::turnsVector;
   turnVector->size=0;
