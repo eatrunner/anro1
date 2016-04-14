@@ -70,13 +70,16 @@ list<Turn*> turns;
 
 };
 
-
+bool ready = false;
 
 
 Turns turns;
 void process(const anro1::mapMessage::ConstPtr& msg){
-    if(msg->type!="fourLanes")
+    if(msg->type!="fourLanes"){
     turns.addTurn(msg->x,msg->y,msg->type);
+    ready = true;
+    	
+    }
 }
 int main(int argc, char **argv)
 {
@@ -97,7 +100,8 @@ int main(int argc, char **argv)
   while (ros::ok())
   {
     ros::spinOnce();
-	
+	if(!ready)
+		continue;
 turnVector = new anro1::turnsVector;
   turnVector->size=0;
      for(list<Turn*>::iterator it = turns.giveList().begin();it!=turns.giveList().end();it++)
