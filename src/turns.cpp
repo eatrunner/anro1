@@ -74,6 +74,7 @@ bool ready = false;
 
 Turns turns;
 void process(const anro1::mapMessage::ConstPtr& msg){
+	ROS_INFO("Ja slyszu");
 	if (msg->type != "fourLanes"){
 		turns.addTurn(msg->x, msg->y, msg->type);
 		ready = true;
