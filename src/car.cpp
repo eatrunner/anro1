@@ -111,8 +111,8 @@ int main( int argc, char** argv )
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
   ros::Publisher car_info_pub = n.advertise<anro1::carMessage>("car_info", 1000);
   /*Subscribers*/	
-  ros::Subscriber lights_info_pub = n.subscribe("lights_info", 1000, lights_infoCallback);
-  ros::Subscriber turns_info_pub = n.subscribe("turns_info", 1000, turns_infoCallback);
+  ros::Subscriber lights_info_sub = n.subscribe("lights_info", 1000, lights_infoCallback);
+  ros::Subscriber turns_info_sub = n.subscribe("turns_info", 1000, turns_infoCallback);
   visualization_msgs::Marker m1;
 
   int state_m1 = 0;
