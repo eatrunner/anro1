@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
    DIRECTORY
    FILES
    mapMessage.msg
-   carMessage.msg
+   car.msg
    lightsVector.msg
    light.msg
    turn.msg
@@ -55,8 +55,15 @@ add_executable(listener src/listener.cpp)
 target_link_libraries(listener ${catkin_LIBRARIES})
 add_dependencies(listener anro1_generate_messages_cpp)
 
-add_executable(car src/car.cpp)
-target_link_libraries(car ${catkin_LIBRARIES})
+#add_executable(car src/car.cpp)
+#target_link_libraries(car ${catkin_LIBRARIES})
 
 add_executable(Car src/Car.cpp)
 target_link_libraries(Car ${catkin_LIBRARIES})
+
+add_executable(Model src/Model.cpp)
+target_link_libraries(Model ${catkin_LIBRARIES})
+
+add_executable(turnsTalker src/turnsTalker.cpp)
+target_link_libraries(turnsTalker ${catkin_LIBRARIES})
+
