@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 }
 
 void visualizeCar(const anro1::car& msg)
-{   ROS_INFO("I heard: [%d]", msg.id);
+{   ROS_INFO("Rendering car, id: [%d]", msg.id);
 
     visualization_msgs::Marker marker1;
     uint32_t shape = visualization_msgs::Marker::CUBE;
@@ -58,11 +58,11 @@ void visualizeCar(const anro1::car& msg)
     marker1.pose.orientation.y = 0.0;
     marker1.pose.orientation.z = 0.0;
     marker1.pose.orientation.w = 1.0;
-    marker1.scale.x = 10*msg.scale;
-    marker1.scale.y = 10*msg.scale;
-    marker1.scale.z = 10*msg.scale;
-    marker1.color.r = 0.5f;
-    marker1.color.g = 0.0f;
+    marker1.scale.x = 30*msg.scale;
+    marker1.scale.y = 30*msg.scale;
+    marker1.scale.z = 30*msg.scale;
+    marker1.color.r = 0.0f;
+    marker1.color.g = 0.8f;
     marker1.color.b = 0.0f;
     marker1.color.a = 1.0;
     marker1.lifetime = ros::Duration();
