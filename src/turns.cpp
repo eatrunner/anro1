@@ -38,7 +38,6 @@ public:
 		{
 			north = false; west = false;
 		}
-		return result;
 	}
 };
 
@@ -46,17 +45,17 @@ public:
 class Turns{
 public:
 	Turns(){
-		
+
 	}
 	void reset(){
-		while (!turns->empty()){
-			turns->pop_front();
+		while (!turns.empty()){
+			turns.pop_front();
 		}
 	}
 
 	void addTurn(int x, int y, string type){
 		Turn turn(x, y, type);
-		turns->push_back(turn);
+		turns.push_back(turn);
 	}
 
 	list<Turn> giveList()
@@ -100,23 +99,23 @@ int main(int argc, char **argv)
 	while (ros::ok())
 	{
 		ros::spinOnce();
-		
+
 		anro1::turnsVector turnVector;
 		turnVector.size = 0;
-		for (list<Turn*>::iterator it = turns.giveList().begin(); it != turns.giveList().end(); it++)
+		for (list<Turn>::iterator it = turns.giveList().begin(); it != turns.giveList().end(); it++)
 		{
 			anro1::turn turnmsg;
-			turnms.>x = (*it)->x;
-			turnmsg.y = (*it)->y;
-			turnmsg.NS = (*it)->north;
-			turnmsg.WE = (*it)->west;
+			turnmsg.>x = (*it).x;
+			turnmsg.y = (*it).y;
+			turnmsg.NS = (*it).north;
+			turnmsg.WE = (*it).west;
 			turnVector.turns.push_back(turnmsg);
 			turnVector.size++;
 		}
 
 		chatter_pub.publish(turnVector);
 
-		
+
 		loop_rate.sleep();
 
 	}
