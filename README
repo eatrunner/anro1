@@ -1,8 +1,14 @@
-README
-Czy ktos wogole czyta te pliki README?
-Zasada dzialania:
+README: aktualizacja 14.04
 
-1. Listener potrzebny wylacznie dla moich testow
-2. MapOfCity w tej wersji, zajmuje sie wyslaniem do turns, lights i model informacji o skrzyzowaniach i zakretach (wysyla msgs z polami string(rozroznia jaki typ zakretu/skrzyzowania), int ,int ). Jezeli odpalicie sobie rviz, do wyswietli wam tez trase taka jaka sobie ustalilismy, choc pewnie trase bedziemy robic w mofelu tak jak pierwotnie zalozone bylo w schemacie. 
-3. Message o polozeniu skrzyzowan i zakretow, zostana wyslane raz i dopiero w momencie gdy wszyscy zasubskrybuja ten topic (map_info). W ten sam sposob wyslana bedzie informacja o trasie do modelu/rviza.
+Mapa, samochody i model zostały połączone. 
+(Jednak jedynych samochód (zielony sześcian)) ma na to wywalone i lata sobie gdzieś obok w przestrzeni ;d.
+Nie wiem czy taki był zamysł ekipy od samochodów. Skala równiez jest zła, bo w oryginalnej samochód jest pikselem na tle mapy.
+Poprawcie też waszego turnsListenera, bo się zawiesza z tego co zauważyłem i plik .launch trzeba stopować Ctrl+Z (przynajmniej tak działa u mnie).
 
+Jak opalamy:
+będąc w catkin_ws:
+1. source ./devel/setup.bash
+2. catkin_make
+3. roslaunch anro1 city.launch
+
+Po odpaleniu oddalamy trochę, po kilku sekundach powinny pojawic sie wszystkie elementy (mapa + jeden samochód).
