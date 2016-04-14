@@ -23,6 +23,10 @@ public:
   bool isMoving();
   void setMoving(bool move);
   bool checkCoordinates(double x, double y);
+  bool checkCoordinateX(double x);
+  bool checkCoordinateY(double y);
+  bool checkDistanceX(double x);
+  bool checkDistanceY(double y);
   anro1::car getMsg();
   
 private:

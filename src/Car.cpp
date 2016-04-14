@@ -22,6 +22,14 @@ bool Car::checkCoordinates(double x, double y){
   return xOffset < speed / 2 && yOffset < speed / 2;
 }
 
+bool Car::checkCoordinateX(double x){
+  return fabs(this->x - x) < speed / 2;
+}
+
+bool Car::checkCoordinateY(double y){
+  return fabs(this->y - y) < speed / 2;
+}
+
 void Car::move(){
   ROS_INFO_STREAM(x << "  " << y);
   if(moving){
@@ -61,6 +69,17 @@ anro1::car Car::getMsg(){
     return carMsg;
 }
 
+bool Car::checkDistanceX(double x){
+    double offset = fabs(this->x - x);
+    return offset < (scale / 2 + speed / 2) && offset > (scale / 2 - speed / 2);
+}
+
+bool Car::checkDistanceY(double y){
+    double offset = fabs(this->y - y);
+    return offset < (scale / 2 + speed / 2) && offset > (scale / 2 - speed / 2);
+}
+
+
 Car car(1);
 bool isFirst = true;
 
@@ -69,7 +88,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nodeHandle;
   ros::Publisher carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
   ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
-  //ros::Subscriber lightsSubscriber;
+  ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
   ros::Rate rate(10);
 
   while(ros::ok()){
@@ -118,15 +137,12 @@ void turnsCallback(const anro1::turnsVector::ConstPtr& msg){
 
 void lightsCallback(const anro1::lightsVector::ConstPtr &msg){
     std::vector<anro1::light> lights = msg->lights;
-    double radius = car.getScale();
-    double x = car.getX();
-    double y = car.getY();
-    for(int i = 0 ; i < msg->size ; i++){
-        if(y == lights[i].y && (fabs(x - lights[i].x) == radius) && !lights[i].WE){
+    for(int i = 0 ; i < lights.size() ; i++){
+        if(car.checkCoordinateY(lights[i].y) && car.checkDistanceX(lights[i].x) && !lights[i].WE){ // swiatlo na osi x
             car.setMoving(false);
             return;
         }
-        else if (x == lights[i].x && (fabs(y - lights[i].y) == radius) && !lights[i].NS){
+        else if (car.checkCoordinateX(lights[i].x) && car.checkDistanceY(lights[i].y) && !lights[i].NS){
             car.setMoving(false);
             return;
         }
