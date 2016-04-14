@@ -99,7 +99,7 @@ int main(int argc, char **argv)
   
   while (ros::ok())
   {
-    ros::spinOnce()
+    ros::spinOnce();
 	if(!ready)
 		continue;
 turnVector = new anro1::turnsVector;
