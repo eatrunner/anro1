@@ -73,8 +73,9 @@ bool ready = false;
 
 Turns turns;
 void process(const anro1::mapMessage::ConstPtr& msg){
-    ROS_INFO("Ja slyszu");
+    
     if (msg->type != "fourLanes"){
+        ROS_INFO("Turn recieved");
         turns.addTurn(msg->x, msg->y, msg->type);
         ready = true;
     }
@@ -88,7 +89,7 @@ int main(int argc, char **argv)
 
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::turnsVector>("turns_info", 10);
-    ros::Subscriber sub = n.subscribe("map_info", 10, process);
+    ros::Subscriber sub = n.subscribe("map_info", 20, process);
     ros::Rate loop_rate(10);
     anro1::turn turnmsg;
     anro1::turnsVector turnVector;
@@ -101,9 +102,6 @@ int main(int argc, char **argv)
         if(!ready){
             continue;
         }
-        turns.addTurn(150,50,"turningUpLeft");
-        turns.addTurn(150,100,"turningDownLeft");
-        turns.addTurn(100,100, "turningDownRight");
         anro1::turnsVector turnVector;
         turnVector.size = 0;
 
