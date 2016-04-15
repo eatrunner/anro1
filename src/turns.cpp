@@ -45,26 +45,26 @@ public:
 class Turns{
 public:
     Turns(){
-
+        turns = new list<Turn>;
     }
     void reset(){
-        while (!turns.empty()){
-            turns.pop_front();
+        while (!turns->empty()){
+            turns->pop_front();
         }
     }
 
     void addTurn(int x, int y, string type){
         Turn turn(x, y, type);
-        turns.push_back(turn);
+        turns->push_front(turn);
     }
 
-    list<Turn> giveList()
+    list<Turn>* giveList()
     {
         return turns;
     }
 
 private:
-    list<Turn> turns;
+    list<Turn>* turns;
 
 };
 
@@ -77,7 +77,6 @@ void process(const anro1::mapMessage::ConstPtr& msg){
     if (msg->type != "fourLanes"){
         turns.addTurn(msg->x, msg->y, msg->type);
         ready = true;
-
     }
 }
 int main(int argc, char **argv)
@@ -91,18 +90,24 @@ int main(int argc, char **argv)
     ros::Publisher chatter_pub = n.advertise<anro1::turnsVector>("turns_info", 10);
     ros::Subscriber sub = n.subscribe("map_info", 10, process);
     ros::Rate loop_rate(10);
-    //anro1::turn turnmsg;
-    //anro1::turnsVector turnVector;
+    anro1::turn turnmsg;
+    anro1::turnsVector turnVector;
 
 
 
     while (ros::ok())
     {
         ros::spinOnce();
-
+        if(!ready){
+            continue;
+        }
+        turns.addTurn(150,50,"turningUpLeft");
+        turns.addTurn(150,100,"turningDownLeft");
+        turns.addTurn(100,100, "turningDownRight");
         anro1::turnsVector turnVector;
         turnVector.size = 0;
-        for (list<Turn>::iterator it = turns.giveList().begin(); it != turns.giveList().end(); it++)
+
+        for (list<Turn>::iterator it = turns.giveList()->begin(); it != turns.giveList()->end(); it++)
         {
             anro1::turn turnmsg;
             turnmsg.x = (*it).x;
