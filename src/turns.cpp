@@ -83,7 +83,7 @@ void process(const anro1::mapMessage::ConstPtr& msg){
 int main(int argc, char **argv)
 {
 
-    ros::init(argc, argv, "Lights");
+    ros::init(argc, argv, "Turns");
 
 
 
