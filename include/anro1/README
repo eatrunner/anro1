@@ -1,1 +1,8 @@
 README
+Czy ktos wogole czyta te pliki README?
+Zasada dzialania:
+
+1. Listener potrzebny wylacznie dla moich testow
+2. MapOfCity w tej wersji, zajmuje sie wyslaniem do turns, lights i model informacji o skrzyzowaniach i zakretach (wysyla msgs z polami string(rozroznia jaki typ zakretu/skrzyzowania), int ,int ). Jezeli odpalicie sobie rviz, do wyswietli wam tez trase taka jaka sobie ustalilismy, choc pewnie trase bedziemy robic w mofelu tak jak pierwotnie zalozone bylo w schemacie. 
+3. Message o polozeniu skrzyzowan i zakretow, zostana wyslane raz i dopiero w momencie gdy wszyscy zasubskrybuja ten topic (map_info). W ten sam sposob wyslana bedzie informacja o trasie do modelu/rviza.
+

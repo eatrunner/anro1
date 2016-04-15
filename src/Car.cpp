@@ -7,7 +7,7 @@ void lightsCallback(const anro1::lightsVector::ConstPtr& msg);
 
 Car::Car(int id){
   this->id = id;
-  speed = 0.01;
+  speed = 1;
   moving = false;
   scale = 0.25;
 }

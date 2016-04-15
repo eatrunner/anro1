@@ -1,0 +1,14 @@
+README: aktualizacja 14.04
+
+Mapa, samochody i model zostały połączone. 
+(Jednak jedynych samochód (zielony sześcian)) ma na to wywalone i lata sobie gdzieś obok w przestrzeni ;d.
+Nie wiem czy taki był zamysł ekipy od samochodów. Skala równiez jest zła, bo w oryginalnej samochód jest pikselem na tle mapy.
+Poprawcie też waszego turnsListenera, bo się zawiesza z tego co zauważyłem i plik .launch trzeba stopować Ctrl+Z (przynajmniej tak działa u mnie).
+
+Jak opalamy:
+będąc w catkin_ws:
+1. source ./devel/setup.bash
+2. catkin_make
+3. roslaunch anro1 city.launch
+
+Po odpaleniu oddalamy trochę, po kilku sekundach powinny pojawic sie wszystkie elementy (mapa + jeden samochód).

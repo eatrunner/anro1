@@ -26,14 +26,16 @@ find_package(catkin REQUIRED COMPONENTS
    std_msgs
  )
  catkin_package(
-	INCLUDE_DIRS msg
-	CATKIN_DEPENDS message_runtime std_msgs
-)
+   CATKIN_DEPENDS message_runtime std_msgs
+ )
 
 add_executable(Car src/Car.cpp)
-add_dependencies(Car my_packages_generate_messages_cpp)
+add_dependencies(Car anro1_generate_messages_cpp)
 target_link_libraries(Car ${catkin_LIBRARIES})
 
 
 add_executable(talker src/talker.cpp)
 target_link_libraries(talker ${catkin_LIBRARIES})
+
+add_executable(turns src/turns.cpp)
+target_link_libraries(turns ${catkin_LIBRARIES})

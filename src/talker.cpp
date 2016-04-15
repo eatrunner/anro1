@@ -31,6 +31,7 @@ int main(int argc, char** argv){
     ros::Rate rate(10);
     anro1::turnsVector turnsMsgVector;
     anro1::lightsVector lightsMsgVector;
+    std::vector<anro1::light> lights = lightsMsgVector.lights;
     turnsMsgVector.turns.push_back(getTurnMsg(false, false, 0.0d, 1.0d));
     turnsMsgVector.turns.push_back(getTurnMsg(true, false, 0.0d, 0.0d));
     turnsMsgVector.turns.push_back(getTurnMsg(true, true, 1.0d, 0.0d));
