@@ -90,7 +90,8 @@ int main(int argc, char **argv)
     ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("lights_info", 10);
     ros::Subscriber sub = n.subscribe("map_info", 20, process);
     ros::Rate loop_rate(10);
-
+    anro1::light lightmsg;
+    anro1::lightsVector lightVector;
 
     while (ros::ok())
     {
