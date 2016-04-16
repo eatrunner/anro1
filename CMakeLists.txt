@@ -49,7 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    DIRECTORY
    FILES
-   carMessage.msg
+   car.msg
    lightsVector.msg
    light.msg
    turn.msg

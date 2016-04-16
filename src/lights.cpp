@@ -15,19 +15,19 @@ public:
         west(true),
         south(true),
         east(true),
-        timeToChange(1000),
+        timeToChange(100),
         northgreen(true),
         x(ix),
         y(iy),
         time(0){
-        }
+    }
 
-        bool north, west, south, east;
-        bool northgreen;
-        int time;
-        int timeToChange;
-        double x, y;
-        void incrementTime(){
+    bool north, west, south, east;
+    bool northgreen;
+    int time;
+    int timeToChange;
+    double x, y;
+    void incrementTime(){
         time++;
         if(time>timeToChange){
             northgreen=!northgreen;
@@ -84,8 +84,6 @@ int main(int argc, char **argv)
 
     ros::init(argc, argv, "Lights");
 
-
-
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("lights_info", 10);
     ros::Subscriber sub = n.subscribe("map_info", 20, process);
@@ -99,11 +97,14 @@ int main(int argc, char **argv)
         if(!ready){
             continue;
         }
+
         anro1::lightsVector lightVector;
-       lightVector.size = 0;
+        lightVector.size = 0;
 
         for (list<Crossroad>::iterator it = crossroads.giveList()->begin(); it != crossroads.giveList()->end(); it++)
         {
+            (*it).incrementTime();
+
             anro1::light lightmsg;
             lightmsg.x = (*it).x;
             lightmsg.y = (*it).y;
