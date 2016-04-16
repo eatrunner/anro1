@@ -65,7 +65,7 @@ void visualizeCar(const anro1::car& msg)
     marker1.scale.x = 30*msg.scale;
     marker1.scale.y = 30*msg.scale;
     marker1.scale.z = 30*msg.scale;
-    marker1.color.r = 0.0f;
+    marker1.color.r = 0.3f;
     marker1.color.g = 0.0f;
     marker1.color.b = 0.5f;
     marker1.color.a = 1.0;
