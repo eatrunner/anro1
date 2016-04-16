@@ -53,7 +53,7 @@ void visualizeCar(const anro1::car& msg)
     marker1.action = visualization_msgs::Marker::ADD;
     marker1.pose.position.x = msg.x;
     marker1.pose.position.y = msg.y;
-    marker1.pose.position.z = 25;
+    marker1.pose.position.z = 0;
     marker1.pose.orientation.x = 0.0;
     marker1.pose.orientation.y = 0.0;
     marker1.pose.orientation.z = 0.0;
@@ -61,8 +61,8 @@ void visualizeCar(const anro1::car& msg)
     marker1.scale.x = 30*msg.scale;
     marker1.scale.y = 30*msg.scale;
     marker1.scale.z = 30*msg.scale;
-    marker1.color.r = 0.0f;
-    marker1.color.g = 0.8f;
+    marker1.color.r = 1.0f;
+    marker1.color.g = 0.0f;
     marker1.color.b = 0.0f;
     marker1.color.a = 1.0;
     marker1.lifetime = ros::Duration();
