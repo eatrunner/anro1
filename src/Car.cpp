@@ -121,15 +121,15 @@ void turnsCallback(const anro1::turnsVector::ConstPtr& msg){
 
 void lightsCallback(const anro1::lightsVector::ConstPtr &msg){
     std::vector<anro1::light> lights = msg->lights;
-    double radius = car.getScale();
+    double radius = car.getScale()*60;
     double x = car.getX();
     double y = car.getY();
     for(int i = 0 ; i < msg->size ; i++){
-        if(y == lights[i].y && (fabs(x - lights[i].x) == radius) && !lights[i].WE){
+        if((fabs(y - lights[i].y) <= radius) && (fabs(x - lights[i].x) <= radius) && !lights[i].WE && car.getVecY() == 0){
             car.setMoving(false);
             return;
         }
-        else if (x == lights[i].x && (fabs(y - lights[i].y) == radius) && !lights[i].NS){
+        else if ((fabs(x - lights[i].x) <= radius) && (fabs(y - lights[i].y) <= radius) && !lights[i].NS && car.getVecX() == 0){
             car.setMoving(false);
             return;
         }
