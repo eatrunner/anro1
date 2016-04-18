@@ -24,6 +24,7 @@ public:
   void setMoving(bool move);
   bool checkCoordinates(double x, double y);
   anro1::car getMsg();
+  int getid();//d
 
 private:
   double x;

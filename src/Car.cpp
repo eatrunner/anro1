@@ -5,6 +5,8 @@
 
 #include <math.h>
 
+#include "anro1/reset_car.h"
+
 void turnsCallback(const anro1::turnsVector::ConstPtr& msg);
 void lightsCallback(const anro1::lightsVector::ConstPtr& msg);
 
@@ -64,8 +66,34 @@ anro1::car Car::getMsg(){
     return carMsg;
 }
 
+int Car::getid(){return id;}//d
+
 Car car(1);
 bool isFirst = true;
+
+std::vector<anro1::turn> turns;//d
+
+
+bool resetcar(anro1::reset_car::Request &req, anro1::reset_car::Response &res)//d
+{
+  int vecX;
+  int vecY;
+  if(req.id=car.getid())
+  {
+    ROS_INFO_STREAM("Reset car");
+    car.setX(turns[0].x);
+    car.setY(turns[0].y);
+    vecX = 0;
+    vecY = turns[0].NS ? 1 : -1;
+    car.setVector(vecX,vecY);
+    //car.setMoving(false);
+    //car.setVector(0,0);
+    //isFirst = true;
+    //res.done = 1;
+  }
+  //else res.done = 0;
+  return true;
+}//d
 
 int main(int argc, char** argv){
   ros::init(argc, argv, "c");
@@ -74,6 +102,8 @@ int main(int argc, char** argv){
   ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
   ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
   ros::Rate rate(10);
+
+  ros::ServiceServer service = nodeHandle.advertiseService("reset_car",resetcar);//d
 
   while(ros::ok()){
       ros::spinOnce();
@@ -85,8 +115,9 @@ int main(int argc, char** argv){
   return 0;
 }
 
+
 void turnsCallback(const anro1::turnsVector::ConstPtr& msg){
-  std::vector<anro1::turn> turns = msg->turns;
+  turns = msg->turns;//d
   int vecX;
   int vecY;
   if(isFirst){

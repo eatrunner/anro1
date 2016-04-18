@@ -58,11 +58,12 @@ find_package(catkin REQUIRED COMPONENTS
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+ add_service_files(
+   FILES
 #   Service1.srv
 #   Service2.srv
-# )
+   reset_car.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -204,3 +205,5 @@ add_executable(Model src/Model.cpp)
 target_link_libraries(Model ${catkin_LIBRARIES})
 add_executable(MapOfCity src/MapOfCity.cpp)
 target_link_libraries(MapOfCity ${catkin_LIBRARIES})
+#add_executable(reset_car_now src/reset_car_now.cpp)#d
+#target_link_libraries(reset_car_now ${catkin_LIBRARIES})#d
