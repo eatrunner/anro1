@@ -1,3 +1,20 @@
+
+
+
+/*
+
+   TO JEST WERSJA PRZEWIDZIANA POD NOWA MAPE- SWIATLA SIE NIE POJAWIA POKI MAPA NIE OGARNIE
+*/
+
+
+
+
+
+
+
+
+
+
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "anro1/light.h"
@@ -14,7 +31,7 @@ using namespace std;
 //reprezentacja pojedynczego skrzyzowania
 class Crossroad{
 public:
-    Crossroad(double ix, double iy) :
+    Crossroad(double ix, double iy, string s) :
         north(true),
         west(true),
         south(true),
@@ -29,6 +46,18 @@ public:
         redTime(0),
         time(0){
           timeToChange=rand()%4+greenTime;//czas w sekundach miedzy zmiana swiatel
+          for(int i=1;i<s.size();i++){
+              if(s[i]=='U')
+                  north=true;
+              if(s[i]=='L')
+                  west=true;
+              if(s[i]=='D')
+                  south=true;
+              if(s[i]=='P')
+                  east=true;
+
+
+          }
     }
 
     bool north, west, south, east;//drogi wylotowe z skrzyzowania
@@ -84,7 +113,7 @@ public:
     }
 
     void addCrossroad(int x, int y, string type){
-        Crossroad crossroad(x, y);
+        Crossroad crossroad(x, y, type);
         crossroads->push_front(crossroad);
     }
     void tick(){//inkrementacja czasu na skrzyzowaniach
@@ -109,7 +138,7 @@ bool ready = false;
 Crossroads crossroads;
 void process(const anro1::mapMessage::ConstPtr& msg){
     ROS_INFO("Ja slyszu");
-    if (msg->type == "fourLanes"){
+    if (msg->type[0] == 'C'){
         crossroads.addCrossroad(msg->x, msg->y, msg->type);
         ready = true;
     }
@@ -146,6 +175,11 @@ int main(int argc, char **argv)
             lightmsg.y = (*it).y;
             lightmsg.NS = (*it).northGreen;
             lightmsg.WE = (*it).westGreen;
+            lightmsg.N = (*it).north;
+            lightmsg.E = (*it).east;
+            lightmsg.S = (*it).south;
+            lightmsg.W = (*it).west;
+
             lightVector.lights.push_back(lightmsg);
             lightVector.size++;
         }
