@@ -24,10 +24,15 @@ public:
   void setMoving(bool move);
   bool checkCoordinates(double x, double y);
   bool checkCoordinateX(double x);
+  bool checkCoordinateX(double x, double y);
+  bool checkCoordinateY(double x, double y);
   bool checkCoordinateY(double y);
   bool checkDistanceX(double x);
   bool checkDistanceY(double y);
+  void setCarNear(bool isCar);
   anro1::car getMsg();
+  bool isCarNear();
+  int getId();
   
 private:
   double x;
@@ -38,6 +43,7 @@ private:
   int vecX;
   int vecY;
   bool moving;
+bool carNear;
 };
 
 #endif
