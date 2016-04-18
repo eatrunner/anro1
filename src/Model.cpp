@@ -127,6 +127,9 @@ void visualizeLights(const anro1::lightsVector& msg)
                 else
                     marker1.color.r = 1.0f;
             }
+            else if(!light.NS && !light.WE)
+                marker1.color.r = 1.0f;
+            
             marker1.color.a = 1.0;
             marker1.lifetime = ros::Duration();
 
