@@ -1,0 +1,2 @@
+string dir
+out[] outs
