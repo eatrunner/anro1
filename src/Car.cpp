@@ -10,7 +10,7 @@ void lightsCallback(const anro1::lightsVector::ConstPtr& msg);
 
 Car::Car(int id){
   this->id = id;
-  speed = 5.1;
+  speed = 1.1;
   moving = false;
   scale = 0.25;
 }
@@ -73,7 +73,7 @@ int main(int argc, char** argv){
   ros::Publisher carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
   ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
   ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
-  ros::Rate rate(10);
+  ros::Rate rate(100);
 
   while(ros::ok()){
       ros::spinOnce();

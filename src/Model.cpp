@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     ros::Subscriber lights_subscriber= n.subscribe("lights_info", 1000, visualizeLights);
 
     modelrviz.setPub(rviz_publisher);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(100);
 
     ros::spin();
 

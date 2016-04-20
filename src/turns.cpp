@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::turnsVector>("turns_info", 10);
     ros::Subscriber sub = n.subscribe("map_info", 20, process);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(100);
     anro1::turn turnmsg;
     anro1::turnsVector turnVector;
 

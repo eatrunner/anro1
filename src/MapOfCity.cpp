@@ -27,7 +27,7 @@ public:
     void configureRviz()
     {
         marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
-        ros::Rate loop_rate(10000);
+        ros::Rate loop_rate(100);
         while(marker_pub.getNumSubscribers() < 1 )
         {
             loop_rate.sleep();
