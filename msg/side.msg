@@ -1,0 +1,2 @@
+point[] in
+point[] out
