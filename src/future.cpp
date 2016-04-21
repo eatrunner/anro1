@@ -41,12 +41,15 @@ public:
 	bool right;
 	bool leftRoute;
 	bool rightRoute;
-	Route(){
+	Route(Point beginn, Point endd){
 		straight = false;
 		left = false;
 		right = false;
 		leftRoute = false;
 		rightRoute = false;
+		begin = beginn;
+		end = endd;
+
 	}
 	bool operator<(const Route& second){
 		if (begin == second.begin)
@@ -322,6 +325,42 @@ public:
 		}
 
 	}
+	anro1::node giveMessage(){
+		anro1::node node;
+		for (int i = 0; i < 4; i++){
+			for (int j = 0; j < sides[i].entries.size(); j++){
+				anro1::accesspoint ap;
+				ap->x = sides[i].entries[j].x;
+				ap->y = sides[i].entries[j].y;
+				for (int k = 0; k < sides[i].entries[j].left.size();k++){
+					anro1::point p;
+					p->x = sides[i].entries[j].left[k].x;
+					p->y = sides[i].entries[j].left[k].y;
+					ap->left->push_back(p);
+				}
+				switch (i){
+				case 0:
+					node->s->push_back(ap);
+					break;
+				case 1:
+					node->e->push_back(ap);
+					break;
+				case 2:
+					node->n->push_back(ap);
+					break;
+				case 3:
+					node->w->push_back(ap);
+					break;
+				}
+			}
+			return node;
+		}
+
+
+
+	}
+
+
 
 	bool test(bool show=false){
 		if (show)
@@ -379,14 +418,14 @@ public:
 class Crossroads{
 public:
 	void createRoutes(list<Route*>* routesToCheck){
-		for (list<Crossroad>::iterator it = crossroads->begin(); it!=crossroads->end(); it++){
-			(*it).addinfo(routesToCheck);
+		for (list<Crossroad*>::iterator it = crossroads->begin(); it!=crossroads->end(); it++){
+			(*it)->addinfo(routesToCheck);
 		}
 	}
 
 
 	Crossroads(){
-		crossroads = new list<Crossroad>;
+		crossroads = new list<Crossroad*>;
 	}
 	void reset(){
 		while (!crossroads->empty()){
@@ -396,21 +435,31 @@ public:
 
 	void addCrossroad(vector<InSide> vec){
 		Crossroad crossroad(vec);
-		crossroads->push_front(crossroad);
+		crossroads->push_front(new Crossroad(vec));
 	}
 	void tick(){//inkrementacja czasu na skrzyzowaniach
-		for (list<Crossroad>::iterator it = giveList()->begin(); it != giveList()->end(); it++){
+		for (list<Crossroad*>::iterator it = giveList()->begin(); it != giveList()->end(); it++){
 			(*it).incrementTime();
 		}
 	}
 
-	list<Crossroad>* giveList()
+	list<Crossroad*>* giveList()
 	{
 		return crossroads;
 	}
 
+	anro1::nodeMessage giveMessage(){
+		anro1::nodeMessage msg;
+		for (list<Crossroad*>::iterator it = crossroads->begin(); it != crossroads->end(); it++){
+			msg->push_back((*it)->giveMessage());
+		}
+		return msg;
+	}
+
+
+
 private:
-	list<Crossroad>* crossroads;
+	list<Crossroad*>* crossroads;
 
 };
 
@@ -473,14 +522,49 @@ int main(){
 
 
 }*/
-/*
-bool ready=false;
 
-void process(const anro1::mapMessage::ConstPtr& msg){
+bool ready=false;
+bool processed = false;
+void process(const anro1::mapNodeMessage::ConstPtr& msg){
 	ROS_INFO("Ja slyszu");
-	if (msg->type == "fourLanes"){
-		crossroads.addCrossroad(msg->x, msg->y, msg->type);
-		ready = true;
+	vector < anro1::mapNode> nodes = msg->nodes;
+	for (int i =0;i<nodes.size(); i++){
+		if (nodes[i].sides.size() != 4){
+			cout << "fuckup";
+		}
+		for (int j =0; j < nodes[i].sides.size(); j++){
+			InSide inside;
+			for (int k = 0; k < nodes[i].sides[j].in.size(); k++){
+				Point p;
+				anro1::point point = nodes[i].sides[j].in[k];
+				p.x = point->x;
+				p.y = point->y;
+				inside.ins.push_back(p);
+			}
+			for (int k = 0; k < nodes[i].sides[j].out.size(); k++){
+				Point p;
+				anro1::point point = nodes[i].sides[j].out[k];
+				p.x = point->x;
+				p.y = point->y;
+				inside.outs.push_back(p);
+			}
+			crossroads.addCrossroad(inside);
+		}
+	}
+	processed = true;
+	
+}
+
+vector<Route*>* routes = new vector<Route*>;
+
+void process2(const anro1::mapNodeMessage::ConstPtr& msg){
+	if (!ready){
+		cout << "gowno";
+	}
+	vector < anro1::mapRoute> msgroutes = msg->routes;
+	for (int i = 0; i < msgroutes.size(); i++){
+		Point begin(msgroutes[i]->begin->x, msgroutes[i]->begin->y);
+		Point end(msgroutes[i]->end->x, msgroutes[i]->end->y)
 	}
 }
 
@@ -492,8 +576,9 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "Nodes");
 	srand(time(NULL));
 	ros::NodeHandle n;
-	ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("lights_info", 1);//utworzenie kanalu do nadawania
-	ros::Subscriber sub = n.subscribe("map_info", 1, process);//subskrypcja kanalu z informacjami
+	ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("nodes_info", 1);//utworzenie kanalu do nadawania
+	ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami
+	ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);
 	ros::Rate loop_rate(10);
 	time_t lasttick, thistick;
 	time(&lasttick);
@@ -508,28 +593,16 @@ int main(int argc, char **argv)
 			lasttick = lasttick + 1;
 			crossroads.tick();
 		}
-		anro1::lightsVector lightVector;
-		lightVector.size = 0;
-
-		for (list<Crossroad>::iterator it = crossroads.giveList()->begin(); it != crossroads.giveList()->end(); it++)//dodajemy wiadomosci do wektora
-		{
-			anro1::light lightmsg;
-			lightmsg.x = (*it).x;
-			lightmsg.y = (*it).y;
-			lightmsg.NS = (*it).northGreen;
-			lightmsg.WE = (*it).westGreen;
-
-
-			lightVector.lights.push_back(lightmsg);
-			lightVector.size++;
-		}
-
-		chatter_pub.publish(lightVector);
+		
+		anro1::nodeMessage nodemsg = crossroads.giveMessage();
+		
+		chatter_pub.publish(nodemsg);
 
 
 		loop_rate.sleep();
 
 	}
+
 
 	return 0;
 }
