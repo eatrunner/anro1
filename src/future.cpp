@@ -12,6 +12,10 @@
 #include <queue>
 using namespace std;
 
+
+
+
+
 class Point{
 public:
 	int x, y;
@@ -28,6 +32,28 @@ public:
 	}
 };
 
+class Route{
+public:
+	Point begin;
+	Point end;
+	bool straight;
+	bool left;
+	bool right;
+	bool leftRoute;
+	bool rightRoute;
+	Route(){
+		straight = false;
+		left = false;
+		right = false;
+		leftRoute = false;
+		rightRoute = false;
+	}
+	bool operator<(const Route& second){
+		if (begin == second.begin)
+			return end < second.end;
+		return begin < second.begin;
+	}
+};
 
 
 
@@ -352,9 +378,9 @@ public:
 
 class Crossroads{
 public:
-	void createRoutes(vector<Route>* routesToCheck){
-		for (int i = 0; i < crossroads->size(); i++){
-
+	void createRoutes(list<Route*>* routesToCheck){
+		for (list<Crossroad>::iterator it = crossroads->begin(); it!=crossroads->end(); it++){
+			(*it).addinfo(routesToCheck);
 		}
 	}
 
@@ -411,28 +437,6 @@ bool testAllPossibilities(int size){
 	return ok;
 }
 
-class Route{
-public:
-	Point begin;
-	Point end;
-	bool straight;
-	bool left;
-	bool right;
-	bool leftRoute;
-	bool rightRoute;
-	Route(){
-		straight = false;
-		left = false;
-		right = false;
-		leftRoute = false;
-		rightRoute = false;
-	}
-	bool operator<(const Route& second){
-		if (begin == second.begin)
-			return end < second.end;
-		return begin < second.begin;
-	}
-};
 
 
 
