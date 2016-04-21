@@ -3,3 +3,4 @@ float64 y
 point[] left
 point[] straight
 point[] right
+bool green
