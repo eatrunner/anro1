@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<robot name="antCar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="car_width" value=".2" />
+  <xacro:property name="car_length" value=".6" />
+  <xacro:property name="car_height" value=".1" />
+  <xacro:property name="car_length" value=".6" />
+  <xacro:property name="wheel_radius" value=".07" />
+  <xacro:property name="wheel_width" value="3.1415" />
+  <xacro:property name="pi" value="3.1415" />
+
+
+  <material name="car_color">
+    <color rgba="0 0 .8 1"/>
+  </material>
+
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <link name="car_body">
+    <visual>
+      <geometry>
+        <box size="${car_length} ${car_width} ${car_height}"/>
+      </geometry>
+      <material name="car_color"/>
+    </visual>
+  </link>
+
+ <xacro:macro name="wheel" params="side_fb side_rl factor_fb, factor_rl">
+    <link name="${side_rl}_${side_fb}_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius/2}" length="wheel_width"/>
+        </geometry>
+        <material name="black"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </visual>
+    </link>
+    <joint name="${side_rl}_${side_fb}_wheel_joint" type="continuous">
+      <axis xyz="0 1 0" rpy="0 0 0" />
+      <parent link="${car_body}"/>
+      <child link="${side_rl_${side_fb}_wheel"/>
+      <origin xyz="${factor_fb*car_length/3}0 ${factor_rl*car_width/2} 0" rpy="0 0 0"/>
+    </joint>
+ </xacro:macro>
+
+ <xacro:macro name="wheel" params="front right 1 -1">
+ <xacro:macro name="wheel" params="front left 1 1">
+ <xacro:macro name="wheel" params="back right -1-1">
+ <xacro:macro name="wheel" params="back left -1 1">
+
+  <link name="head">
+    <visual>
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+      <material name="white"/>
+    </visual>
+  </link>
+	
+    <xacro:wheel prefix="${prefix}" suffix="front" reflect="1"/>
+    <xacro:wheel prefix="${prefix}" suffix="back" reflect="-1"/>
+
+  <joint name="head_swivel" type="continuous">
+    <parent link="base_link"/>
+    <child link="head"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 2.3"/>
+  </joint>
+</robot>

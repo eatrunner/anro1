@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<robot name="antCar" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!--roslaunch urdf_tutorial xacrodisplay.launch model:=/home/antek/ANRO/car.urdf.xacro-->
+
+  <xacro:property name="car_length" value="15" />
+  <xacro:property name="car_width" value="${car_length/2}" />
+  <xacro:property name="car_height" value="${car_length/5}" />
+  <xacro:property name="windows_height" value="${car_height*0.6}" />
+ <xacro:property name= "windows_length" value="${car_length*0.4}" />
+  <xacro:property name="wheel_radius" value="${car_height/2}" />
+  <xacro:property name="wheel_width" value="${car_width/5}" />
+  <xacro:property name="pi" value="3.1415" />
+
+
+  <material name="car_color">
+    <color rgba="0.5 0 .8 1"/>
+  </material>
+
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+  <material name="window">
+    <color rgba="0 0 0.5 0.7"/>
+  </material>
+
+
+  <link name="car_body">
+    <visual>
+      <geometry>
+        <box size="${car_length} ${car_width} ${car_height}"/>
+      </geometry>
+      <material name="car_color"/>
+    </visual>
+  </link>
+
+  <link name="windows">
+    <visual>
+      <geometry>
+        <box size="${windows_length} ${car_width} ${windows_height}"/>
+      </geometry>
+      <material name="window"/>
+    </visual>
+  </link>
+  <joint name="windows_to_body" type="fixed">
+    <parent link="car_body"/>
+    <child link="windows"/>
+    <origin xyz="0 0 ${(car_height + windows_height)/2}" rpy="0 0 0"/>
+  </joint>
+  <link name="front_window">
+    <visual>
+      <geometry>
+        <box size="${windows_length/2} ${car_width-0.03} ${windows_height}"/>
+      </geometry>
+      <material name="window"/>
+    </visual>
+  </link>
+  <joint name="front_window_to_windows" type="fixed">
+    <parent link="windows"/>
+    <child link="front_window"/>
+    <origin xyz="${windows_length/2} 0 -${windows_height/1.9}" rpy="0 ${pi/4} 0"/>
+  </joint>
+
+  <link name="car_top">
+    <visual>
+      <geometry>
+        <box size="${windows_length} ${car_width} 0.05"/>
+      </geometry>
+      <material name="car_color"/>
+    </visual>
+  </link>
+  <joint name="top_to_body" type="fixed">
+    <parent link="windows"/>
+    <child link="car_top"/>
+    <origin xyz="0 0 ${(windows_height)/2}"/>
+  </joint>
+
+ <xacro:macro name="wheel" params="side_fb side_rl factor_fb factor_rl">
+    <link name="${side_rl}_${side_fb}_wheel">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="black"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </visual>
+    </link>
+    <joint name="${side_rl}_${side_fb}_wheel_joint" type="continuous">
+      <axis xyz="0 1 0" rpy="0 0 0" />
+      <parent link="car_body"/>
+      <child link="${side_rl}_${side_fb}_wheel"/>
+      <origin xyz="${factor_fb*car_length/3} ${factor_rl*car_width/2} -${car_height/1.3-wheel_radius}" rpy="0 0 0"/>
+    </joint>
+ </xacro:macro>
+
+ <xacro:wheel side_fb="front" side_rl="right" factor_fb= "1" factor_rl="-1"/>
+ <xacro:wheel side_fb="front" side_rl="left" factor_fb="1" factor_rl="1"/>
+ <xacro:wheel side_fb="rear" side_rl="right" factor_fb="-1" factor_rl="-1"/>
+ <xacro:wheel side_fb="rear" side_rl="left" factor_fb="-1" factor_rl="1"/>
+
+</robot>
+

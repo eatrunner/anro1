@@ -1,0 +1,12 @@
+background_b: 200
+background_g: 100
+background_r: 200
+rosdistro: 'jade
+
+  '
+roslaunch:
+  uris: {host_antek_virtualbox__41553: 'http://antek-VirtualBox:41553/'}
+rosversion: '1.11.16
+
+  '
+run_id: 6bc3b9ea-ee97-11e5-a044-0800275029b4
