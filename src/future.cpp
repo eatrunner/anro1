@@ -434,8 +434,8 @@ public:
 	}
 
 	void addCrossroad(vector<InSide> vec){
-		Crossroad crossroad(vec);
-		crossroads->push_front(new Crossroad(vec));
+		Crossroad* crossroad = new Crossroad(vec);
+		crossroads->push_front(crossroad);
 	}
 	void tick(){//inkrementacja czasu na skrzyzowaniach
 		for (list<Crossroad*>::iterator it = giveList()->begin(); it != giveList()->end(); it++){
@@ -494,10 +494,6 @@ bool testAllPossibilities(int size){
 
 
 
-
-int main(){
-
-}
 
 
 
