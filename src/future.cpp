@@ -557,6 +557,28 @@ void process(const anro1::mapNodeMessage::ConstPtr& msg){
 
 vector<Route*>* routes = new vector<Route*>;
 
+anro1::routemsg giveroutes(vector<Route*>* routesto){
+	anro1::routemsg routemsg;
+	for (vector<Route*>::iterator it = routesto->begin(); it != routesto->end(); it++){
+		anro1::route route;
+		Point begin = (*it)->begin;
+		route->begin->x = begin.x;
+		route->begin->y = begin.y;
+		Point end = (*it)->end;
+		route->end->x = end.x;
+		route->end->x = end.y;
+		Route mroute = **it;
+		route->leftroute = mroute.leftRoute;
+		route->rightroute = mroute.rightRoute;
+		route->straight = mroute.straight;
+		route->left = mroute.left;
+		route->right = mroute.right;
+		routemsg.push_back(route);
+	}
+	return routemsg;
+}
+
+
 void process2(const anro1::mapNodeMessage::ConstPtr& msg){
 	if (!ready){
 		cout << "gowno";
@@ -577,6 +599,8 @@ int main(int argc, char **argv)
 	srand(time(NULL));
 	ros::NodeHandle n;
 	ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("nodes_info", 1);//utworzenie kanalu do nadawania
+	ros::Publisher route_chatter = n.advertise<anro1::lightsVector>("routes_info", 1);//utworzenie kanalu do nadawania
+
 	ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami
 	ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);
 	ros::Rate loop_rate(10);
@@ -597,6 +621,8 @@ int main(int argc, char **argv)
 		anro1::nodeMessage nodemsg = crossroads.giveMessage();
 		
 		chatter_pub.publish(nodemsg);
+		anro1::routemsg rmsg = giveroutes(routes);
+		route_chatter.publish(routemsg);
 
 
 		loop_rate.sleep();
@@ -607,4 +633,3 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-*/
