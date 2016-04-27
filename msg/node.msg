@@ -1,4 +1,4 @@
-accesspoint[] n
-accesspoint[] e
-accesspoint[] w
-accesspoint[] s
+accessPoint[] n
+accessPoint[] e
+accessPoint[] w
+accessPoint[] s

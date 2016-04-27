@@ -19,7 +19,7 @@ void lights_infoCallback(const anro1::point::ConstPtr& msg)
 
   //ROS_WARN_STREAM("Marker ID : " << marker.id << " x = " << (float)marker.pose.position.x
                 //  << " y = " << (float) marker.pose.position.y);
-
+}
 
 int main( int argc, char** argv )
 {
