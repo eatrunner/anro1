@@ -52,6 +52,8 @@ find_package(catkin REQUIRED COMPONENTS
    accessPoint.msg
    carMessage.msg
    direction.msg
+   light.msg
+   lightsmsg.msg
    mapNode.msg
    mapNodeMessage.msg
    mapRoute.msg
