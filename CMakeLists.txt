@@ -60,5 +60,10 @@ add_executable(Model src/Model.cpp)
 target_link_libraries(Model ${catkin_LIBRARIES})
 
 add_executable(turns src/turns.cpp)
+add_dependencies(turns anro1_generate_messages_cpp)
 target_link_libraries(turns ${catkin_LIBRARIES})
+
+add_executable(lights src/lights.cpp)
+add_dependencies(lights anro1_generate_messages_cpp)
+target_link_libraries(lights ${catkin_LIBRARIES})
 

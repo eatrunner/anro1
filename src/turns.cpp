@@ -83,14 +83,14 @@ void process(const anro1::mapMessage::ConstPtr& msg){
 int main(int argc, char **argv)
 {
 
-    ros::init(argc, argv, "Lights");
+    ros::init(argc, argv, "Turns");
 
 
 
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::turnsVector>("turns_info", 10);
     ros::Subscriber sub = n.subscribe("map_info", 20, process);
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(20);
     anro1::turn turnmsg;
     anro1::turnsVector turnVector;
 
