@@ -7,6 +7,7 @@
 #include <ctime>
 #include <sstream>
 #include <list>
+#include "anro1/Constants.h"
 using namespace std;
 
 
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::lightsVector>("lights_info", 10);//utworzenie kanalu do nadawania
     ros::Subscriber sub = n.subscribe("map_info", 20, process);//subskrypcja kanalu z informacjami
-    ros::Rate loop_rate(20);
+    ros::Rate loop_rate(Constants::rate);
     time_t lasttick, thistick;
     time(&lasttick);
     while (ros::ok())

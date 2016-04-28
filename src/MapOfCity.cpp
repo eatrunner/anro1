@@ -4,6 +4,7 @@
 #include "anro1/mapMessage.h"
 #include <cstdlib>
 #include <visualization_msgs/Marker.h>
+#include "anro1/Constants.h"
 using namespace std;
 
 
@@ -27,7 +28,7 @@ public:
     void configureRviz()
     {
         marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
-        ros::Rate loop_rate(100);
+        ros::Rate loop_rate(Constants::rate);
         while(marker_pub.getNumSubscribers() < 1 )
         {
             loop_rate.sleep();
@@ -445,7 +446,7 @@ public:
         anro1::mapMessage turning;
 
         //petla czeka okolo 10sek na listener
-        ros::Rate loop_rate(10);
+        ros::Rate loop_rate(Constants::rate);
 
         ROS_INFO("I heard: ");
         // wysylanie informacji o polozeniu skrzyzowan

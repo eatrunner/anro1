@@ -8,6 +8,7 @@
 #include "anro1/car.h"
 #include <ros/ros.h>
 #include <math.h>
+#include "anro1/Constants.h"
 
 class Car{
 public:

@@ -3,13 +3,18 @@
 void turnsCallback(const anro1::turnsVector::ConstPtr& msg);
 void lightsCallback(const anro1::lightsVector::ConstPtr& msg);
 void carsCallback(const anro1::car::ConstPtr &msg);
+
+/*
+ * Funkcja nie nalezy do klasy Car, sluzy do okreslenia czy dana wartosc
+ * znajduje sie w podanym przedziale przez lower i high
+ */
 bool isInIterval(double lower, double higher, double value){
     return value >= lower && value <= higher;
 }
 
 Car::Car(int id){
   this->id = id;
-  speed = 2.5;
+  speed = (double)30/Constants::rate;
   moving = false;
   scale = 8;
   carNear = false;
@@ -22,22 +27,22 @@ Car::~Car(){
 bool Car::checkCoordinates(double x, double y){
   double xOffset = fabs(this->x - x);
   double yOffset = fabs(this->y - y);
-  return xOffset < speed && yOffset < speed;
+  return xOffset < speed/2 && yOffset < speed/2;
 }
 bool Car::checkCoordinateX(double x){
-  return fabs(this->x - x) < speed;
+  return fabs(this->x - x) < speed / 2;
 }
 bool Car::checkCoordinateX(double x, double offset){
   return fabs(this->x - x) < offset;
 }
 bool Car::checkCoordinateY(double y){
-  return fabs(this->y - y) < speed;
+  return fabs(this->y - y) < speed / 2;
 }
 bool Car::checkCoordinateY(double y, double offset){
   return fabs(this->y - y) < offset;
 }
 void Car::move(){
-  ROS_INFO_STREAM(x << "  " << y);
+  //ROS_INFO_STREAM(x << "  " << y);
   if(moving){
      x += vecX * speed;
      y += vecY * speed;
@@ -72,7 +77,7 @@ int main(int argc, char** argv){
   ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
   ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
-  ros::Rate rate(20);
+  ros::Rate rate(Constants::rate);
 
   while(ros::ok()){
       ros::spinOnce();
@@ -142,24 +147,24 @@ void lightsCallback(const anro1::lightsVector::ConstPtr &msg){
 }
 
 void carsCallback(const anro1::car::ConstPtr &msg){
-    if(msg->id == car->getId())     //Jezeli wiadomosc pochodzi od tego samego samochodu, ktorego sterujemy
+    if(msg->id == car->getId())                                 //Jezeli wiadomosc pochodzi od tego samego samochodu, ktorego sterujemy
         return;
-    if (car->isCarNear() && !(msg->id == carNearId)){ //Jezeli juz sie zatrzymalismy przez jakis samochod
-        return;                                           //To sprawdzamy TYLKO wiadomosci od tego samochodu
+    if (car->isCarNear() && !(msg->id == carNearId)){           //Jezeli juz sie zatrzymalismy przez jakis samochod
+        return;                                                 //To sprawdzamy TYLKO wiadomosci od tego samochodu
     }
     double distance = 0;
-    if (car->checkCoordinateY(msg->y)){
-        distance = (msg->x - car->getX()) * car->getVecX();
-    }
-    else if (car->checkCoordinateX(msg->x)){
+    if (car->checkCoordinateY(msg->y, car->getScale() * 1.3)){  //wprowadzamy offset aby sie nie zderzaly
+        distance = (msg->x - car->getX()) * car->getVecX();     //przy kacie prostym, obliczamy dystans
+    }                                                           //pomiedzy samochodami
+    else if (car->checkCoordinateX(msg->x, car->getScale() * 1.3)){
         distance = (msg-> y - car -> getY()) * car->getVecY();
     }
-    if (distance > 0 && distance <= car->getScale()*1.5){
-        car->setMoving(false);
-        carNearId = msg -> id;
+    ROS_INFO_STREAM("distance" << distance);
+    if (distance > double(0) && distance <= car->getScale()*1.3){       //Jezeli samochod dostatecznie blisko
+        car->setMoving(false);                                  //Zatrzymujemy go
+        carNearId = msg -> id;                                  //Zapamietujemy, ktory to byl samochod
         car -> setCarNear(true);
     }
-    else{
-        car -> setCarNear(false);
-    }
+    else                                                        //Jezeli nie ma zadnego samochodu w okreslonym dystansie
+        car -> setCarNear(false);                              
 }
