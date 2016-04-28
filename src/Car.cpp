@@ -25,13 +25,13 @@ bool Car::checkCoordinates(double x, double y){
   return xOffset < speed && yOffset < speed;
 }
 bool Car::checkCoordinateX(double x){
-  return fabs(this->x - x) < speed / 2;
+  return fabs(this->x - x) < speed;
 }
 bool Car::checkCoordinateX(double x, double offset){
   return fabs(this->x - x) < offset;
 }
 bool Car::checkCoordinateY(double y){
-  return fabs(this->y - y) < speed / 2;
+  return fabs(this->y - y) < speed;
 }
 bool Car::checkCoordinateY(double y, double offset){
   return fabs(this->y - y) < offset;
@@ -123,7 +123,6 @@ void lightsCallback(const anro1::lightsVector::ConstPtr &msg){
     double offsetL = 10;
     double offsetH = 15;
     for(int i = 0 ; i < lights.size() ; i++){           //Odczytaj wszystkie wiadomosci z wektora
-        ROS_INFO_STREAM("distance" << car->getDistanceX(lights[i].x));
         if(car->checkCoordinateY(lights[i].y)           //Sprawdz czy swiatlo jest na twojej linii jazdy
                 && isInIterval(offsetL,offsetH,car->getDistanceX(lights[i].x))  //Sprawdz odleglosc od swiatla
                                                                            //Czy znajduje sie w przedziale
@@ -149,10 +148,10 @@ void carsCallback(const anro1::car::ConstPtr &msg){
         return;                                           //To sprawdzamy TYLKO wiadomosci od tego samochodu
     }
     double distance = 0;
-    if (car->getVecY() == 0 && car->checkCoordinateY(msg->y, car->getScale())){
+    if (car->checkCoordinateY(msg->y)){
         distance = (msg->x - car->getX()) * car->getVecX();
     }
-    else if (car -> getVecX() == 0 && car->checkCoordinateX(msg->x, car->getScale())){
+    else if (car->checkCoordinateX(msg->x)){
         distance = (msg-> y - car -> getY()) * car->getVecY();
     }
     if (distance > 0 && distance <= car->getScale()*1.5){
