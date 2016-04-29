@@ -699,29 +699,23 @@ ros::Publisher route_chatter = n.advertise<anro1::routemsg>("routes_info", 1);//
 ros::Rate loop_rate(10);     time_t lasttick, thistick;     time(&lasttick);    vector<InSide> inside = createPoints(1,1,1,1);    crossroads.addCrossroad(inside);     while (ros::ok())
     {
         ros::spinOnce();
-        // if (!ready2)
+      /*   if (!ready2)
         {
-            //     continue;
-            //
+                 continue;
         }
-        //time(&thistick);
-        //if (lasttick + 1 < thistick)
+        time(&thistick);
+        if (lasttick + 1 < thistick)
         {
-            //uplynela conajmniej sekunda od ostatniej inkrementacji          //   lasttick = lasttick + 1;
-            //  crossroads.tick();
+            //uplynela conajmniej sekunda od ostatniej inkrementacji             lasttick = lasttick + 1;
+              crossroads.tick();
             //
-        }
+        }*/
         anro1::nodeMessage nodemsg = crossroads.giveMessage();  
         ROS_INFO("COSIDZIE");
             chatter_pub.publish(nodemsg);
-        anro1::routemsg routemsg = giveroutes(routes);
-        route_chatter.publish(routemsg);
+       // anro1::routemsg routemsg = giveroutes(routes);
+        //route_chatter.publish(routemsg);
         loop_rate.sleep();
     }
     return 0;
 }
-/*int main(int argc, char** argv)
-{
-    return 0;
-}
-*/
