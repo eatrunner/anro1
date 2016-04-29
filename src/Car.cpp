@@ -152,15 +152,15 @@ void carsCallback(const anro1::car::ConstPtr &msg){
     if (car->isCarNear() && !(msg->id == carNearId)){           //Jezeli juz sie zatrzymalismy przez jakis samochod
         return;                                                 //To sprawdzamy TYLKO wiadomosci od tego samochodu
     }
-    double distance = 0;
-    if (car->checkCoordinateY(msg->y, car->getScale() * 1.3)){  //wprowadzamy offset aby sie nie zderzaly
+    double distance = -1;
+    if (car->checkCoordinateY(msg->y, car->getScale()/ 2)){  //wprowadzamy offset aby sie nie zderzaly
         distance = (msg->x - car->getX()) * car->getVecX();     //przy kacie prostym, obliczamy dystans
     }                                                           //pomiedzy samochodami
-    else if (car->checkCoordinateX(msg->x, car->getScale() * 1.3)){
+    else if (car->checkCoordinateX(msg->x, car->getScale() / 2)){
         distance = (msg-> y - car -> getY()) * car->getVecY();
     }
-    ROS_INFO_STREAM("distance" << distance);
-    if (distance > double(0) && distance <= car->getScale()*1.3){       //Jezeli samochod dostatecznie blisko
+    ROS_INFO_STREAM("distance" << distance << " x " << car->getX() << " y " << car->getY());
+    if (distance > 0 && distance <= car->getScale()*1.3){       //Jezeli samochod dostatecznie blisko
         car->setMoving(false);                                  //Zatrzymujemy go
         carNearId = msg -> id;                                  //Zapamietujemy, ktory to byl samochod
         car -> setCarNear(true);
