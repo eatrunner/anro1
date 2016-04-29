@@ -18,6 +18,7 @@ Car::Car(int id){
   moving = false;
   scale = 8;
   carNear = false;
+  carNearId = 0;
 }
 
 Car::~Car(){
@@ -66,7 +67,6 @@ anro1::car Car::getMsg(){
 
 Car *car;
 bool isFirst = true;
-int carNearId = 0;
 
 int main(int argc, char** argv){
   char c = *argv[1];
@@ -149,20 +149,20 @@ void lightsCallback(const anro1::lightsVector::ConstPtr &msg){
 void carsCallback(const anro1::car::ConstPtr &msg){
     if(msg->id == car->getId())                                 //Jezeli wiadomosc pochodzi od tego samego samochodu, ktorego sterujemy
         return;
-    if (car->isCarNear() && !(msg->id == carNearId)){           //Jezeli juz sie zatrzymalismy przez jakis samochod
+    if (car->isCarNear() && !(msg->id == car->getCarNearId())){           //Jezeli juz sie zatrzymalismy przez jakis samochod
         return;                                                 //To sprawdzamy TYLKO wiadomosci od tego samochodu
     }
     double distance = -1;
-    if (car->checkCoordinateY(msg->y, car->getScale()/ 2)){  //wprowadzamy offset aby sie nie zderzaly
+    if (car->checkCoordinateY(msg->y, car->getScale() * 1.1)){  //wprowadzamy offset aby sie nie zderzaly
         distance = (msg->x - car->getX()) * car->getVecX();     //przy kacie prostym, obliczamy dystans
     }                                                           //pomiedzy samochodami
-    else if (car->checkCoordinateX(msg->x, car->getScale() / 2)){
+    else if (car->checkCoordinateX(msg->x, car->getScale() * 1.1)){
         distance = (msg-> y - car -> getY()) * car->getVecY();
     }
     ROS_INFO_STREAM("distance" << distance << " x " << car->getX() << " y " << car->getY());
     if (distance > 0 && distance <= car->getScale()*1.3){       //Jezeli samochod dostatecznie blisko
         car->setMoving(false);                                  //Zatrzymujemy go
-        carNearId = msg -> id;                                  //Zapamietujemy, ktory to byl samochod
+        car->setCarNearId(msg->id);                                   //Zapamietujemy, ktory to byl samochod
         car -> setCarNear(true);
     }
     else                                                        //Jezeli nie ma zadnego samochodu w okreslonym dystansie

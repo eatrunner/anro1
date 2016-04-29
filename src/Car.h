@@ -43,6 +43,8 @@ public:
   void setCarNear(bool isCar){carNear = isCar;}
   bool isCarNear(){return carNear;}
   int getId(){return id;}
+  void setCarNearId(int carNearId){this->carNearId = carNearId;}
+  int getCarNearId(){return carNearId;}
 
 private:
   double x;
@@ -54,6 +56,7 @@ private:
   int vecY;
   bool moving;
   bool carNear;
+  int carNearId;
 };
 
 #endif
