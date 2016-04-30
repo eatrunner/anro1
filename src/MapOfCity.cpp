@@ -29,15 +29,89 @@ public:
     configureRviz();
     //sendMapVisualization();
     std::vector<std::vector<char> > map1(readMap());
-    std::vector<Crossroad> crossroads(ReadMatrix::buildInfo(map1));
-  }
+    ROS_INFO("mapSize: [%d]",(int)map1.size());
 
+    std::vector<Crossroad> crossroads(ReadMatrix::buildInfo(map1));
+    create_map(generate_lanes(crossroads));
+  }
+  void create_map(vector < Lane > lanes)
+  {
+    ROS_INFO("CREATE FUKCING MAP, SIZE: [%d]",(int)lanes.size());
+    visualization_msgs::Marker  points, line_strip, line_list, cubes;
+    uint32_t shape = visualization_msgs::Marker::CUBE;
+    marker1.header.frame_id = "/my_frame";
+    marker1.header.stamp = ros::Time::now();
+    marker1.type = shape;
+    marker1.ns = "MapOfCity";
+    marker1.id = 4;
+    marker1.action = visualization_msgs::Marker::ADD;
+    marker1.pose.position.x = 75;
+    marker1.pose.position.y = 75;
+    marker1.pose.position.z = 25;
+    marker1.pose.orientation.x = 0.0;
+    marker1.pose.orientation.y = 0.0;
+    marker1.pose.orientation.z = 0.0;
+    marker1.pose.orientation.w = 1.0;
+    marker1.scale.x = 5.0;
+    marker1.scale.y = 5.0;
+    marker1.scale.z = 25.0;
+    marker1.color.r = 0.5f;
+    marker1.color.g = 0.0f;
+    marker1.color.b = 0.0f;
+    marker1.color.a = 1.0;
+    marker1.lifetime = ros::Duration();
+
+    marker_pub.publish(marker1);
+
+    line_list.header.frame_id = "/my_frame";
+    line_list.header.stamp = ros::Time::now();
+    line_list.ns = "MapOfCity";
+    line_list.action = visualization_msgs::Marker::ADD;
+
+    line_list.lifetime = ros::Duration();
+
+
+
+    line_list.id = 3;
+    line_list.type = visualization_msgs::Marker::LINE_LIST;
+    line_list.scale.x = 1;
+
+
+    // Line strip is blue
+    line_list.color.b = 1.0;
+    line_list.color.a = 1.0;
+
+    int32_t i, j;
+    for (i = 0; i <lanes.size(); i++ )
+    {
+
+      geometry_msgs::Point p;
+      p.x = (int32_t)lanes[i].getStart().getX();
+      p.y = (int32_t)lanes[i].getStart().getY();
+      p.z = 0.0;
+      line_list.points.push_back(p);
+
+      p.x = (int32_t)lanes[i].getEnd().getX();
+      p.y = (int32_t)lanes[i].getEnd().getY();
+      p.z = 0.0;
+      line_list.points.push_back(p);
+    }
+
+
+    marker_pub.publish(line_list);
+
+
+  }
   std::vector<std::vector<char> > readMap()
   {
-    std::ifstream file("mapaVer1.txt");
+    std::ifstream file("/home/ant/catkin_ws/src/anro1/mapaVer1.txt");
+    if(!file.is_open())
+      ROS_INFO("damn! file does not exist");
+    else
+      ROS_INFO("file opened properly");
     std::vector<std::vector<char> > map;
     std::string row;
-    int temp;
+    char temp;
     for (int i = 0; std::getline(file, row); i++)
     {
       std::stringstream  line(row);
@@ -45,9 +119,26 @@ public:
       while (line >> temp)
         map[i].push_back(temp);
     }
+    ROS_INFO("Zakobnczenie czytania pliku, rozmiar: [%d]",(int)map[5].size());
+    int i;
+    for (i = 0; i < map.size(); i++)
+    {
+      ROS_INFO("Rozmiar wiersza nr. [%d], [%d]",i,(int)map[5].size());
+    }
+
+    for (i = 0; i < map.size(); i++)
+    {
+      for (int j = 0; j < map[i].size(); j++)
+      {ROS_INFO("[%c]", map[i][j]);}
+
+      ROS_INFO("\n");
+    }
+
+    ROS_INFO("end of reading map");
     return map;
   }
-  vector < Lane >  generateRoutes(vector<Crossroad> cv)
+
+  vector < Lane >  generate_lanes(vector<Crossroad> cv)
   {
     int i, j, k, y;
     vector < Lane > rt;
@@ -74,7 +165,13 @@ public:
           temp.push_back(Lane(c.getE()[j].getOrigin()));
 
     }
-    vector<int> x_cross_v;
+    ROS_INFO("list of lanes:");
+    for (i = 0; i < rt.size(); i++)
+    {
+      ROS_INFO("lane nr [%d], pocz: [%d] i [%d], koniec: [%d] i [%d]",(int)i,(int)rt[i].getStart().getX(),(int)rt[i].getStart().getY(),(int)rt[i].getEnd().getX(),(int)rt[i].getEnd().getY());
+    }
+    return rt;
+    /*vector<int> x_cross_v;
     for (i = 0; i < cv.size(); i++)
     {
       Crossroad c = cv[i];
@@ -87,12 +184,16 @@ public:
         }
       }
       x_cross_v.push_back(c.getOrigin().getX());
-      for (j = c.getS().size(); j >= 0; j++)
+
+
+      for (j = c.getS().size(); j >= 0; j--)
       {
+
         temp.push_back(Lane(c.getS()[j].getOrigin()));
       }
       for (k = 0; k < cv.size(); k++)
       {
+
         if (c.getOrigin().getX()!= cv[k].getOrigin().getX())
           continue;
         else
@@ -115,15 +216,16 @@ public:
       }
       temp.clear();
     }
-
+    */
   }
 
   void configureRviz()
   {
     marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
     ros::Rate loop_rate(10000);
-    while(marker_pub.getNumSubscribers() < 1 )
+    while(marker_pub.getNumSubscribers() < 1)
     {
+       ROS_INFO("Create at least one subscriber");
       loop_rate.sleep();
     }
 
@@ -310,7 +412,7 @@ public:
     cubes.scale.y = 10;
     cubes.scale.z = 0.2;
     cubes.color.r = 1.0f;
-    cubes.color.g = 1.0f;
+    cubes.color.g = 0.0f;
     cubes.color.b = 1.0f;
     cubes.color.a = 1.0f;
 
@@ -621,6 +723,7 @@ public:
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "MapOfCity");
+
   new MapOfCity();
   ROS_INFO("Exiting..");
   return 0;

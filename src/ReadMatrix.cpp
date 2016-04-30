@@ -19,8 +19,8 @@ ReadMatrix::~ReadMatrix()
 std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
 {
   const int mapSize = 1000;
-  const double xRatio = mapSize / mapInfo.size();
-  const double yRatio = mapSize / mapInfo[0].size();
+  const double xRatio = 50;//mapSize / mapInfo.size();
+  const double yRatio = 50;//mapSize / mapInfo[0].size();
   bool in;
   double x, y,xRoute, yRoute;
 

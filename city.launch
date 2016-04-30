@@ -2,6 +2,8 @@
 
   <node pkg="anro1" name="someName0" type="MapOfCity">
   </node>
+  <node pkg="rviz" name="someName4" type="rviz">
+  </node>
   <!--
   <node pkg="anro1" name="someName1" type="turn">
   </node>
