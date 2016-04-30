@@ -1,0 +1,17 @@
+<launch>
+
+  <node pkg="anro1" name="someName0" type="MapOfCity">
+  </node>
+  <!--
+  <node pkg="anro1" name="someName1" type="turn">
+  </node>
+  <node pkg="anro1" name="someName2" type="light">
+  </node>
+  <node pkg="anro1" name="antekmiszcz" type="Car">
+  </node>
+  <node pkg="anro1" name="someName3" type="Model">
+  </node>
+  <node pkg="rviz" name="someName4" type="rviz">
+  </node>
+  -->
+</launch>

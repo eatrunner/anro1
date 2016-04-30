@@ -5,9 +5,11 @@
 class Point
 {
 public:
+  Point();
 	Point(double x, double y);
 	double getX();
 	double getY();
+  void setCoor(double x, double y);
 	virtual ~Point();
 protected:
 private:

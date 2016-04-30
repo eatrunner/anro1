@@ -10,3 +10,7 @@ Route::~Route()
 {
 	//dtor
 }
+Point Route::getOrigin()
+{
+  return origin;
+}

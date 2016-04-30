@@ -8,9 +8,9 @@ class ReadMatrix
 public:
 	ReadMatrix();
 	virtual ~ReadMatrix();
-	static void buildInfo(std::vector<std::vector<char>> mapInfo);
-	static std::vector<Crossroad> crossroadsNorth, crossroadsSouth, crossroadsEast, crossroadsWest;
-	static void sendRouteInfo();
+  //static std::vector<Crossroad> matrix_crossroads;
+  static std::vector<Crossroad> buildInfo(std::vector<std::vector<char> > mapInfo);
+  //static void sendRouteInfo();
 protected:
 private:
 };

@@ -1,5 +1,8 @@
 #include "Point.h"
 
+Point::Point()
+{
+}
 Point::Point(double x, double y)
 {
 	this->x = x;
@@ -19,4 +22,9 @@ double Point::getX()
 double Point::getY()
 {
 	return y;
+}
+void Point::setCoor(double x, double y)
+{
+  this->x = x;
+  this->y = y;
 }
