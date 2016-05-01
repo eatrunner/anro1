@@ -1,15 +1,16 @@
-#include "ReadMatrix.h"
+﻿#include "ReadMatrix.h"
 #include "ros/ros.h"
 #include <stdio.h>
 //#include "anro1/routeMessage.h"
 #include <cstdlib>
 #include "Crossroad.h"
+#include "Constants.h"
 std::vector<Crossroad> crossroads;
 
 
 ReadMatrix::ReadMatrix()
 {
-//crossroads = new
+  //crossroads = new
 }
 ReadMatrix::~ReadMatrix()
 {
@@ -19,71 +20,61 @@ ReadMatrix::~ReadMatrix()
 std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
 {
   const int mapSize = 1000;
-  const double xRatio = 50;//mapSize / mapInfo.size();
-  const double yRatio = 50;//mapSize / mapInfo[0].size();
+  const double xRatio = MATRIX_DISTANCE;//1;//mapSize / mapInfo.size();
+  const double yRatio = MATRIX_DISTANCE;//mapSize / mapInfo[0].size();
   bool in;
   double x, y,xRoute, yRoute;
 
   for (size_t i = 0; i < mapInfo.size(); i++)
   {
-    for (size_t j = 0; j<mapInfo[i].size(); j++)
+    for (size_t j = 0; j < mapInfo[i].size(); j++)
     {
-      if (mapInfo[i][j] != '+')
+      if ((mapInfo[i][j] + '0' )!= '+')
         continue;
-      x = j * xRatio;
-      y = i * yRatio;
+      x = -100 + j * xRatio;
+      y = -100 + i * yRatio;
 
       Crossroad c(x,y);
       /*WSCHOD*/
       if (j != mapInfo[0].size() - 1)
       {
-        for (int k = 0; k < mapInfo[i][j + 1]; k++)
-        {
-          if (k < mapInfo[i][j + 2])
-            in = true;
-          else
-            in = false;
-          xRoute = x + 2;
-
-          if (mapInfo[i][j + 1] == 1)
-            yRoute = y;
-          else if (mapInfo[i][j + 1] == 2)
-            yRoute = y - 1 + k * 2;
-          else if (mapInfo[i][j + 1] == 3)
-            yRoute = y - 1 + k ;
-          else if(mapInfo[i][j + 1] == 4)
-            yRoute = y - 1.5 + k;
-
-          int size = crossroads.size();
-          //crossroadsEast.push_back(Crossroad(x, y));
-          c.addNewRoute(xRoute, yRoute, in,'E');
-
+        int lane_num = mapInfo[i][j + 1];
+        int lane_in = mapInfo[i][j + 2];
+        int lane_out = lane_num - lane_in;
+        xRoute = x + 2*LANE_WIDTH;
+        if(lane_num!=0)
+        { for (int k = 1; k <= lane_in; k++)
+          {
+            yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, true,'E');
+          }
+          for (int k = 1; k <= lane_out; k++)
+          {
+            yRoute = y +  (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, false,'E');
+          }
         }
       }
 
       /*ZACHOD*/
       if (j != 0)
       {
-        for (int k = mapInfo[i][j - 1]; k > 0; k--)
-        {
-          if (k > mapInfo[i][j - 2])
-            in = false;
-          else
-            in = true;
-          xRoute = x - 2;
+        int lane_num = mapInfo[i][j - 1];
+        int lane_in = mapInfo[i][j - 2];
+        int lane_out = lane_num - lane_in;
+        xRoute = x - 2*LANE_WIDTH;
+        if(lane_num!=0)
+        { for (int k = 1; k <= lane_out; k++)
+          {
+            yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, true,'W');
+          }
+          for (int k = 1; k <= lane_in; k++)
+          {
+            yRoute = y + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, false,'W');
+          }
 
-          if (mapInfo[i][j - 1] == 1)
-            yRoute = y;
-          else if (mapInfo[i][j - 1] == 2)
-            yRoute = y - 1 + k * 2;
-          else if (mapInfo[i][j - 1] == 3)
-            yRoute = y - 1 + k;
-          else if (mapInfo[i][j - 1] == 4)
-            yRoute = y - 1.5 + k;
-          int size = crossroads.size();
-          //crossroadsWest.push_back(Crossroad(x, y));
-          //crossroads[size].addNewRoute(xRoute, yRoute, in);
-          c.addNewRoute(xRoute, yRoute, in,'W');
         }
       }
 
@@ -117,7 +108,7 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
       /*POLUDNIE*/
       if (i != mapInfo.size() - 1)
       {
-        for (int k = mapInfo[i + 1][j]; k > 0; k--)
+        for (int k = 0; k <mapInfo[i + 1][j] ; k++)
         {
           if (k > mapInfo[i + 2][j])
             in = false;
@@ -140,9 +131,11 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
           c.addNewRoute(xRoute, yRoute, in,'S');
         }
       }
+      ROS_INFO("daaaaaaaaaaaaaaaaaaaamn! E size: [%d]",c.getE().size());
       crossroads.push_back(c);
     }
   }
+
   return crossroads;
 }
 /*

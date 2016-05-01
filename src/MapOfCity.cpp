@@ -9,6 +9,7 @@
 #include "Crossroad.h"
 #include "Lane.h"
 #include "ReadMatrix.h"
+#include "Constants.h"
 
 using namespace std;
 
@@ -28,41 +29,44 @@ public:
     //sendCrossroadsInfo();
     configureRviz();
     //sendMapVisualization();
-    std::vector<std::vector<char> > map1(readMap());
-    ROS_INFO("mapSize: [%d]",(int)map1.size());
+    const std::vector<std::vector<char> > map1(readMap());
+    ROS_INFO("mapSize I: [%d]",(int)map1.size());
+    ROS_INFO("mapSize J: [%d]",(int)map1[0].size());
 
     std::vector<Crossroad> crossroads(ReadMatrix::buildInfo(map1));
-    create_map(generate_lanes(crossroads));
+    create_map(generate_lanes(crossroads),crossroads);
   }
-  void create_map(vector < Lane > lanes)
+  void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
   {
     ROS_INFO("CREATE FUKCING MAP, SIZE: [%d]",(int)lanes.size());
     visualization_msgs::Marker  points, line_strip, line_list, cubes;
+    for(int i =0;i<crossroads.size();i++)
+    {Crossroad c = crossroads[i];
     uint32_t shape = visualization_msgs::Marker::CUBE;
     marker1.header.frame_id = "/my_frame";
     marker1.header.stamp = ros::Time::now();
     marker1.type = shape;
     marker1.ns = "MapOfCity";
-    marker1.id = 4;
+    marker1.id = c.getOrigin().getX() + c.getOrigin().getY();
     marker1.action = visualization_msgs::Marker::ADD;
-    marker1.pose.position.x = 75;
-    marker1.pose.position.y = 75;
-    marker1.pose.position.z = 25;
+    marker1.pose.position.x = (int)c.getOrigin().getX();
+    marker1.pose.position.y = (int)c.getOrigin().getY();
+    marker1.pose.position.z = 0;
     marker1.pose.orientation.x = 0.0;
     marker1.pose.orientation.y = 0.0;
     marker1.pose.orientation.z = 0.0;
     marker1.pose.orientation.w = 1.0;
-    marker1.scale.x = 5.0;
-    marker1.scale.y = 5.0;
-    marker1.scale.z = 25.0;
-    marker1.color.r = 0.5f;
-    marker1.color.g = 0.0f;
+    marker1.scale.x = 4*LANE_WIDTH;
+    marker1.scale.y = 4*LANE_WIDTH;
+    marker1.scale.z = 1.0;
+    marker1.color.r = 0.0f;
+    marker1.color.g = 1.0f;
     marker1.color.b = 0.0f;
     marker1.color.a = 1.0;
     marker1.lifetime = ros::Duration();
 
     marker_pub.publish(marker1);
-
+}
     line_list.header.frame_id = "/my_frame";
     line_list.header.stamp = ros::Time::now();
     line_list.ns = "MapOfCity";
@@ -74,7 +78,7 @@ public:
 
     line_list.id = 3;
     line_list.type = visualization_msgs::Marker::LINE_LIST;
-    line_list.scale.x = 1;
+    line_list.scale.x = 0.9*LANE_WIDTH;
 
 
     // Line strip is blue
@@ -104,7 +108,7 @@ public:
   }
   std::vector<std::vector<char> > readMap()
   {
-    std::ifstream file("/home/ant/catkin_ws/src/anro1/mapaVer1.txt");
+    std::ifstream file("/home/ant/catkin_ws/src/anro1/test.txt");//mapaVer1.txt");
     if(!file.is_open())
       ROS_INFO("damn! file does not exist");
     else
@@ -119,7 +123,7 @@ public:
       while (line >> temp)
         map[i].push_back(temp);
     }
-    ROS_INFO("Zakobnczenie czytania pliku, rozmiar: [%d]",(int)map[5].size());
+    ROS_INFO("Zakobnczenie czytania pliku, rozmiar: [%d]",(int)map[0].size());
     int i;
     for (i = 0; i < map.size(); i++)
     {
@@ -135,21 +139,76 @@ public:
     }
 
     ROS_INFO("end of reading map");
+    ROS_INFO("liczba wierszy: [%d]", map.size());
+    ROS_INFO("liczba kolumn: [%d]", map[0].size());
+    ROS_INFO("liczba east pierwszeg wiersza: [%c]", map[0][1]);
+
+    for (i = 0; i < map.size(); i++)
+    {
+      for (int j = 0; j < map[i].size(); j++)
+      {
+        map[i][j]=(map[i][j] - '0');
+
+      }
+    }
     return map;
   }
 
   vector < Lane >  generate_lanes(vector<Crossroad> cv)
   {
+    ROS_INFO("Number of crossroads: [%d]", cv.size());
     int i, j, k, y;
+    for(i=0;i<cv.size();i++)
+    { ROS_INFO("\n");
+      ROS_INFO("cross nr [%d] ", i);
+      ROS_INFO("\n");
+      ROS_INFO("size north: [%d]", cv[i].getN().size());
+      ROS_INFO("size east: [%d]", cv[i].getE().size());
+      ROS_INFO("size south: [%d]",cv[i].getS().size());
+      ROS_INFO("size west : [%d]", cv[i].getW().size());
+
+
+      if(cv[i].getW().size()!=0)
+      {
+        for(int j = 0; j<cv[i].getW().size();j++)
+        {
+          ROS_INFO("Origin of route: West[%d]: x: %f, y: %f", j, cv[i].getW()[j].getOrigin().getX(),cv[i].getW()[j].getOrigin().getY() );
+        }
+      }
+      if(cv[i].getN().size()!=0)
+      {
+        for(int j = 0; j<cv[i].getN().size();j++)
+        {
+          ROS_INFO("Origin of route: North[%d]: x: %f, y: %f", j, cv[i].getN()[j].getOrigin().getX(),cv[i].getN()[j].getOrigin().getY() );
+        }
+      }
+      if(cv[i].getE().size()!=0)
+      {
+        for(int j = 0; j<cv[i].getE().size();j++)
+        {
+          ROS_INFO("Origin of route: East[%d]: x: %f, y: %f", j, cv[i].getE()[j].getOrigin().getX(),cv[i].getE()[j].getOrigin().getY() );
+        }
+      }
+      if(cv[i].getS().size()!=0)
+      {
+        for(int j = 0; j<cv[i].getS().size();j++)
+        {
+          ROS_INFO("Origin of route: South[%d]: x: %f, y: %f", j, cv[i].getS()[j].getOrigin().getX(),cv[i].getS()[j].getOrigin().getY() );
+        }
+      }
+
+    }
+
     vector < Lane > rt;
     vector < Lane > temp;
 
     for (i = 0; i < cv.size(); i++)
     {
       Crossroad c = cv[i];
-      if (i > 0 && c.getOrigin().getY() == y && temp.size() != 0)
+
+      if (i!=0 && c.getOrigin().getY() == y && c.getW().size() > 0)
       {
-        for (j = c.getW().size(); j >= 0; j--)
+        for (j = 0; j <c.getW().size(); j++)
         {
           temp[j].setEnd((c.getW())[j].getOrigin());
           rt.push_back(temp[j]);
@@ -160,7 +219,7 @@ public:
 
       temp.clear();
       y = c.getOrigin().getY();
-      if (c.getE().size()!= 0)
+      if (c.getE().size()> 0)
         for (j = 0; j < c.getE().size(); j++)
           temp.push_back(Lane(c.getE()[j].getOrigin()));
 
@@ -172,51 +231,51 @@ public:
     }
     return rt;
     /*vector<int> x_cross_v;
-    for (i = 0; i < cv.size(); i++)
-    {
-      Crossroad c = cv[i];
-      if (x_cross_v.size() != 0)
-      {
-        for (j = 0; j < x_cross_v.size(); j++)
-        {
-          if (x_cross_v[j] == c.getOrigin().getX())
-            continue;
-        }
-      }
-      x_cross_v.push_back(c.getOrigin().getX());
+     for (i = 0; i < cv.size(); i++)
+     {
+       Crossroad c = cv[i];
+       if (x_cross_v.size() != 0)
+       {
+         for (j = 0; j < x_cross_v.size(); j++)
+         {
+           if (x_cross_v[j] == c.getOrigin().getX())
+             continue;
+         }
+       }
+       x_cross_v.push_back(c.getOrigin().getX());
 
 
-      for (j = c.getS().size(); j >= 0; j--)
-      {
+       for (j = c.getS().size(); j >= 0; j--)
+       {
 
-        temp.push_back(Lane(c.getS()[j].getOrigin()));
-      }
-      for (k = 0; k < cv.size(); k++)
-      {
+         temp.push_back(Lane(c.getS()[j].getOrigin()));
+       }
+       for (k = 0; k < cv.size(); k++)
+       {
 
-        if (c.getOrigin().getX()!= cv[k].getOrigin().getX())
-          continue;
-        else
-        {
-          if (c.getN().size()!= 0)
-            for (j = c.getN().size(); j >= 0; j--)
-            {
-              temp[j].setEnd(c.getN()[j].getOrigin());
-              rt.push_back(temp[j]);
-            }
-          temp.clear();
-          if (c.getS().size()!= 0)
-            for (j = c.getS().size(); j >= 0; j--)
-            {
-              temp.push_back(Lane(c.getS()[j].getOrigin()));
-              rt.push_back(temp[j]);
+         if (c.getOrigin().getX()!= cv[k].getOrigin().getX())
+           continue;
+         else
+         {
+           if (c.getN().size()!= 0)
+             for (j = c.getN().size(); j >= 0; j--)
+             {
+               temp[j].setEnd(c.getN()[j].getOrigin());
+               rt.push_back(temp[j]);
+             }
+           temp.clear();
+           if (c.getS().size()!= 0)
+             for (j = c.getS().size(); j >= 0; j--)
+             {
+               temp.push_back(Lane(c.getS()[j].getOrigin()));
+               rt.push_back(temp[j]);
 
-            }
-        }
-      }
-      temp.clear();
-    }
-    */
+             }
+         }
+       }
+       temp.clear();
+     }
+     */
   }
 
   void configureRviz()
@@ -225,7 +284,7 @@ public:
     ros::Rate loop_rate(10000);
     while(marker_pub.getNumSubscribers() < 1)
     {
-       ROS_INFO("Create at least one subscriber");
+      ROS_INFO("Create at least one subscriber");
       loop_rate.sleep();
     }
 
