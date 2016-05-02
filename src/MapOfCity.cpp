@@ -47,7 +47,7 @@ public:
     marker1.header.stamp = ros::Time::now();
     marker1.type = shape;
     marker1.ns = "MapOfCity";
-    marker1.id = c.getOrigin().getX() + c.getOrigin().getY();
+    marker1.id = i + c.getOrigin().getX() + c.getOrigin().getY();
     marker1.action = visualization_msgs::Marker::ADD;
     marker1.pose.position.x = (int)c.getOrigin().getX();
     marker1.pose.position.y = (int)c.getOrigin().getY();
@@ -78,7 +78,7 @@ public:
 
     line_list.id = 3;
     line_list.type = visualization_msgs::Marker::LINE_LIST;
-    line_list.scale.x = 0.9*LANE_WIDTH;
+    line_list.scale.x = VIZ_LANE_WIDTH;
 
 
     // Line strip is blue
@@ -108,7 +108,7 @@ public:
   }
   std::vector<std::vector<char> > readMap()
   {
-    std::ifstream file("/home/ant/catkin_ws/src/anro1/test.txt");//mapaVer1.txt");
+    std::ifstream file("/home/ant/catkin_ws/src/anro1/mapaVer1.txt");
     if(!file.is_open())
       ROS_INFO("damn! file does not exist");
     else
