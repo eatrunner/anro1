@@ -8,6 +8,7 @@ public:
   Route(double x, double y, bool in);
   virtual ~Route();
   Point getOrigin();
+  bool getIn();
 protected:
 private:
   Point origin;

@@ -38,81 +38,97 @@ public:
   }
   void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
   {
-    ROS_INFO("CREATE FUKCING MAP, SIZE: [%d]",(int)lanes.size());
+    ROS_INFO("CREATE FUCKING MAP, SIZE LANES: [%d]",(int)lanes.size());
+    ROS_INFO("CREATE FUCKING MAP, SIZE CROSSES: [%d]",(int)crossroads.size());
     visualization_msgs::Marker  points, line_strip, line_list, cubes;
     for(int i =0;i<crossroads.size();i++)
-    {Crossroad c = crossroads[i];
-    uint32_t shape = visualization_msgs::Marker::CUBE;
-    marker1.header.frame_id = "/my_frame";
-    marker1.header.stamp = ros::Time::now();
-    marker1.type = shape;
-    marker1.ns = "MapOfCity";
-    marker1.id = i + c.getOrigin().getX() + c.getOrigin().getY();
-    marker1.action = visualization_msgs::Marker::ADD;
-    marker1.pose.position.x = (int)c.getOrigin().getX();
-    marker1.pose.position.y = (int)c.getOrigin().getY();
-    marker1.pose.position.z = 0;
-    marker1.pose.orientation.x = 0.0;
-    marker1.pose.orientation.y = 0.0;
-    marker1.pose.orientation.z = 0.0;
-    marker1.pose.orientation.w = 1.0;
-    marker1.scale.x = 4*LANE_WIDTH;
-    marker1.scale.y = 4*LANE_WIDTH;
-    marker1.scale.z = 1.0;
-    marker1.color.r = 0.0f;
-    marker1.color.g = 1.0f;
-    marker1.color.b = 0.0f;
-    marker1.color.a = 1.0;
-    marker1.lifetime = ros::Duration();
-
-    marker_pub.publish(marker1);
-}
-    line_list.header.frame_id = "/my_frame";
-    line_list.header.stamp = ros::Time::now();
-    line_list.ns = "MapOfCity";
-    line_list.action = visualization_msgs::Marker::ADD;
-
-    line_list.lifetime = ros::Duration();
-
-
-
-    line_list.id = 3;
-    line_list.type = visualization_msgs::Marker::LINE_LIST;
-    line_list.scale.x = VIZ_LANE_WIDTH;
-
-
-    // Line strip is blue
-    line_list.color.b = 1.0;
-    line_list.color.a = 1.0;
-
-    int32_t i, j;
-    for (i = 0; i <lanes.size(); i++ )
     {
+      Crossroad c = crossroads[i];
+      uint32_t shape = visualization_msgs::Marker::CUBE;
+      marker1.header.frame_id = "/my_frame";
+      marker1.header.stamp = ros::Time::now();
+      marker1.type = shape;
+      marker1.ns = "MapCrossroads";
+      marker1.id = i;// + c.getOrigin().getX() + c.getOrigin().getY();
+      marker1.action = visualization_msgs::Marker::ADD;
+      marker1.pose.position.x = c.getOrigin().getX();
+      marker1.pose.position.y = c.getOrigin().getY();
+      marker1.pose.position.z = 0;
+      marker1.pose.orientation.x = 0.0;
+      marker1.pose.orientation.y = 0.0;
+      marker1.pose.orientation.z = 0.0;
+      marker1.pose.orientation.w = 1.0;
+      marker1.scale.x = 4*LANE_WIDTH;
+      marker1.scale.y = 4*LANE_WIDTH;
+      marker1.scale.z = LANE_WIDTH/6;
+      marker1.color.r = 0.0f;
+      marker1.color.g = 1.0f;
+      marker1.color.b = 0.0f;
+      marker1.color.a = 1.0;
+      marker1.lifetime = ros::Duration();
 
-      geometry_msgs::Point p;
-      p.x = (int32_t)lanes[i].getStart().getX();
-      p.y = (int32_t)lanes[i].getStart().getY();
-      p.z = 0.0;
-      line_list.points.push_back(p);
+      marker_pub.publish(marker1);
 
-      p.x = (int32_t)lanes[i].getEnd().getX();
-      p.y = (int32_t)lanes[i].getEnd().getY();
-      p.z = 0.0;
-      line_list.points.push_back(p);
     }
 
 
-    marker_pub.publish(line_list);
+    int32_t i;
+    for (i = 0; i <lanes.size(); i++ )
+    {
+      Lane l = lanes[i];
+      uint32_t shape = visualization_msgs::Marker::CUBE;
+      marker1.header.frame_id = "/my_frame";
+      marker1.header.stamp = ros::Time::now();
+      marker1.type = shape;
+      marker1.ns = "MapLanes";
+      marker1.id = i;
+      marker1.action = visualization_msgs::Marker::ADD;
+      marker1.pose.position.x = ((l.getStart().getX() + l.getEnd().getX())/2);
+      marker1.pose.position.y = ((l.getStart().getY() + l.getEnd().getY())/2);
+      marker1.pose.position.z = 0;
+      marker1.scale.x =(l.getStart().getX() - l.getEnd().getX());
+      if(marker1.scale.x==0)
+        marker1.scale.x = VIZ_LANE_WIDTH;
+      marker1.scale.y = (l.getStart().getY() - l.getEnd().getY());
+      if(marker1.scale.y==0)
+        marker1.scale.y = VIZ_LANE_WIDTH;
+      marker1.scale.z =LANE_WIDTH/8;
+
+      if(l.getDir() == 'E')//blue
+      {
+        marker1.color.r = 0.4f;
+        marker1.color.g = 0.4f;
+        marker1.color.b = 1.0f;
+      }
+      else if(l.getDir() == 'W')//red
+      {
+        marker1.color.b = 0.4f;
+        marker1.color.g = 0.4f;
+        marker1.color.r = 1.0f;
+      }
+      else
+      {
+        marker1.color.b = 0.0f;
+        marker1.color.g = 0.0f;
+        marker1.color.r = 0.0f;
+      }
+      marker1.color.a = 1.0;
+      marker1.lifetime = ros::Duration();
+
+      marker_pub.publish(marker1);
+    }
+
+
 
 
   }
   std::vector<std::vector<char> > readMap()
   {
-    std::ifstream file("/home/ant/catkin_ws/src/anro1/mapaVer1.txt");
+    std::ifstream file("/home/ant/catkin_ws/src/anro1/mapa1.txt");
     if(!file.is_open())
       ROS_INFO("damn! file does not exist");
     else
-      ROS_INFO("file opened properly");
+      ROS_INFO("File opened properly.");
     std::vector<std::vector<char> > map;
     std::string row;
     char temp;
@@ -157,11 +173,14 @@ public:
   vector < Lane >  generate_lanes(vector<Crossroad> cv)
   {
     ROS_INFO("Number of crossroads: [%d]", cv.size());
-    int i, j, k, y;
+    int i, j;
+    double y;
     for(i=0;i<cv.size();i++)
     { ROS_INFO("\n");
       ROS_INFO("cross nr [%d] ", i);
       ROS_INFO("\n");
+      ROS_INFO("origin x: [%f]", cv[i].getOrigin().getX());
+      ROS_INFO("origin y: [%f]", cv[i].getOrigin().getY());
       ROS_INFO("size north: [%d]", cv[i].getN().size());
       ROS_INFO("size east: [%d]", cv[i].getE().size());
       ROS_INFO("size south: [%d]",cv[i].getS().size());
@@ -196,7 +215,7 @@ public:
           ROS_INFO("Origin of route: South[%d]: x: %f, y: %f", j, cv[i].getS()[j].getOrigin().getX(),cv[i].getS()[j].getOrigin().getY() );
         }
       }
-
+      ROS_INFO("dzialam");
     }
 
     vector < Lane > rt;
@@ -205,29 +224,48 @@ public:
     for (i = 0; i < cv.size(); i++)
     {
       Crossroad c = cv[i];
-
+      ROS_INFO("zaczynam skrz:%d",i,i);
       if (i!=0 && c.getOrigin().getY() == y && c.getW().size() > 0)
       {
         for (j = 0; j <c.getW().size(); j++)
         {
           temp[j].setEnd((c.getW())[j].getOrigin());
           rt.push_back(temp[j]);
-
+          ROS_INFO("accepted: end: %f,%f",(c.getW())[j].getOrigin().getX(),(c.getW())[j].getOrigin().getY());
         }
+      }
+      else
+      {
+        if(i!=0)
+        {
+          ROS_INFO("fuck off %d ",i,i);
+          if(c.getW().size()!=0)
+          {
+            ROS_INFO("%f,%f",(c.getW())[0].getOrigin().getX(),(c.getW())[0].getOrigin().getY());
 
+          }
+        }
+        else
+        {
+          ROS_INFO("jestem zerem");
+        }
       }
 
       temp.clear();
       y = c.getOrigin().getY();
       if (c.getE().size()> 0)
         for (j = 0; j < c.getE().size(); j++)
-          temp.push_back(Lane(c.getE()[j].getOrigin()));
-
+        {
+          char dir='E';
+          if(c.getE()[j].getIn())
+            dir ='W';
+          temp.push_back(Lane(c.getE()[j].getOrigin(),dir));
+        }
     }
     ROS_INFO("list of lanes:");
     for (i = 0; i < rt.size(); i++)
     {
-      ROS_INFO("lane nr [%d], pocz: [%d] i [%d], koniec: [%d] i [%d]",(int)i,(int)rt[i].getStart().getX(),(int)rt[i].getStart().getY(),(int)rt[i].getEnd().getX(),(int)rt[i].getEnd().getY());
+      ROS_INFO("lane nr [%d], pocz: [%f] i [%f], koniec: [%f] i [%f]",i,rt[i].getStart().getX(),rt[i].getStart().getY(),rt[i].getEnd().getX(),rt[i].getEnd().getY());
     }
     return rt;
     /*vector<int> x_cross_v;

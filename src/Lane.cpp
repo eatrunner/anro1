@@ -10,6 +10,11 @@ Lane::Lane(Point p)
 {
   this->start.setCoor(p.getX(),p.getY());
 }
+Lane::Lane(Point p, char dir)
+{
+  this->start.setCoor(p.getX(),p.getY());
+  this->dir = dir;
+}
 void Lane::setStart(double x, double y)
 {
   this->start.setCoor(x,y);
@@ -33,6 +38,10 @@ Point Lane::getStart()
 Point Lane::getEnd()
 {
   return this->end;
+}
+char Lane::getDir()
+{
+  return this->dir;
 }
 Lane::~Lane()
 {

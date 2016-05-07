@@ -19,21 +19,30 @@ ReadMatrix::~ReadMatrix()
 
 std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
 {
-  const int mapSize = 1000;
-  const double xRatio = MATRIX_DISTANCE;//1;//mapSize / mapInfo.size();
-  const double yRatio = MATRIX_DISTANCE;//mapSize / mapInfo[0].size();
+  const double xRatio = MATRIX_DISTANCE;
+  const double yRatio = MATRIX_DISTANCE;
   bool in;
   double x, y,xRoute, yRoute;
-
+  double verSize = mapInfo.size();
+  double horSize = mapInfo.size();
+  int maxj = 0;
+  for (size_t i = 0; i < mapInfo.size(); i++)
+  {
+    for (size_t j = 0; j < mapInfo[i].size(); j++)
+    {
+      if(j>maxj)
+        maxj = j;
+    }
+  }
   for (size_t i = 0; i < mapInfo.size(); i++)
   {
     for (size_t j = 0; j < mapInfo[i].size(); j++)
     {
       if ((mapInfo[i][j] + '0' )!= '+')
         continue;
-      x = -100 + j * xRatio;
-      y = -100 + i * yRatio;
-
+      x = j * xRatio;
+      y = i*yRatio;
+      y=-y;
       Crossroad c(x,y);
       /*WSCHOD*/
       if (j != mapInfo[0].size() - 1)
@@ -45,12 +54,12 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
         if(lane_num!=0)
         { for (int k = 1; k <= lane_in; k++)
           {
-            yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            yRoute = y + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
             c.addNewRoute(xRoute, yRoute, true,'E');
           }
           for (int k = 1; k <= lane_out; k++)
           {
-            yRoute = y +  (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            yRoute = y -  (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
             c.addNewRoute(xRoute, yRoute, false,'E');
           }
         }
@@ -66,12 +75,12 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
         if(lane_num!=0)
         { for (int k = 1; k <= lane_out; k++)
           {
-            yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            yRoute = y + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
             c.addNewRoute(xRoute, yRoute, true,'W');
           }
           for (int k = 1; k <= lane_in; k++)
           {
-            yRoute = y + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
             c.addNewRoute(xRoute, yRoute, false,'W');
           }
 

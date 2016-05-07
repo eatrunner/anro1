@@ -14,3 +14,8 @@ Point Route::getOrigin()
 {
   return origin;
 }
+bool Route::getIn()
+{
+  return in;
+}
+
