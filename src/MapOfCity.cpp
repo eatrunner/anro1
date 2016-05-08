@@ -30,18 +30,15 @@ public:
     configureRviz();
     //sendMapVisualization();
     const std::vector<std::vector<char> > map1(readMap());
-    ROS_INFO("mapSize I: [%d]",(int)map1.size());
-    ROS_INFO("mapSize J: [%d]",(int)map1[0].size());
-
     std::vector<Crossroad> crossroads(ReadMatrix::buildInfo(map1));
     maxX = ReadMatrix::getMaxX();
-    ROS_INFO("maxX! [%f]",(maxX));
-    create_map(generate_lanes(crossroads),crossroads);
+    std::vector<Lane> lanes(generate_lanes(crossroads));
+    create_map(lanes,crossroads);
+    sendInfo(lanes,crossroads);//TODO: FUNCKJA DO WYSYŁANIA INFO DO INNYCH MODULÓW
   }
   void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
   {
-    ROS_INFO("CREATE FUCKING MAP, SIZE LANES: [%d]",(int)lanes.size());
-    ROS_INFO("CREATE FUCKING MAP, SIZE CROSSES: [%d]",(int)crossroads.size());
+
     visualization_msgs::Marker  points, line_strip, line_list, cubes;
     for(int i =0;i<crossroads.size();i++)
     {
@@ -51,7 +48,7 @@ public:
       marker1.header.stamp = ros::Time::now();
       marker1.type = shape;
       marker1.ns = "MapCrossroads";
-      marker1.id = i;// + c.getOrigin().getX() + c.getOrigin().getY();
+      marker1.id = i;
       marker1.action = visualization_msgs::Marker::ADD;
       marker1.pose.position.x = c.getOrigin().getX();
       marker1.pose.position.y = c.getOrigin().getY();
@@ -133,9 +130,6 @@ public:
       marker_pub.publish(marker1);
     }
 
-
-
-
   }
   std::vector<std::vector<char> > readMap()
   {
@@ -170,10 +164,10 @@ public:
       ROS_INFO("\n");
     }
 
-    ROS_INFO("end of reading map");
+
     ROS_INFO("liczba wierszy: [%d]", map.size());
     ROS_INFO("liczba kolumn: [%d]", map[0].size());
-    ROS_INFO("liczba east pierwszeg wiersza: [%c]", map[0][1]);
+
 
     for (i = 0; i < map.size(); i++)
     {
@@ -192,7 +186,8 @@ public:
     int i, j;
     double y,x;
     for(i=0;i<cv.size();i++)
-    { ROS_INFO("\n");
+    {
+      ROS_INFO("\n");
       ROS_INFO("cross nr [%d] ", i);
       ROS_INFO("\n");
       ROS_INFO("origin x: [%f]", cv[i].getOrigin().getX());
@@ -231,7 +226,7 @@ public:
           ROS_INFO("Origin of route: South[%d]: x: %f, y: %f", j, cv[i].getS()[j].getOrigin().getX(),cv[i].getS()[j].getOrigin().getY() );
         }
       }
-      ROS_INFO("dzialam");
+
     }
 
     vector < Lane > rt;
@@ -240,32 +235,17 @@ public:
     for (i = 0; i < cv.size(); i++)
     {
       Crossroad c = cv[i];
-      ROS_INFO("zaczynam skrz:%d",i,i);
+
       if (i!=0 && c.getOrigin().getY() == y && c.getW().size() > 0)
       {
         for (j = 0; j <c.getW().size(); j++)
         {
           temp[j].setEnd((c.getW())[j].getOrigin());
           rt.push_back(temp[j]);
-          ROS_INFO("accepted: end: %f,%f",(c.getW())[j].getOrigin().getX(),(c.getW())[j].getOrigin().getY());
-        }
-      }
-      else
-      {
-        if(i!=0)
-        {
-          ROS_INFO(";/ %d ",i,i);
-          if(c.getW().size()!=0)
-          {
-            ROS_INFO("%f,%f",(c.getW())[0].getOrigin().getX(),(c.getW())[0].getOrigin().getY());
 
-          }
-        }
-        else
-        {
-          ROS_INFO("jestem zerem");
         }
       }
+
 
       temp.clear();
       y = c.getOrigin().getY();
@@ -309,7 +289,7 @@ public:
             temp[j].setEnd((cr.getN())[j].getOrigin());
 
           rt.push_back(temp[j]);}
-          //ROS_INFO("accepted: end: %f,%f",(c.getW())[j].getOrigin().getX(),(c.getW())[j].getOrigin().getY());
+
           temp.clear();
           if (cr.getS().size()> 0)
             for (j = 0; j < cr.getS().size(); j++)
@@ -320,13 +300,10 @@ public:
               temp.push_back(Lane(cr.getS()[j].getOrigin(),dir));
             }
         }
-        else
-        {
-          ROS_INFO("Nie w pionie: aktualny: %f, poszukiwany: %f",cr.getOrigin().getX(),x);
-        }
+
 
       }
-      ROS_INFO("aktulany x:%f ----%f maksymalny x",cv[m].getOrigin().getX(),maxX);
+
     }while(cv[m].getOrigin().getX()!=maxX);
     ROS_INFO("list of lanes:");
     for (i = 0; i < rt.size(); i++)
@@ -540,263 +517,6 @@ public:
     leaves2.pose.position.y = 15;
 
   }
-  void sendMapVisualization()
-  {
-
-    // funkcja do drogi
-
-
-    visualization_msgs::Marker  points, line_strip, line_list, cubes;
-
-
-
-    // stworz budynki i drzewa
-    createBuildings();
-
-    // wyslij do rviza
-    marker_pub.publish(marker1);
-    marker_pub.publish(marker2);
-    marker_pub.publish(marker3);
-    marker_pub.publish(tree);
-    marker_pub.publish(leaves);
-    marker_pub.publish(tree1);
-    marker_pub.publish(leaves1);
-    marker_pub.publish(tree2);
-    marker_pub.publish(leaves2);
-
-    cubes.header.frame_id = "/my_frame";
-    cubes.header.stamp = ros::Time::now();
-    cubes.ns = "MapOfCity";
-    cubes.action = visualization_msgs::Marker::ADD;
-    cubes.pose.orientation.w = 1.0;
-
-
-    cubes.id = 0;
-    cubes.type = visualization_msgs::Marker::CUBE_LIST;
-
-
-    cubes.scale.x = 10;
-    cubes.scale.y = 10;
-    cubes.scale.z = 0.2;
-    cubes.color.r = 1.0f;
-    cubes.color.g = 0.0f;
-    cubes.color.b = 1.0f;
-    cubes.color.a = 1.0f;
-
-    points.header.frame_id = line_strip.header.frame_id = line_list.header.frame_id = "/my_frame";
-    points.header.stamp = line_strip.header.stamp = line_list.header.stamp = ros::Time::now();
-    points.ns = line_strip.ns = line_list.ns = "MapOfCity";
-    points.action = line_strip.action = line_list.action = visualization_msgs::Marker::ADD;
-    points.pose.orientation.w = line_strip.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-
-
-
-    points.id = 1;
-    line_strip.id = 2;
-    line_list.id = 3;
-
-
-
-    points.type = visualization_msgs::Marker::POINTS;
-    line_strip.type = visualization_msgs::Marker::LINE_STRIP;
-    line_list.type = visualization_msgs::Marker::LINE_LIST;
-
-
-
-    // POINTS markers use x and y scale for width/height respectively
-    points.scale.x = 0.2;
-    points.scale.y = 0.2;
-
-    // LINE_STRIP/LINE_LIST markers use only the x component of scale, for the line width
-    line_strip.scale.x = 0.1;
-    line_list.scale.x = 0.1;
-
-
-
-    // Points are green
-    points.color.b = 1.0f;
-    points.color.a = 1.0;
-
-    // Line strip is blue
-    line_strip.color.b = 1.0;
-    line_strip.color.a = 1.0;
-
-
-
-    // Create the vertices for the points and lines
-    for (uint32_t i = 0; i < 150; ++i)
-    {
-
-      float y = 50;
-      float z = 0.00;
-      geometry_msgs::Point p;
-      p.x = (int32_t)i;
-      p.y = y;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-
-    for (uint32_t i = 50; i < 100; ++i)
-    {
-
-      float x = 150;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = x;
-      p.y = (int32_t)i;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-    for (uint32_t i = 150; i > 100; --i)
-    {
-
-      float y = 100;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = (int32_t)i;
-      p.y = y;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-    for (uint32_t i = 100; i > 0; --i)
-    {
-
-      float x = 100;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = x;
-      p.y = (int32_t)i;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-    for (uint32_t i = 100; i > 50; --i)
-    {
-
-      float y = 0;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = (int32_t)i;
-      p.y = y;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-
-    for (uint32_t i = 0; i < 100; ++i)
-    {
-
-      float x = 50;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = x;
-      p.y = (int32_t)i;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-    for (uint32_t i = 50; i > 0; --i)
-    {
-
-      float y = 100;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = (int32_t)i;
-      p.y = y;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-    for (uint32_t i = 100; i > 50; --i)
-    {
-
-      float x = 0;
-      float z = 0.000;
-      geometry_msgs::Point p;
-      p.x = 0;
-      p.y = (int32_t)i;
-      p.z = z;
-
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
-      cubes.points.push_back(p);
-
-    }
-
-
-    marker_pub.publish(points);
-    marker_pub.publish(line_strip);
-    marker_pub.publish(cubes);
-
-
-
-  }
 
   // metoda sendCrossroadsInfo wysyła w topicu map_info message mapMessage zawierajace pola okreslajace polozenie oraz typ skrzyzownia/zakretu
   void sendCrossroadsInfo()
@@ -885,14 +605,6 @@ public:
 
 };
 
-//void setMaxJ(int j)
-//{
-//  this->maxJ = j;
-//}
-//int getMaxJ()
-//{
-//  return this->maxJ;
-//}
 
 
 
