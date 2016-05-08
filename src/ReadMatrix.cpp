@@ -7,16 +7,20 @@
 #include "Constants.h"
 std::vector<Crossroad> crossroads;
 
-
+static double maxX = 0;
 ReadMatrix::ReadMatrix()
 {
+
   //crossroads = new
 }
 ReadMatrix::~ReadMatrix()
 {
   //dtor
 }
-
+double ReadMatrix::getMaxX()
+{
+  return maxX;
+}
 std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
 {
   const double xRatio = MATRIX_DISTANCE;
@@ -25,15 +29,7 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
   double x, y,xRoute, yRoute;
   double verSize = mapInfo.size();
   double horSize = mapInfo.size();
-  int maxj = 0;
-  for (size_t i = 0; i < mapInfo.size(); i++)
-  {
-    for (size_t j = 0; j < mapInfo[i].size(); j++)
-    {
-      if(j>maxj)
-        maxj = j;
-    }
-  }
+
   for (size_t i = 0; i < mapInfo.size(); i++)
   {
     for (size_t j = 0; j < mapInfo[i].size(); j++)
@@ -44,6 +40,10 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
       y = i*yRatio;
       y=-y;
       Crossroad c(x,y);
+
+      if (x>maxX)
+        maxX = x;
+
       /*WSCHOD*/
       if (j != mapInfo[0].size() - 1)
       {
@@ -76,12 +76,12 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
         { for (int k = 1; k <= lane_out; k++)
           {
             yRoute = y + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
-            c.addNewRoute(xRoute, yRoute, true,'W');
+            c.addNewRoute(xRoute, yRoute, false,'W');
           }
           for (int k = 1; k <= lane_in; k++)
           {
             yRoute = y - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
-            c.addNewRoute(xRoute, yRoute, false,'W');
+            c.addNewRoute(xRoute, yRoute, true,'W');
           }
 
         }
@@ -90,61 +90,50 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
       /*POLNOC*/
       if (i != 0)
       {
-        for (int k = 0 ; k < mapInfo[i - 1][j]; k++)
+        int lane_num = mapInfo[i- 1][j];
+        int lane_in = mapInfo[i- 2][j];
+        int lane_out = lane_num - lane_in;
+        yRoute = y + 2*LANE_WIDTH;
+        if(lane_num!=0)
         {
-          if (k < mapInfo[i - 2][j])
-            in = true;
-          else
-            in = false;
+          for (int k = 1; k <= lane_in; k++)
+          {
+            xRoute = x - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, true,'N');
+          }
+          for (int k = 1; k <= lane_out; k++)
+          {
+            xRoute = x + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, false,'N');
+          }
 
-          yRoute = y - 2;
 
-          if (mapInfo[i - 1][j] == 1)
-            xRoute = x;
-          else if (mapInfo[i - 1][j] == 2)
-            xRoute = x - 1 + k * 2;
-          else if (mapInfo[i - 1][j] == 3)
-            xRoute = x - 1 + k;
-          else if (mapInfo[i-1][j] == 4)
-            xRoute = x - 1.5 + k;
-          int size = crossroads.size();
-          //crossroadsNorth.push_back(Crossroad(x, y));
-          //crossroads[size].addNewRoute(xRoute, yRoute, in);
-          c.addNewRoute(xRoute, yRoute, in,'N');
         }
       }
 
       /*POLUDNIE*/
       if (i != mapInfo.size() - 1)
       {
-        for (int k = 0; k <mapInfo[i + 1][j] ; k++)
-        {
-          if (k > mapInfo[i + 2][j])
-            in = false;
-          else
-            in = true;
+        int lane_num = mapInfo[i+1][j];
+        int lane_in = mapInfo[i+2][j];
+        int lane_out = lane_num - lane_in;
+        yRoute = y - 2*LANE_WIDTH;
+        if(lane_num!=0)
+        { for (int k = 1; k <= lane_out; k++)
+          {
+            xRoute = x - (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, false,'S');
+          }
+          for (int k = 1; k <= lane_in; k++)
+          {
+            xRoute = x + (0.5*LANE_WIDTH + (k-1)*LANE_WIDTH);
+            c.addNewRoute(xRoute, yRoute, true,'S');
+          }
 
-          yRoute = y - 2;
-
-          if (mapInfo[i + 1][j] == 1)
-            xRoute = x;
-          else if (mapInfo[i + 1][j] == 2)
-            xRoute = x - 1 + k * 2;
-          else if (mapInfo[i + 1][j] == 3)
-            xRoute = x - 1 + k;
-          else if (mapInfo[i + 1][j] == 4)
-            xRoute = x - 1.5 + k;
-          int size = crossroads.size();
-          //crossroadsSouth.push_back(Crossroad(x, y));
-          //crossroads[size].addNewRoute(xRoute, yRoute, in);
-          c.addNewRoute(xRoute, yRoute, in,'S');
         }
-      }
-      ROS_INFO("daaaaaaaaaaaaaaaaaaaamn! E size: [%d]",c.getE().size());
-      crossroads.push_back(c);
+      }crossroads.push_back(c);
     }
   }
-
   return crossroads;
 }
 /*

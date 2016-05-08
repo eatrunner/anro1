@@ -17,7 +17,7 @@ using namespace std;
 class MapOfCity{
 
 public:
-
+  double maxX;
   visualization_msgs::Marker marker1, marker2, marker3, tree, leaves, tree1, leaves1, tree2, leaves2;
   ros::NodeHandle n;
   ros::Publisher marker_pub;
@@ -34,6 +34,8 @@ public:
     ROS_INFO("mapSize J: [%d]",(int)map1[0].size());
 
     std::vector<Crossroad> crossroads(ReadMatrix::buildInfo(map1));
+    maxX = ReadMatrix::getMaxX();
+    ROS_INFO("maxX! [%f]",(maxX));
     create_map(generate_lanes(crossroads),crossroads);
   }
   void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
@@ -61,9 +63,9 @@ public:
       marker1.scale.x = 4*LANE_WIDTH;
       marker1.scale.y = 4*LANE_WIDTH;
       marker1.scale.z = LANE_WIDTH/6;
-      marker1.color.r = 0.0f;
-      marker1.color.g = 1.0f;
-      marker1.color.b = 0.0f;
+      marker1.color.r = 0.5f;
+      marker1.color.g = 0.5f;
+      marker1.color.b = 0.5f;
       marker1.color.a = 1.0;
       marker1.lifetime = ros::Duration();
 
@@ -87,6 +89,7 @@ public:
       marker1.pose.position.y = ((l.getStart().getY() + l.getEnd().getY())/2);
       marker1.pose.position.z = 0;
       marker1.scale.x =(l.getStart().getX() - l.getEnd().getX());
+      marker1.scale.y =(l.getStart().getY() - l.getEnd().getY());
       if(marker1.scale.x==0)
         marker1.scale.x = VIZ_LANE_WIDTH;
       marker1.scale.y = (l.getStart().getY() - l.getEnd().getY());
@@ -103,6 +106,18 @@ public:
       else if(l.getDir() == 'W')//red
       {
         marker1.color.b = 0.4f;
+        marker1.color.g = 0.4f;
+        marker1.color.r = 1.0f;
+      }
+      else if(l.getDir() == 'N')//green
+      {
+        marker1.color.b = 0.2f;
+        marker1.color.g = 0.8f;
+        marker1.color.r = 0.2f;
+      }
+      else if(l.getDir() == 'S')//pinky
+      {
+        marker1.color.b = 1.0f;
         marker1.color.g = 0.4f;
         marker1.color.r = 1.0f;
       }
@@ -139,6 +154,7 @@ public:
       while (line >> temp)
         map[i].push_back(temp);
     }
+
     ROS_INFO("Zakobnczenie czytania pliku, rozmiar: [%d]",(int)map[0].size());
     int i;
     for (i = 0; i < map.size(); i++)
@@ -174,7 +190,7 @@ public:
   {
     ROS_INFO("Number of crossroads: [%d]", cv.size());
     int i, j;
-    double y;
+    double y,x;
     for(i=0;i<cv.size();i++)
     { ROS_INFO("\n");
       ROS_INFO("cross nr [%d] ", i);
@@ -238,7 +254,7 @@ public:
       {
         if(i!=0)
         {
-          ROS_INFO("fuck off %d ",i,i);
+          ROS_INFO(";/ %d ",i,i);
           if(c.getW().size()!=0)
           {
             ROS_INFO("%f,%f",(c.getW())[0].getOrigin().getX(),(c.getW())[0].getOrigin().getY());
@@ -262,13 +278,67 @@ public:
           temp.push_back(Lane(c.getE()[j].getOrigin(),dir));
         }
     }
+
+    //return rt;
+
+    //NOWA CZESC:
+
+    int m =-1;
+    do
+    {
+      Crossroad c = cv[++m];
+      temp.clear();
+      x = c.getOrigin().getX();
+      if (c.getS().size()> 0)
+        for (j = 0; j < c.getS().size(); j++)
+        {
+          char dir='S';
+          if(c.getS()[j].getIn())
+            dir ='N';
+          temp.push_back(Lane(c.getS()[j].getOrigin(),dir));
+        }
+      for(int k=m+1;k<cv.size();k++)
+      {
+        ROS_INFO("m = %d,k = %d",m,k);
+        Crossroad cr = cv[k];
+        if (cr.getOrigin().getX() == x && cr.getN().size() > 0)
+        {
+          ROS_INFO("Znaleziony pion: %f, poszukiwany: %f",cr.getOrigin().getX(),x);
+          for (j = 0; j <cr.getN().size(); j++)
+          {
+            temp[j].setEnd((cr.getN())[j].getOrigin());
+
+          rt.push_back(temp[j]);}
+          //ROS_INFO("accepted: end: %f,%f",(c.getW())[j].getOrigin().getX(),(c.getW())[j].getOrigin().getY());
+          temp.clear();
+          if (cr.getS().size()> 0)
+            for (j = 0; j < cr.getS().size(); j++)
+            {
+              char dir='S';
+              if(cr.getS()[j].getIn())
+                dir ='N';
+              temp.push_back(Lane(cr.getS()[j].getOrigin(),dir));
+            }
+        }
+        else
+        {
+          ROS_INFO("Nie w pionie: aktualny: %f, poszukiwany: %f",cr.getOrigin().getX(),x);
+        }
+
+      }
+      ROS_INFO("aktulany x:%f ----%f maksymalny x",cv[m].getOrigin().getX(),maxX);
+    }while(cv[m].getOrigin().getX()!=maxX);
     ROS_INFO("list of lanes:");
     for (i = 0; i < rt.size(); i++)
     {
-      ROS_INFO("lane nr [%d], pocz: [%f] i [%f], koniec: [%f] i [%f]",i,rt[i].getStart().getX(),rt[i].getStart().getY(),rt[i].getEnd().getX(),rt[i].getEnd().getY());
+      ROS_INFO("lane nr [%d], pocz: [%f] i [%f], koniec: [%f] i [%f], kier: %c",i,rt[i].getStart().getX(),rt[i].getStart().getY(),rt[i].getEnd().getX(),rt[i].getEnd().getY(),rt[i].getDir());
     }
     return rt;
-    /*vector<int> x_cross_v;
+
+
+
+    /*
+    vector<int> x_cross_v;
      for (i = 0; i < cv.size(); i++)
      {
        Crossroad c = cv[i];
@@ -312,8 +382,8 @@ public:
          }
        }
        temp.clear();
-     }
-     */
+     }*/
+    return rt;
   }
 
   void configureRviz()
@@ -814,6 +884,15 @@ public:
   }
 
 };
+
+//void setMaxJ(int j)
+//{
+//  this->maxJ = j;
+//}
+//int getMaxJ()
+//{
+//  return this->maxJ;
+//}
 
 
 

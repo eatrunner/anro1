@@ -16,10 +16,13 @@ public:
   std::vector<Route> getE();
   std::vector<Route> getS();
   std::vector<Route> getW();
+//  int getMaxJ();
+//  void setMaxJ(int j);
 
 protected:
 private:
   Point origin;
+  //d maxj;
   std::vector<Route> N;
   std::vector<Route> E;
   std::vector<Route> S;

@@ -11,6 +11,7 @@ public:
   //static std::vector<Crossroad> matrix_crossroads;
   static std::vector<Crossroad> buildInfo(std::vector<std::vector<char> > mapInfo);
   //static void sendRouteInfo();
+  static double getMaxX();
 protected:
 private:
 };
