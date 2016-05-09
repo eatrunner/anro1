@@ -49,50 +49,45 @@ public:
           for(int j=0;j<crossroads[i].S.size();j++){
               anro1::point p;
               if(crossroads[i].S[j].getIn()){//skad wziac wyjazdowe
-                  Point p2 = crossroads[i].S[j].getIn();
-                  p.x=p2.x;
-                  p.y=p2.y;
+                  p.x=crossroads[i].S[j].getOrigin().getX();
+                  p.y=crossroads[i].S[j].getOrigin().getY();
                   sideS.in.push_back(p);
               }
           }
-           node.push_back(sideS);
+           node.sides.push_back(sideS);
            anro1::side sideE;
           for(int j=0;j<crossroads[i].E.size();j++){
               anro1::point p;
               if(crossroads[i].E[j].getIn()){
-                  Point p2 = crossroads[i].E[j].getIn();
-                  p.x=p2.x;
-                  p.y=p2.y;
+                  p.x=crossroads[i].E[j].getOrigin().getX();
+                  p.y=crossroads[i].E[j].getOrigin().getY();
                   sideE.in.push_back(p);
               }
           }
-           node.push_back(sideE);
+           node.sides.push_back(sideE);
            anro1::side sideN;
           for(int j=0;j<crossroads[i].N.size();j++){
               anro1::point p;
               if(crossroads[i].N[j].getIn()){
-                  Point p2 = crossroads[i].N[j].getIn();
-                  p.x=p2.x;
-                  p.y=p2.y;
+                  p.x=crossroads[i].N[j].getOrigin().getX();
+                  p.y=crossroads[i].N[j].getOrigin().getY();
                   sideN.in.push_back(p);
               }
           }
-           node.push_back(sideN);
+           node.sides.push_back(sideN);
            anro1::side sideW;
 
           for(int j=0;j<crossroads[i].W.size();j++){
               anro1::point p;
               if(crossroads[i].W[j].getIn()){
-                  Point p2 = crossroads[i].W[j].getIn();
-                  p.x=p2.x;
-                  p.y=p2.y;
+                  p.x=crossroads[i].W[j].getOrigin().getX();
+                  p.y=crossroads[i].W[j].getOrigin().getY();
                   sideW.in.push_back(p);
               }
           }
-          node.push_back(sideW);
-          nodemsg.push_back(node);
+          node.sides.push_back(sideW);
+          nodemsg.nodes.push_back(node);
       }
-
   }
 
   void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
@@ -578,7 +573,7 @@ public:
   }
 
   // metoda sendCrossroadsInfo wysyła w topicu map_info message mapMessage zawierajace pola okreslajace polozenie oraz typ skrzyzownia/zakretu
-  void sendCrossroadsInfo()
+  /*void sendCrossroadsInfo()
   {
     //konfiguracja polaczenia
     ros::NodeHandle n;
@@ -661,7 +656,7 @@ public:
     }
 
   }
-
+*/
 };
 
 
