@@ -2,6 +2,11 @@
 #include "std_msgs/String.h"
 #include <stdio.h>
 #include "anro1/mapMessage.h"
+#include "anro1/mapNode.h"
+#include "anro1/mapNodeMessage.h"
+#include "anro1/mapRoute.h"
+#include "anro1/mapRouteMessage.h"
+#include "anro1/side.h"
 #include <cstdlib>
 #include <fstream>
 #include <vector>
@@ -9,6 +14,7 @@
 #include "Crossroad.h"
 #include "Lane.h"
 #include "ReadMatrix.h"
+#include "anro1/point.h"
 #include "Constants.h"
 
 using namespace std;
@@ -36,6 +42,92 @@ public:
     create_map(lanes,crossroads);
     sendInfo(lanes,crossroads);//TODO: FUNCKJA DO WYSYŁANIA INFO DO INNYCH MODULÓW
   }
+
+  void sendInfo(std::vector<Lane> lanes,std::vector<Crossroad> crossroads){
+      anro1::mapNodeMessage nodemsg;
+      for(int i=0;i<crossroads.size();i++){
+          anro1::mapNode node;
+          anro1::side sideS;//przeciwnie do wskazowek zegara od poludnia
+          for(int j=0;j<crossroads[i].S.size();j++){
+              anro1::point p;
+              p.x=crossroads[i].S[j].getOrigin().getX();
+              p.y=crossroads[i].S[j].getOrigin().getY();
+              if(crossroads[i].S[j].getIn()){//skad wziac wyjazdowe
+                  sideS.in.push_back(p);
+              }
+              else{
+                  sideS.out.push_back(p);
+              }
+          }
+           node.sides.push_back(sideS);
+           anro1::side sideE;
+          for(int j=0;j<crossroads[i].E.size();j++){
+              anro1::point p;
+              p.x=crossroads[i].E[j].getOrigin().getX();
+              p.y=crossroads[i].E[j].getOrigin().getY();
+              if(crossroads[i].E[j].getIn()){
+                  sideE.in.push_back(p);
+              }
+              else{
+                  sideE.out.push_back(p);
+              }
+          }
+           node.sides.push_back(sideE);
+           anro1::side sideN;
+          for(int j=0;j<crossroads[i].N.size();j++){
+              anro1::point p;
+              p.x=crossroads[i].N[j].getOrigin().getX();
+              p.y=crossroads[i].N[j].getOrigin().getY();
+              if(crossroads[i].N[j].getIn()){
+                  sideN.in.push_back(p);
+              }
+              else{
+                  sideN.out.push_back(p);
+              }
+          }
+           node.sides.push_back(sideN);
+           anro1::side sideW;
+
+          for(int j=0;j<crossroads[i].W.size();j++){
+              anro1::point p;
+              p.x=crossroads[i].W[j].getOrigin().getX();
+              p.y=crossroads[i].W[j].getOrigin().getY();
+              if(crossroads[i].W[j].getIn()){
+                  sideW.in.push_back(p);
+              }
+              else{
+                   sideW.out.push_back(p);
+              }
+          }
+          node.sides.push_back(sideW);
+          nodemsg.nodes.push_back(node);
+      }
+      anro1::mapRouteMessage routemsg;
+      for(int i=0;i<lanes.size();i++){
+          anro1::mapRoute route;
+          Point begin, end;
+          begin = lanes[i].getStart();
+          end=lanes[i].getEnd();
+          route.begin.x=begin.x;
+          route.begin.y=begin.y;
+          route.end.x=route.end.x;
+          route.end.y=route.end.y;
+          routemsg.routes.push_back(route);
+      }
+      ros::NodeHandle n;
+      ros::Publisher node_info = n.advertise<anro1::mapNodeMessage>("map_info_nodes", 1000);
+      ros::Publisher route_info = n.advertise<anro1::mapRouteMessage>("map_info_routes", 1000);
+      while(node_info.getNumSubscribers() < 1||route_info.getNumSubscribers() < 1)
+      {
+        ros::Rate loop_rate(10000);
+        loop_rate.sleep();
+      }
+
+      node_info.publish(nodemsg);
+      route_info.publish(routemsg);
+
+  }
+
   void create_map(vector < Lane > lanes,vector<Crossroad> crossroads)
   {
 
@@ -519,11 +611,11 @@ public:
   }
 
   // metoda sendCrossroadsInfo wysyła w topicu map_info message mapMessage zawierajace pola okreslajace polozenie oraz typ skrzyzownia/zakretu
-  void sendCrossroadsInfo()
+  /*void sendCrossroadsInfo()
   {
     //konfiguracja polaczenia
     ros::NodeHandle n;
-    ros::Publisher map_info = n.advertise<anro1::mapMessage>("map_info", 1000);
+    ros::Publisher map_info = n.advertise<anro1::mapnodeMessage>("map_info", 1000);
     anro1::mapMessage crossroad1;
     anro1::mapMessage turning;
 
@@ -602,7 +694,7 @@ public:
     }
 
   }
-
+*/
 };
 
 
