@@ -1,4 +1,4 @@
-#include "ros/ros.h" 
+#include "ros/ros.h"
 #include "std_msgs/String.h" 
 #include "anro1/accessPoint.h" 
 #include "anro1/direction.h" 
@@ -12,7 +12,7 @@
 #include "anro1/nodeMessage.h" 
 #include "anro1/point.h" 
 #include "anro1/route.h" 
-#include "anro1/routemsg.h" 
+#include "anro1/routemsg.h"
 #include "anro1/side.h" 
 #include <iostream> 
 #include <stdlib.h> 
@@ -151,9 +151,10 @@ class Crossroad
             {
                 for (list<Route*>::iterator it = routes->begin(); ; it++)
                 {
-                    //dopisz kierunki                     if (it == routes->end())
+                    //dopisz kierunki
+                    if (it == routes->end())
                     {
-                        cout << "Route with entry" << sides[i].entries[j].x << "," << sides[i].entries[j].y << "not found!" << endl;
+                        ROS_INFO("ROUTE NOT FOUND END [%d] [%d]",(int)sides[i].entries[j].x,(int)sides[i].entries[j].y);
                     }
                     if ((*it)->end == sides[i].entries[j])
                     {
@@ -279,6 +280,8 @@ class Crossroad
 		int rightIndex = i + 1;
             rightIndex %= 4;
             int rightLane = sides[i].entries.size() - 1;
+            if(sides[i].entries.size()==0)
+                continue;
             int outsSize = insides[rightIndex].outs.size();
             //jesli naprzeciw 1 pas to break          
 	   int breakEarlier = 0;
@@ -287,7 +290,9 @@ class Crossroad
             if (insides[opposideIndex].outs.size() == 1 && insides[i].ins.size() == 1)
             {
                 //jesli naprzeciw 1 pas to break                 
-		breakEarlier = outsSize - 1;
+        breakEarlier = outsSize - 1;
+        if(breakEarlier<0)
+            breakEarlier=0;
             }
             for (int j = outsSize - 1; j >= 0 + breakEarlier; j--)
             {
@@ -301,10 +306,12 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            //lefts wszystkie!!             
+           //lefts wszystkie!!
 		int leftIndex = i + 3;
             leftIndex %= 4;
             int leftLane = 0;
+            if(sides[i].entries.size()==0)
+                continue;
             int outsSize = insides[leftIndex].outs.size();
             int opposideIndex = i + 2;
             opposideIndex %= 4;
@@ -324,15 +331,19 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            int rightIndex = i + 1;             rightIndex %= 4;             for (int k = sides[i].entries.size()-1; k >= 0; k--)
+            int rightIndex = i + 1;
+            rightIndex %= 4;
+            for (int k = sides[i].entries.size()-1; k >= 0; k--)
             {
                 Entry* thisentry = &(sides[i].entries[k]);
                 if (thisentry->left.size() == 0 && thisentry->straight.size() == 0 && thisentry->right.size() == 0)
                 {
                     Point p;
-                    if (insides[rightIndex].outs.size() >= k)
+                    if(insides[rightIndex].outs.size()==0)
+                        continue;//MAJOR TODO
+                    if (insides[rightIndex].outs.size() >= k+1)
                     {
-                        p = insides[rightIndex].outs[k-1];
+                        p = insides[rightIndex].outs[k];
                     }
                     else
                     {
@@ -362,6 +373,7 @@ class Crossroad
         createRightConnections(insides);
         createLeftConnections(insides);
         createRemainingRightConnections(insides);
+        setLightsStates();
     }
     bool nsTogether, weTogether;
     int time,timeToChange;
@@ -377,11 +389,15 @@ class Crossroad
     {
         switch (state)
         {
-            case allred:             for (int i = 0; i < sides[side].entries.size(); i++)
+            case allred:
+            for (int i = 0; i < sides[side].entries.size(); i++)
             {
                 sides[side].entries[i].light = false;
             }
-            timeToChange = 2;             break;         case allgreen:             for (int i = 0; i < sides[side].entries.size(); i++)
+            timeToChange = 2;
+            break;
+            case allgreen:
+            for (int i = 0; i < sides[side].entries.size(); i++)
             {
                 sides[side].entries[i].light = true;
             }
@@ -510,6 +526,7 @@ class Crossroads
     void addCrossroad(vector<InSide> vec)
     {
         Crossroad* crossroad = new Crossroad(vec);
+        ROS_INFO("STWORZONO");
         crossroads->push_front(crossroad);
     }
     void tick()
@@ -526,42 +543,10 @@ class Crossroads
     }
     anro1::nodeMessage giveMessage()
     {
-        anro1::nodeMessage msg;         for (list<Crossroad*>::iterator it = crossroads->begin(); it != crossroads->end(); it++)
+        anro1::nodeMessage msg;
+        for (list<Crossroad*>::iterator it = crossroads->begin(); it != crossroads->end(); it++)
         {
-            anro1::node node = (*it)->giveMessage();         vector<anro1::accessPoint> aps = node.n;     for(int j=0;j<aps.size();j++)
-            {
-                ROS_INFO("count2");         anro1::accessPoint ap = aps[j];         vector<anro1::point> points = ap.straight;         for(int m=0;m<points.size();m++)
-                {
-                    anro1::point p= points[m];
-                    if(p.x==1)
-                    {
-                        ROS_INFO("OK");
-                    }
-                    else
-                    {
-                        ROS_INFO("NIEOK");
-                    }
-                }
-            }
             msg.nodes.push_back((*it)->giveMessage());
-        }
-        vector<anro1::node> nodes = msg.nodes;     for(int i=0;i<nodes.size();i++)
-        {
-            ROS_INFO("count");                                                                                                                                                                                              anro1::node node = nodes[i];     vector<anro1::accessPoint> aps = node.n;     for(int j=0;j<aps.size();j++)
-            {
-                ROS_INFO("count2");         anro1::accessPoint ap = aps[j];         vector<anro1::point> points = ap.straight;         for(int m=0;m<points.size();m++)
-                {
-                    anro1::point p= points[m];
-                    if(p.x==1)
-                    {
-                        ROS_INFO("OK");
-                    }
-                    else
-                    {
-                        ROS_INFO("NIEOK");
-                    }
-                }
-            }
         }
         return msg;
     }
@@ -620,35 +605,46 @@ bool ready=false;
 bool processed = false;
 void process(const anro1::mapNodeMessage::ConstPtr& msg)
 {
-    ROS_INFO("Ja slyszu");     vector < anro1::mapNode> nodes = msg->nodes;     for (int i =0;i<nodes.size(); i++)
+    ROS_INFO("Ja slyszu");
+    vector < anro1::mapNode> nodes = msg->nodes;
+    for (int i =0;i<nodes.size(); i++)
     {
+        ROS_INFO("PRZETWARZAMY");
         vector<InSide> insides;
         if (nodes[i].sides.size() != 4)
         {
-            cout << "fuckup";
+              ROS_INFO("disaster");
         }
         for (int j =0; j < nodes[i].sides.size(); j++)
         {
-            InSide inside;             for (int k = 0; k < nodes[i].sides[j].in.size(); k++)
+            ROS_INFO("PRZETWARZAMY2");
+            InSide inside;
+            for (int k = 0; k < nodes[i].sides[j].in.size(); k++)
             {
+                ROS_INFO("PRZETWARZAMY3");
                 Point p;
                 anro1::point point = nodes[i].sides[j].in[k];
                 p.x = point.x;
                 p.y = point.y;
                 inside.ins.push_back(p);
             }
+            ROS_INFO("PRZETWARZAMYpo3");
             for (int k = 0; k < nodes[i].sides[j].out.size(); k++)
             {
+                ROS_INFO("PRZETWARZAMY4");
                 Point p;
                 anro1::point point = nodes[i].sides[j].out[k];
                 p.x = point.x;
                 p.y = point.y;
                 inside.outs.push_back(p);
             }
+             ROS_INFO("PRZETWARZAMYpo4");
             insides.push_back(inside);
+            ROS_INFO("PRZETWARZAMYpush");
         }
         crossroads.addCrossroad(insides);
     }
+    ROS_INFO("PRZETORZYLISMY");
     processed = true;
 }
 vector<Route*>* routes = new vector<Route*>;
@@ -676,16 +672,17 @@ anro1::routemsg giveroutes(vector<Route*>* routesto)
 bool ready2=false;
 void process2(const anro1::mapRouteMessage::ConstPtr& msg)
 {
-    if (!ready)
+   /* if (!ready)
     {
         cout << "gowno";
         return;
     }
-    vector < anro1::mapRoute> msgroutes = msg->routes;     for (int i = 0; i < msgroutes.size(); i++)
+    vector < anro1::mapRoute> msgroutes = msg->routes;
+    for (int i = 0; i < msgroutes.size(); i++)
     {
         Point begin(msgroutes[i].begin.x, msgroutes[i].begin.y);
         Point end(msgroutes[i].end.x, msgroutes[i].end.y);
-    }
+    }*/
     ready2=true;
 }
 //ready2=true;
@@ -694,26 +691,36 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Nodes");     
 srand(time(NULL));     
 ros::NodeHandle n;     
-ros::Publisher chatter_pub = n.advertise<anro1::nodeMessage>("nodes_info", 10);//utworzenie kanalu do nadawania     
+ros::Publisher chatter_pub = n.advertise<anro1::nodeMessage>("nodes_info", 10);//utworzenie kanalu do nadawania
+ros::Subscriber lightsSubscriber = n.subscribe("map_info_nodes", 1000, process);
+ros::Rate rate(10);
 ros::Publisher route_chatter = n.advertise<anro1::routemsg>("routes_info", 1);//utworzenie kanalu do nadawania     //ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami     //ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);     
-ros::Rate loop_rate(10);     time_t lasttick, thistick;     time(&lasttick);    vector<InSide> inside = createPoints(1,1,1,1);    crossroads.addCrossroad(inside);     while (ros::ok())
+ros::Subscriber routesSubscriber = n.subscribe("map_info_routes", 1000, process2);
+ros::Rate loop_rate(10);     time_t lasttick, thistick;
+
+while (ros::ok())
     {
         ros::spinOnce();
-      /*   if (!ready2)
+         if (ready2)
         {
-                 continue;
+                 break;
         }
+}
+time(&lasttick);
+while (ros::ok())
+    {
+        ros::spinOnce();//pewnie mozna to usunac
         time(&thistick);
         if (lasttick + 1 < thistick)
         {
             //uplynela conajmniej sekunda od ostatniej inkrementacji             lasttick = lasttick + 1;
               crossroads.tick();
             //
-        }*/
+        }
         anro1::nodeMessage nodemsg = crossroads.giveMessage();  
         ROS_INFO("COSIDZIE");
             chatter_pub.publish(nodemsg);
-       // anro1::routemsg routemsg = giveroutes(routes);
+      // anro1::routemsg routemsg = giveroutes(routes);
         //route_chatter.publish(routemsg);
         loop_rate.sleep();
     }
