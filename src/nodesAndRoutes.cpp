@@ -406,16 +406,34 @@ class Crossroad
     }
     anro1::node giveMessage()
     {
-        anro1::node node;         for (int i = 0; i < 4; i++)
+        anro1::node node;
+        for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < sides[i].entries.size(); j++)
             {
-                anro1::accessPoint ap;                 ap.x = sides[i].entries[j].x;                 ap.y = sides[i].entries[j].y;                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
+                anro1::accessPoint ap;
+                ap.x = sides[i].entries[j].x;
+                ap.y = sides[i].entries[j].y;
+                for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
                     anro1::point p;
                     p.x = sides[i].entries[j].straight[k].x;
                     p.y = sides[i].entries[j].straight[k].y;
                     ap.straight.push_back(p);
+                }
+                for (int k = 0; k < sides[i].entries[j].left.size();k++)
+                {
+                    anro1::point p;
+                    p.x = sides[i].entries[j].left[k].x;
+                    p.y = sides[i].entries[j].left[k].y;
+                    ap.left.push_back(p);
+                }
+                for (int k = 0; k < sides[i].entries[j].right.size();k++)
+                {
+                    anro1::point p;
+                    p.x = sides[i].entries[j].right[k].x;
+                    p.y = sides[i].entries[j].right[k].y;
+                    ap.right.push_back(p);
                 }
                 switch (i)
                 {
