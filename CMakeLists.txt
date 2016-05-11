@@ -49,12 +49,20 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    DIRECTORY
    FILES
-   car.msg
-   lightsVector.msg
+   accessPoint.msg
+   direction.msg
    light.msg
-   turn.msg
-   turnsVector.msg
-   mapMessage.msg
+   lightsmsg.msg
+   mapNode.msg
+   mapNodeMessage.msg
+   mapRoute.msg
+   mapRouteMessage.msg
+   node.msg
+   nodeMessage.msg
+   point.msg
+   route.msg
+   routemsg.msg
+   side.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -107,7 +115,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-   INCLUDE_DIRS include
+#  INCLUDE_DIRS include
 #  LIBRARIES anro1
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
@@ -119,7 +127,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-#include_directories(include)
+include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   include/anro1
@@ -196,16 +204,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-#add_executable(light src/lights.cpp)
-#target_link_libraries(light ${catkin_LIBRARIES})
-#add_executable(turn src/turns.cpp)
-#target_link_libraries(turn ${catkin_LIBRARIES})
-#add_executable(Car src/Car.cpp)
-#target_link_libraries(Car ${catkin_LIBRARIES})
-#add_executable(Model src/Model.cpp)
-#target_link_libraries(Model ${catkin_LIBRARIES})
-
-
 add_executable(MapOfCity src/MapOfCity.cpp)
 target_link_libraries(MapOfCity ${catkin_LIBRARIES} ReadMatrix Crossroad  Point Route Lane)
 
@@ -221,4 +219,5 @@ target_link_libraries(Lane ${catkin_LIBRARIES} Point)
 add_library(ReadMatrix src/ReadMatrix.cpp)
 #target_link_libraries(ReadMatrix ${catkin_LIBRARIES} Crossroad )
 
-
+add_executable(nodesAndRoutes src/nodesAndRoutes.cpp)
+target_link_libraries(nodesAndRoutes ${catkin_LIBRARIES})
