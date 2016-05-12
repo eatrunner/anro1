@@ -74,7 +74,7 @@ class Route
 ;
 class Entry : public Point
 {
-    public:     Entry(int ix, int iy) : Point(x,y),light(false)
+    public:     Entry(int ix, int iy) : Point(ix,iy),light(false)
     {
     }
     vector<Point> left,straight,right;
@@ -252,6 +252,8 @@ class Crossroad
 		Point p = insides[i].ins[k];
                 sides[i].entries.push_back(Entry(p.x, p.y));
                 //cout << "pushentry" << endl;
+                ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
+                ROS_INFO("WJAZD [%d][%d]",(int)sides[i].entries[0].x,(int)sides[i].entries[0].y);
             }
         }
     }
@@ -414,6 +416,7 @@ class Crossroad
                 anro1::accessPoint ap;
                 ap.x = sides[i].entries[j].x;
                 ap.y = sides[i].entries[j].y;
+                ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
                     anro1::point p;
@@ -644,6 +647,7 @@ void process(const anro1::mapNodeMessage::ConstPtr& msg)
                 anro1::point point = nodes[i].sides[j].in[k];
                 p.x = point.x;
                 p.y = point.y;
+                ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
                 inside.ins.push_back(p);
             }
             ROS_INFO("PRZETWARZAMYpo3");
@@ -736,7 +740,7 @@ while (ros::ok())
             //
         }
         anro1::nodeMessage nodemsg = crossroads.giveMessage();  
-        ROS_INFO("COSIDZIE");
+      //  ROS_INFO("COSIDZIE");
             chatter_pub.publish(nodemsg);
       // anro1::routemsg routemsg = giveroutes(routes);
         //route_chatter.publish(routemsg);
