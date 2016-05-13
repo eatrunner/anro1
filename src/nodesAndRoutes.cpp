@@ -44,6 +44,10 @@ class Point
     {
         return x == second.x&&y == second.y;
     }
+    bool operator!=(const Point& second)
+    {
+        return x != second.x||y == second.y;
+    }
 }
 ;
 class Route
@@ -74,7 +78,7 @@ class Route
 ;
 class Entry : public Point
 {
-    public:     Entry(int ix, int iy) : Point(ix,iy),light(false)
+    public:     Entry(double ix, double iy) : Point(ix,iy),light(false)
     {
     }
     vector<Point> left,straight,right;
@@ -467,8 +471,23 @@ class Crossroad
           vector<Point> points;
         for(int i=0;i<4;i++){
             for(int j=0;j<sides[i].entries.size();j++)
-            points.push_back(sides[i].entries)
-
+                points.push_back(Point(sides[i].entries[j].x,sides[i].entries[j].y));
+        }
+        cout<<"pointssize"<<points.size()<<endl;
+        for(int i=0;i<points.size();i++){
+            for(int j=i+1;j<points.size();j++){
+                if(points[i]==points[j]){
+                    cout<<"disaster";
+                    for(int num=0;num<4;num++)
+                        for(int l=0;l<insides[num].ins.size();l++){
+                            cout<<insides[num].ins[l].x<<" "<<insides[num].ins[l].y<<endl;
+                        }
+                    cout<<"mojepunkty"<<endl;
+                    for(int num=0;num<points.size();num++){
+                        cout<<points[num].x<<" "<<points[num].y<<endl;
+                    }
+                }
+            }
         }
 
 
