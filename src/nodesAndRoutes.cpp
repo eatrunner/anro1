@@ -25,8 +25,8 @@
 using namespace std;
 class Point
 {
-    public:     int x, y;
-    Point(int ix, int iy) : x(ix), y(iy)
+    public:     double x, y;
+    Point(double ix, double iy) : x(ix), y(iy)
     {
     }
     Point(const Point& p) : x(p.x), y(p.y)
@@ -74,7 +74,7 @@ class Route
 ;
 class Entry : public Point
 {
-    public:     Entry(int ix, int iy) : Point(x,y),light(false)
+    public:     Entry(int ix, int iy) : Point(ix,iy),light(false)
     {
     }
     vector<Point> left,straight,right;
@@ -244,7 +244,8 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            //ins i outs od srodka pasa             
+            //ins i outs od srodka pasa
+
 		int insSize = insides[i].ins.size();             
 		for (int k = 0; k < insSize; k++)
             {
@@ -252,6 +253,8 @@ class Crossroad
 		Point p = insides[i].ins[k];
                 sides[i].entries.push_back(Entry(p.x, p.y));
                 //cout << "pushentry" << endl;
+                //ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
+               // ROS_INFO("WJAZD [%d][%d]",(int)sides[i].entries[0].x,(int)sides[i].entries[0].y);
             }
         }
     }
@@ -357,9 +360,7 @@ class Crossroad
     Crossroad(vector<InSide> insides) :         nsTogether(false), redtime(2), greentime(6),         weTogether(false),         state(0),         side(0),         time(0)
     {
         //kazdy kolejny po prawej   0 na poludniu             if (insides.size() != 4)
-        {
-            cout << "DISASTER";
-        }
+
         if (insides[0].ins.size() == 1 && insides[2].ins.size() == 1)
         {
             nsTogether = true;
@@ -374,6 +375,7 @@ class Crossroad
         createLeftConnections(insides);
         createRemainingRightConnections(insides);
         setLightsStates();
+        test(insides);
     }
     bool nsTogether, weTogether;
     int time,timeToChange;
@@ -414,6 +416,7 @@ class Crossroad
                 anro1::accessPoint ap;
                 ap.x = sides[i].entries[j].x;
                 ap.y = sides[i].entries[j].y;
+                //ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
                     anro1::point p;
@@ -450,11 +453,37 @@ class Crossroad
         }
         return node;
     }
-    bool test(bool show=false)
+    bool test(vector<InSide> insides)
     {
+        for(int i=0;i<4;i++){
+            cout<<"strona"<<i<<endl;
+            for(int j=0;j<insides[i].ins.size();j++){
+               // cout<<"wjazd"<<insides[i].ins[j].x<<" "<<insides[i].ins[j].y<<endl;
+            }
+            for(int j=0;j<insides[i].outs.size();j++){
+                //cout<<"wyjazd"<<insides[i].outs[j].x<<" "<<insides[i].outs[j].y<<endl;
+            }
+        }
+          vector<Point> points;
+        for(int i=0;i<4;i++){
+            for(int j=0;j<sides[i].entries.size();j++)
+            points.push_back(sides[i].entries)
+
+        }
+
+
+        /*ROS_INFO("TEST");
         if (show)         for (int i = 0; i < 4; i++)
         {
-            cout << sides[i].entries.size()<<"ent"<<endl;
+            ROS_INFO("ROZMIARY WJAZDOW [%d]",(int)sides[i].entries.size());
+            for(int j=0;j<sides[i].entries.size();j++){
+                ROS_INFO("WJAZD [%d][%d]",sides[i].entries[j].x,sides[i].entries[j].y);
+                for(int k=0;k<sides[i].entries[j].left.size();k++){
+                     ROS_INFO("LEWO [%d][%d]",sides[i].entries[j].left[k].x,sides[i].entries[j].left[k].y);
+                    sides[i].entries[j].left[k];
+                }
+            }
+
         }
         if (show)         for (int i = 0; i < 4; i++)
         {
@@ -483,7 +512,8 @@ class Crossroad
                 }
             }
         }
-        return true;
+        return true;*/
+
     }
     void changelights()
     {
@@ -544,7 +574,6 @@ class Crossroads
     void addCrossroad(vector<InSide> vec)
     {
         Crossroad* crossroad = new Crossroad(vec);
-        ROS_INFO("STWORZONO");
         crossroads->push_front(crossroad);
     }
     void tick()
@@ -597,7 +626,7 @@ bool testAllPossibilities(int size)
                 {
                     vector<InSide> insides = createPoints(i, k, m, n);
                     Crossroad c(insides);
-                    ok = c.test();
+                   // ok = c.test();
                     if (!ok)                         cout << i << " " << k << " " << m << " " << n << endl;
                 }
             }
@@ -627,38 +656,39 @@ void process(const anro1::mapNodeMessage::ConstPtr& msg)
     vector < anro1::mapNode> nodes = msg->nodes;
     for (int i =0;i<nodes.size(); i++)
     {
-        ROS_INFO("PRZETWARZAMY");
+       // ROS_INFO("PRZETWARZAMY");
         vector<InSide> insides;
         if (nodes[i].sides.size() != 4)
         {
-              ROS_INFO("disaster");
+         //     ROS_INFO("disaster");
         }
         for (int j =0; j < nodes[i].sides.size(); j++)
         {
-            ROS_INFO("PRZETWARZAMY2");
+          //  ROS_INFO("PRZETWARZAMY2");
             InSide inside;
             for (int k = 0; k < nodes[i].sides[j].in.size(); k++)
             {
-                ROS_INFO("PRZETWARZAMY3");
+             //   ROS_INFO("PRZETWARZAMY3");
                 Point p;
                 anro1::point point = nodes[i].sides[j].in[k];
                 p.x = point.x;
                 p.y = point.y;
+                //ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
                 inside.ins.push_back(p);
             }
-            ROS_INFO("PRZETWARZAMYpo3");
+        //    ROS_INFO("PRZETWARZAMYpo3");
             for (int k = 0; k < nodes[i].sides[j].out.size(); k++)
             {
-                ROS_INFO("PRZETWARZAMY4");
+              //  ROS_INFO("PRZETWARZAMY4");
                 Point p;
                 anro1::point point = nodes[i].sides[j].out[k];
                 p.x = point.x;
                 p.y = point.y;
                 inside.outs.push_back(p);
             }
-             ROS_INFO("PRZETWARZAMYpo4");
+           //  ROS_INFO("PRZETWARZAMYpo4");
             insides.push_back(inside);
-            ROS_INFO("PRZETWARZAMYpush");
+           // ROS_INFO("PRZETWARZAMYpush");
         }
         crossroads.addCrossroad(insides);
     }
@@ -736,7 +766,7 @@ while (ros::ok())
             //
         }
         anro1::nodeMessage nodemsg = crossroads.giveMessage();  
-        ROS_INFO("COSIDZIE");
+      //  ROS_INFO("COSIDZIE");
             chatter_pub.publish(nodemsg);
       // anro1::routemsg routemsg = giveroutes(routes);
         //route_chatter.publish(routemsg);
