@@ -381,7 +381,7 @@ class Crossroad
             }
         }
     }
-    Crossroad(vector<InSide> insides) :         nsTogether(false), redtime(2), greentime(6),         weTogether(false),         state(0),         side(0),         time(0)
+    Crossroad(vector<InSide> insides) :         nsTogether(false), redtime(2), greentime(6),         weTogether(false),         state(0),         side(0),         time(0), turn(false)
     {
         //kazdy kolejny po prawej   0 na poludniu             if (insides.size() != 4)
 
@@ -397,11 +397,31 @@ class Crossroad
         createStraightConnections(insides);
         createRightConnections(insides);
         createLeftConnections(insides);
+	
         createRemainingRightConnections(insides);
-        setLightsStates();
+int count=0;
+	for(int i=0;i<4;i++){
+		if(sides[i].entries.size()!=0)
+			count++;
+
+}
+	if(count<=2)
+		turn=true;
+if(turn)	
+for(int i=0;i<4;i++){
+		for(int j=0;j<sides[i].entries.size();j++){
+			sides[i].entries[j].light=true;
+}
+
+}
+
+	if(!turn)
+        	setLightsStates();
+	
         test(insides);
     }
     bool nsTogether, weTogether;
+    bool turn;
     int time,timeToChange;
     int side,state;
     int greentime, redtime;
@@ -634,6 +654,8 @@ class Crossroad
     }
     void incrementTime()
     {
+	if(turn)
+		return;
         time++;
         if (time > timeToChange)
         {
