@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     ros::Subscriber lights_subscriber= n.subscribe("lights_info", 1000, visualizeLights);
 
     modelrviz.setPub(rviz_publisher);
-    ros::Rate loop_rate(Constants::rate);
+    ros::Rate loop_rate(10);
 
     ros::spin();
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
 }
 
 void visualizeCar(const anro1::car& msg)
-{   //ROS_INFO("Rendering car, id: [%d]", msg.id);
+{   ROS_INFO("Rendering car, id: [%d]", msg.id);
 
     visualization_msgs::Marker marker1;
     uint32_t shape = visualization_msgs::Marker::CUBE;
@@ -57,14 +57,14 @@ void visualizeCar(const anro1::car& msg)
     marker1.action = visualization_msgs::Marker::ADD;
     marker1.pose.position.x = msg.x;
     marker1.pose.position.y = msg.y;
-    marker1.pose.position.z = msg.scale / 2;
+    marker1.pose.position.z = 15*msg.scale;
     marker1.pose.orientation.x = 0.0;
     marker1.pose.orientation.y = 0.0;
     marker1.pose.orientation.z = 0.0;
     marker1.pose.orientation.w = 1.0;
-    marker1.scale.x = msg.scale;
-    marker1.scale.y = msg.scale;
-    marker1.scale.z = msg.scale;
+    marker1.scale.x = 30*msg.scale;
+    marker1.scale.y = 30*msg.scale;
+    marker1.scale.z = 30*msg.scale;
     marker1.color.r = 0.3f;
     marker1.color.g = 0.0f;
     marker1.color.b = 0.5f;
@@ -111,22 +111,22 @@ void visualizeLights(const anro1::lightsVector& msg)
             marker1.scale.x = scale;
             marker1.scale.y = scale;
             marker1.scale.z = scale;
-            marker1.color.r = 1.0f;
+            marker1.color.r = 0.0f;
             marker1.color.g = 0.0f;
             marker1.color.b = 0.0f;
-            if(k>=2){
-                 if(light.NS){
-                     marker1.color.r = 0.0f;
-                     marker1.color.g = 1.0f;
-                 }
-            }
-            if(k<2){
-                if(light.WE){
+            if(light.NS)
+            {
+                if(k<2)
+                    marker1.color.r = 1.0f;
+                else
                     marker1.color.g = 1.0f;
-                    marker1.color.r = 0.0f;
-                }
             }
-
+            else if(light.WE)
+            { if(k<2)
+                    marker1.color.g = 1.0f;
+                else
+                    marker1.color.r = 1.0f;
+            }
             marker1.color.a = 1.0;
             marker1.lifetime = ros::Duration();
 

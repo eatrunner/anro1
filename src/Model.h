@@ -11,7 +11,6 @@
 #include "anro1/lightsVector.h"
 #include "anro1/turn.h"
 #include "anro1/turnsVector.h"
-#include "anro1/Constants.h"
 
 class Model{
 public:

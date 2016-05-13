@@ -9,6 +9,10 @@
 #include <ros/ros.h>
 #include <math.h>
 #include "anro1/Constants.h"
+#include "anro1/accessPoint.h"
+#include "anro1/node.h"
+#include "anro1/nodeMessage.h"
+#include "anro1/point.h"
 
 class Car{
 public:
