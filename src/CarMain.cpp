@@ -245,7 +245,7 @@ void checkForTurn(std::vector<anro1::node> nodes){
             double x = fabs(accessPointsWithSide[j].x - car->point.x);
             double y = fabs(accessPointsWithSide[j].y - car->point.y);
             if(x <= eps && y <= eps)
-                turnCar(accessPointsWithSide[i], );
+                turnCar(accessPointsWithSide[i]);
         }
     }
 }
