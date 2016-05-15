@@ -21,7 +21,7 @@ double ReadMatrix::getMaxX()
 {
   return maxX;
 }
-std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
+std::vector<Crossroad> &ReadMatrix::buildInfo(std::vector<std::vector<char> > mapInfo)
 {
   const double xRatio = MATRIX_DISTANCE;
   const double yRatio = MATRIX_DISTANCE;
@@ -136,24 +136,3 @@ std::vector<Crossroad> ReadMatrix::buildInfo(std::vector<std::vector<char> > map
   }
   return crossroads;
 }
-/*
-void ReadMatrix::sendRouteInfo()
-{
-  ros::NodeHandle n;
-  ros::Publisher marker_pub = n.advertise<anro1::routeMessage>("route_info", 1000);
-  anro1::routeMessage wykurw_message;
-  /* vector Crossroad *
-  for (int i = 0; i < crossroads.size(); i++)
-  {
-    wykurw_message.push_back(crossroads[i]);
-  }
-
-  while (route_info.getNumSubscribers() < 1)
-  {
-
-    ROS_WARN_ONCE("Please create a subscriber to the marker");
-    loop_rate.sleep();
-  }
-
-  route_info.publish(wykurw_message);
-}*/
