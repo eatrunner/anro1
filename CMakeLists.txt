@@ -213,6 +213,9 @@ include_directories(
 add_executable(MapOfCity src/MapOfCity.cpp)
 target_link_libraries(MapOfCity ${catkin_LIBRARIES} ReadMatrix Crossroad  Point Route Lane)
 
+add_executable(Model src/Model.cpp)
+target_link_libraries(Model ${catkin_LIBRARIES})
+
 
 add_library(Crossroad src/Crossroad.cpp)
 #target_link_libraries(Crossroad ${catkin_LIBRARIES})
@@ -226,7 +229,10 @@ add_library(ReadMatrix src/ReadMatrix.cpp)
 #target_link_libraries(ReadMatrix ${catkin_LIBRARIES} Crossroad )
 
 add_executable(nodesAndRoutes src/nodesAndRoutes.cpp)
+add_dependencies(nodesAndRoutes anro1_generate_messages_cpp)
 target_link_libraries(nodesAndRoutes ${catkin_LIBRARIES})
 
-add_executable(Car src/Car.cpp)
-target_link_libraries(Car ${catkin_LIBRARIES})
+add_executable(Car src/CarMain.cpp)
+target_link_libraries(Car ${catkin_LIBRARIES} CarClass)
+add_dependencies(Car anro1_generate_messages_cpp)
+add_library(CarClass src/Car.cpp)

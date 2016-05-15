@@ -1,32 +1,32 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h" 
-#include "anro1/accessPoint.h" 
-#include "anro1/direction.h" 
-#include "anro1/light.h" 
-#include "anro1/lightsmsg.h" 
-#include "anro1/mapNode.h" 
-#include "anro1/mapNodeMessage.h" 
-#include "anro1/mapRoute.h" 
-#include "anro1/mapRouteMessage.h" 
-#include "anro1/node.h" 
-#include "anro1/nodeMessage.h" 
-#include "anro1/point.h" 
-#include "anro1/route.h" 
+#include "std_msgs/String.h"
+#include "anro1/accessPoint.h"
+#include "anro1/direction.h"
+#include "anro1/light.h"
+#include "anro1/lightsmsg.h"
+#include "anro1/mapNode.h"
+#include "anro1/mapNodeMessage.h"
+#include "anro1/mapRoute.h"
+#include "anro1/mapRouteMessage.h"
+#include "anro1/node.h"
+#include "anro1/nodeMessage.h"
+#include "anro1/point.h"
+#include "anro1/route.h"
 #include "anro1/routemsg.h"
-#include "anro1/side.h" 
-#include <iostream> 
-#include <stdlib.h> 
-#include <vector> 
-#include <ctime> 
-#include <sstream> 
-#include <list> 
-#include <queue> 
+#include "anro1/side.h"
+#include <iostream>
+#include <stdlib.h>
+#include <vector>
+#include <ctime>
+#include <sstream>
+#include <list>
+#include <queue>
 
 using namespace std;
 class Point
 {
-    public:     int x, y;
-    Point(int ix, int iy) : x(ix), y(iy)
+    public:     double x, y;
+    Point(double ix, double iy) : x(ix), y(iy)
     {
     }
     Point(const Point& p) : x(p.x), y(p.y)
@@ -43,6 +43,20 @@ class Point
     bool operator==(const Point& second)
     {
         return x == second.x&&y == second.y;
+    }
+    bool operator!=(const Point& second)
+    {
+        return x != second.x||y == second.y;
+    }
+    double calculateDistance(double ix,double iy){
+        double iix=ix-x;
+        double iiy=iy-y;
+        iix*=iix;
+        iiy*=iiy;
+        return iix+iiy;
+    }
+    double calculateDistance(Point second){
+        return calculateDistance(second.x,second.y);
     }
 }
 ;
@@ -74,7 +88,7 @@ class Route
 ;
 class Entry : public Point
 {
-    public:     Entry(int ix, int iy) : Point(ix,iy),light(false)
+    public:     Entry(double ix, double iy) : Point(ix,iy),light(false)
     {
     }
     vector<Point> left,straight,right;
@@ -122,12 +136,12 @@ class Light
     {
         for (int i = 0; i < 4; i++)
         {
-            //ins i outs od srodka pasa    
-         int insSize = insides[i].ins.size();      
+            //ins i outs od srodka pasa
+         int insSize = insides[i].ins.size();
        for (int k = 0; k < insSize; k++)
             {
-                //inicjalizacja wjazdow                 
-		Point p = insides[i].ins[k];
+                //inicjalizacja wjazdow
+        Point p = insides[i].ins[k];
                 sides[i].entries.push_back(Entry(p.x, p.y));
                 //cout << "pushentry" << endl;
             }
@@ -244,16 +258,17 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            //ins i outs od srodka pasa             
-		int insSize = insides[i].ins.size();             
-		for (int k = 0; k < insSize; k++)
+            //ins i outs od srodka pasa
+
+        int insSize = insides[i].ins.size();
+        for (int k = 0; k < insSize; k++)
             {
-                //inicjalizacja wjazdow                 
-		Point p = insides[i].ins[k];
+                //inicjalizacja wjazdow
+        Point p = insides[i].ins[k];
                 sides[i].entries.push_back(Entry(p.x, p.y));
                 //cout << "pushentry" << endl;
-                ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
-                ROS_INFO("WJAZD [%d][%d]",(int)sides[i].entries[0].x,(int)sides[i].entries[0].y);
+                //ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
+               // ROS_INFO("WJAZD [%d][%d]",(int)sides[i].entries[0].x,(int)sides[i].entries[0].y);
             }
         }
     }
@@ -261,12 +276,12 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            //make straights             
-	int opposideIndex = i + 2;             
-	opposideIndex %= 4;             
-	int outsSize = insides[opposideIndex].outs.size();             
-	int entriesSize = sides[i].entries.size();             
-	for (int l = 0; l < entriesSize && l<outsSize; l++)
+            //make straights
+    int opposideIndex = i + 2;
+    opposideIndex %= 4;
+    int outsSize = insides[opposideIndex].outs.size();
+    int entriesSize = sides[i].entries.size();
+    for (int l = 0; l < entriesSize && l<outsSize; l++)
             {
                 Point p = insides[opposideIndex].outs[l];
                 sides[i].entries[l].straight.push_back(p);
@@ -278,20 +293,20 @@ class Crossroad
     {
         for (int i = 0; i < 4; i++)
         {
-            //prawo             
-		int rightIndex = i + 1;
+            //prawo
+        int rightIndex = i + 1;
             rightIndex %= 4;
             int rightLane = sides[i].entries.size() - 1;
             if(sides[i].entries.size()==0)
                 continue;
             int outsSize = insides[rightIndex].outs.size();
-            //jesli naprzeciw 1 pas to break          
-	   int breakEarlier = 0;
+            //jesli naprzeciw 1 pas to break
+       int breakEarlier = 0;
             int opposideIndex = i + 2;
             opposideIndex %= 4;
             if (insides[opposideIndex].outs.size() == 1 && insides[i].ins.size() == 1)
             {
-                //jesli naprzeciw 1 pas to break                 
+                //jesli naprzeciw 1 pas to break
         breakEarlier = outsSize - 1;
         if(breakEarlier<0)
             breakEarlier=0;
@@ -309,7 +324,7 @@ class Crossroad
         for (int i = 0; i < 4; i++)
         {
            //lefts wszystkie!!
-		int leftIndex = i + 3;
+        int leftIndex = i + 3;
             leftIndex %= 4;
             int leftLane = 0;
             if(sides[i].entries.size()==0)
@@ -323,8 +338,8 @@ class Crossroad
             }
             for (int j = 0; j < outsSize; j++)
             {
-                //jesli naprzeciw 1 pas to break                 
-		Point p = insides[leftIndex].outs[j];
+                //jesli naprzeciw 1 pas to break
+        Point p = insides[leftIndex].outs[j];
                 sides[i].entries[leftLane].left.push_back(p);
             }
         }
@@ -341,8 +356,18 @@ class Crossroad
                 if (thisentry->left.size() == 0 && thisentry->straight.size() == 0 && thisentry->right.size() == 0)
                 {
                     Point p;
-                    if(insides[rightIndex].outs.size()==0)
-                        continue;//MAJOR TODO
+                    if(insides[rightIndex].outs.size()==0){//TODO
+                        int leftIndex=i+2;
+                        leftIndex %= 4;
+                        if(insides[leftIndex].outs.size()==0){
+
+                            continue;
+                        }
+                        p=insides[leftIndex].outs[insides[leftIndex].outs.size()-1];
+                        //thisentry->
+                        continue;
+                    }
+
                     if (insides[rightIndex].outs.size() >= k+1)
                     {
                         p = insides[rightIndex].outs[k];
@@ -359,9 +384,7 @@ class Crossroad
     Crossroad(vector<InSide> insides) :         nsTogether(false), redtime(2), greentime(6),         weTogether(false),         state(0),         side(0),         time(0)
     {
         //kazdy kolejny po prawej   0 na poludniu             if (insides.size() != 4)
-        {
-            cout << "DISASTER";
-        }
+
         if (insides[0].ins.size() == 1 && insides[2].ins.size() == 1)
         {
             nsTogether = true;
@@ -376,6 +399,7 @@ class Crossroad
         createLeftConnections(insides);
         createRemainingRightConnections(insides);
         setLightsStates();
+        test(insides);
     }
     bool nsTogether, weTogether;
     int time,timeToChange;
@@ -416,7 +440,7 @@ class Crossroad
                 anro1::accessPoint ap;
                 ap.x = sides[i].entries[j].x;
                 ap.y = sides[i].entries[j].y;
-                ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
+                //ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
                     anro1::point p;
@@ -453,11 +477,119 @@ class Crossroad
         }
         return node;
     }
-    bool test(bool show=false)
+    bool test(vector<InSide> insides)
     {
+        for(int i=0;i<4;i++){
+            //cout<<"strona"<<i<<endl;
+            for(int j=0;j<insides[i].ins.size();j++){
+               // cout<<"wjazd"<<insides[i].ins[j].x<<" "<<insides[i].ins[j].y<<endl;
+            }
+            for(int j=0;j<insides[i].outs.size();j++){
+                //cout<<"wyjazd"<<insides[i].outs[j].x<<" "<<insides[i].outs[j].y<<endl;
+            }
+        }
+          vector<Point> points;
+        for(int i=0;i<4;i++){
+            for(int j=0;j<sides[i].entries.size();j++)
+                points.push_back(Point(sides[i].entries[j].x,sides[i].entries[j].y));
+        }
+        //cout<<"pointssize"<<points.size()<<endl;
+        for(int i=0;i<points.size();i++){
+            for(int j=i+1;j<points.size();j++){
+                if(points[i]==points[j]){
+                    cout<<"disaster";
+                    for(int num=0;num<4;num++)
+                        for(int l=0;l<insides[num].ins.size();l++){
+                            cout<<insides[num].ins[l].x<<" "<<insides[num].ins[l].y<<endl;
+                        }
+                    cout<<"mojepunkty"<<endl;
+                    for(int num=0;num<points.size();num++){
+                        cout<<points[num].x<<" "<<points[num].y<<endl;
+                    }
+                }
+            }
+        }
+        vector<Point> lefts, straights, rights;
+        for(int i=0;i<4;i++){
+            for(int j=0;j<sides[i].entries.size();j++){
+                for(int k=0;k<sides[i].entries[j].left.size();k++){
+                     lefts.push_back(Point(sides[i].entries[j].left[k].x,sides[i].entries[j].left[k].y));
+                }
+                for(int k=0;k<sides[i].entries[j].straight.size();k++){
+                     straights.push_back(Point(sides[i].entries[j].straight[k].x,sides[i].entries[j].straight[k].y));
+                }
+                for(int k=0;k<sides[i].entries[j].right.size();k++){
+                     rights.push_back(Point(sides[i].entries[j].right[k].x,sides[i].entries[j].right[k].y));
+                }
+            }
+            /*for(int j=0;j<sides[i].straight.size();j++){
+                lefts.push_back(Point(sides[i].left[j].x,sides[i].left[j].y));
+            }
+            for(int j=0;j<sides[i].left.size();j++){
+                lefts.push_back(Point(sides[i].left[j].x,sides[i].left[j].y));
+            }*/
+        }
+        /*for(int i=0;i<lefts.size();i++){
+            for(int j=i+1;j<lefts.size();j++){
+                if(lefts[i]==lefts[j]){
+                    cout<<"disaster";
+                }
+                //else cout<<"testleft";
+            }
+        }*/
+        /*for(int i=0;i<rights.size();i++){
+            for(int j=i+1;j<rights.size();j++){
+                if(rights[i]==rights[j]){
+                    cout<<"disaster";
+                }
+                //else cout<<"testright";
+            }
+        }*/
+        for(int i=0;i<straights.size();i++){
+            for(int j=i+1;j<straights.size();j++){
+                if(straights[i]==straights[j]){
+                    cout<<"2 punkty na wprost kieruja do jednego";
+                }
+               // else cout<<"teststraight";
+            }
+        }
+        for(int i=0;i<rights.size();i++){
+            lefts.push_back(rights[i]);
+        }
+        for(int i=0;i<straights.size();i++){
+            lefts.push_back(straights[i]);
+        }
+        for(int i=0;i<lefts.size();i++){
+            for(int j=0;j<points.size();j++){
+                if(lefts[i]==points[j]){
+                    cout<<"disaster";
+                }
+            }
+        }
+        for(int i=0;i<4;i++){
+            for(int j=0;j<sides[i].entries.size();j++){
+                if(sides[i].entries[j].left.size()==0 && sides[i].entries[j].straight.size()==0 && sides[i].entries[j].right.size()==0){
+                    cout<<"nie ma gdzie jechac"<<endl;
+                    for(int num=0;num<4;num++)
+                        for(int l=0;l<insides[num].ins.size();l++){
+                            cout<<"wjazdy"<<insides[num].ins[l].x<<" "<<insides[num].ins[l].y<<endl;
+                        }
+                }
+            }
+        }
+        cout<<"ok"<<endl;
+        /*ROS_INFO("TEST");
         if (show)         for (int i = 0; i < 4; i++)
         {
-            cout << sides[i].entries.size()<<"ent"<<endl;
+            ROS_INFO("ROZMIARY WJAZDOW [%d]",(int)sides[i].entries.size());
+            for(int j=0;j<sides[i].entries.size();j++){
+                ROS_INFO("WJAZD [%d][%d]",sides[i].entries[j].x,sides[i].entries[j].y);
+                for(int k=0;k<sides[i].entries[j].left.size();k++){
+                     ROS_INFO("LEWO [%d][%d]",sides[i].entries[j].left[k].x,sides[i].entries[j].left[k].y);
+                    sides[i].entries[j].left[k];
+                }
+            }
+
         }
         if (show)         for (int i = 0; i < 4; i++)
         {
@@ -486,7 +618,8 @@ class Crossroad
                 }
             }
         }
-        return true;
+        return true;*/
+
     }
     void changelights()
     {
@@ -508,20 +641,20 @@ class Crossroad
             changelights();
         }
     }
-	anro1::lightsmsg giveLights(){
+    anro1::lightsmsg giveLights(){
 anro1::lightsmsg lightsvector;
 for (int i = 0; i < 4; i++)
         {
             for (int j = 0; j < sides[i].entries.size(); j++)
             {
                 anro1::light light;
-		light.cords.x = sides[i].entries[j].x; 
-		light.cords.y = sides[i].entries[j].y;             
-		light.green = sides[i].entries[j].light;
-		lightsvector.lights.push_back(light);
+        light.cords.x = sides[i].entries[j].x;
+        light.cords.y = sides[i].entries[j].y;
+        light.green = sides[i].entries[j].light;
+        lightsvector.lights.push_back(light);
             }
         }
-	return lightsvector;
+    return lightsvector;
 }
 };
 class Crossroads
@@ -547,12 +680,11 @@ class Crossroads
     void addCrossroad(vector<InSide> vec)
     {
         Crossroad* crossroad = new Crossroad(vec);
-        ROS_INFO("STWORZONO");
         crossroads->push_front(crossroad);
     }
     void tick()
     {
-        //inkrementacja czasu na skrzyzowaniach 
+        //inkrementacja czasu na skrzyzowaniach
         for (list<Crossroad*>::iterator it = giveList()->begin(); it != giveList()->end(); it++)
         {
             (*it)->incrementTime();
@@ -572,12 +704,12 @@ class Crossroads
         return msg;
     }
 
-	anro1::lightsmsg giveLights(){
-	anro1::lightsmsg toGive;
-	for(list<Crossroad*>::iterator it = crossroads->begin();it!=crossroads->end();it++){
-		anro1::lightsmsg tmp = (*it)->giveLights();
-		for(int i=0;i<tmp.lights.size();i++){
-		toGive.lights.push_back(tmp.lights[i]);
+    anro1::lightsmsg giveLights(){
+    anro1::lightsmsg toGive;
+    for(list<Crossroad*>::iterator it = crossroads->begin();it!=crossroads->end();it++){
+        anro1::lightsmsg tmp = (*it)->giveLights();
+        for(int i=0;i<tmp.lights.size();i++){
+        toGive.lights.push_back(tmp.lights[i]);
 }
 
 }
@@ -600,7 +732,7 @@ bool testAllPossibilities(int size)
                 {
                     vector<InSide> insides = createPoints(i, k, m, n);
                     Crossroad c(insides);
-                    ok = c.test();
+                   // ok = c.test();
                     if (!ok)                         cout << i << " " << k << " " << m << " " << n << endl;
                 }
             }
@@ -630,40 +762,158 @@ void process(const anro1::mapNodeMessage::ConstPtr& msg)
     vector < anro1::mapNode> nodes = msg->nodes;
     for (int i =0;i<nodes.size(); i++)
     {
-        ROS_INFO("PRZETWARZAMY");
+       // ROS_INFO("PRZETWARZAMY");
         vector<InSide> insides;
         if (nodes[i].sides.size() != 4)
         {
-              ROS_INFO("disaster");
+         //     ROS_INFO("disaster");
         }
         for (int j =0; j < nodes[i].sides.size(); j++)
         {
-            ROS_INFO("PRZETWARZAMY2");
+          //  ROS_INFO("PRZETWARZAMY2");
             InSide inside;
             for (int k = 0; k < nodes[i].sides[j].in.size(); k++)
             {
-                ROS_INFO("PRZETWARZAMY3");
+             //   ROS_INFO("PRZETWARZAMY3");
                 Point p;
                 anro1::point point = nodes[i].sides[j].in[k];
                 p.x = point.x;
                 p.y = point.y;
-                ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
+                //ROS_INFO("WJAZD [%d][%d]",(int)p.x,(int)p.y);
                 inside.ins.push_back(p);
             }
-            ROS_INFO("PRZETWARZAMYpo3");
+        //    ROS_INFO("PRZETWARZAMYpo3");
             for (int k = 0; k < nodes[i].sides[j].out.size(); k++)
             {
-                ROS_INFO("PRZETWARZAMY4");
+              //  ROS_INFO("PRZETWARZAMY4");
                 Point p;
                 anro1::point point = nodes[i].sides[j].out[k];
                 p.x = point.x;
                 p.y = point.y;
                 inside.outs.push_back(p);
             }
-             ROS_INFO("PRZETWARZAMYpo4");
+
+
             insides.push_back(inside);
-            ROS_INFO("PRZETWARZAMYpush");
+           // ROS_INFO("PRZETWARZAMYpush");
         }
+        Point middle(nodes[i].x,nodes[i].y);
+        for(int j=0;j<insides.size();j++){
+
+            bool sorted=false;
+           while(!sorted){
+                if(insides[j].ins.size()==0)
+                    break;
+                int k=0;
+                for(;k<insides[j].ins.size()-1;k++){
+                    cout<<"lecimy"<<k<<endl;
+                    double distance1=insides[j].ins[k].calculateDistance(middle);
+                    double distance2=insides[j].ins[k+1].calculateDistance(middle);
+                    cout<<"sort"<<distance1<<" "<<distance2<<endl;
+                    if(distance1>distance2){
+                        cout<<"sortujemy"<<endl;
+                        cout<<insides[j].ins[k].x<<" "<<insides[j].ins[k].x<<endl;
+                        cout<<insides[j].ins[k+1].x<<" "<<insides[j].ins[k+1].x<<endl;
+
+                        Point spare=insides[j].ins[k];
+                        insides[j].ins[k]=insides[j].ins[k+1];
+                        insides[j].ins[k+1]=spare;
+                        cout<<insides[j].ins[k].x<<" "<<insides[j].ins[k].x<<endl;
+                        cout<<insides[j].ins[k+1].x<<" "<<insides[j].ins[k+1].x<<endl;
+
+                        k=-1;
+                       // cout<<k<<"rozmiar"<<insides[j].ins.size()-1;
+
+                    }
+                   }
+
+                sorted=true;
+            }
+        }
+        for(int j=0;j<insides.size();j++){
+
+            bool sorted=false;
+           while(!sorted){
+                if(insides[j].outs.size()==0)
+                    break;
+                int k=0;
+                for(;k<insides[j].outs.size()-1;k++){
+                    cout<<"lecimy"<<k<<endl;
+                    double distance1=insides[j].outs[k].calculateDistance(middle);
+                    double distance2=insides[j].outs[k+1].calculateDistance(middle);
+                    cout<<"sort"<<distance1<<" "<<distance2<<endl;
+                    if(distance1>distance2){
+                        /*cout<<"sortujemy"<<endl;
+                        cout<<insides[j].ins[k].x<<" "<<insides[j].ins[k].x<<endl;
+                        cout<<insides[j].ins[k+1].x<<" "<<insides[j].ins[k+1].x<<endl;*/
+
+                        Point spare=insides[j].outs[k];
+                        insides[j].outs[k]=insides[j].outs[k+1];
+                        insides[j].outs[k+1]=spare;
+                       // cout<<insides[j].ins[k].x<<" "<<insides[j].ins[k].x<<endl;
+                        //cout<<insides[j].ins[k+1].x<<" "<<insides[j].ins[k+1].x<<endl;
+
+                        k=-1;
+                       // cout<<k<<"rozmiar"<<insides[j].ins.size()-1;
+
+                    }
+                   }
+
+                sorted=true;
+            }
+        }
+        for(int j=0;j<insides.size();j++){
+
+                if(insides[j].ins.size()==0)
+                     continue;
+                for(int k=0;k<insides[j].ins.size()-1;k++){
+                    //cout<<"lecimy"<<k<<endl;
+                    double distance1=insides[j].ins[k].calculateDistance(middle);
+                    double distance2=insides[j].ins[k+1].calculateDistance(middle);
+                    //cout<<"sort"<<distance1<<" "<<distance2<<endl;
+                    if(distance1>distance2){
+                        cout<<"disasternasorcie";
+                    }
+                   }
+
+
+          // cout<<"posortowano"<<endl;
+
+
+
+        }
+        for(int j=0;j<insides.size();j++){
+
+                if(insides[j].ins.size()<2)
+                     continue;
+                cout<<"sortowano wzgledem"<<middle.x<<" "<<middle.y<<endl;
+                for(int k=0;k<insides[j].ins.size();k++){
+                     cout<<insides[j].ins[k].x<<" "<<insides[j].ins[k].y<<endl;
+                   }
+
+
+          // cout<<"posortowano"<<endl;
+
+
+
+        }
+        for(int j=0;j<insides.size();j++){
+
+                if(insides[j].outs.size()<2)
+                     continue;
+                cout<<"sortowano wzgledem"<<middle.x<<" "<<middle.y<<endl;
+                for(int k=0;k<insides[j].outs.size();k++){
+                     cout<<insides[j].outs[k].x<<" "<<insides[j].outs[k].y<<endl;
+                   }
+
+
+          // cout<<"posortowano"<<endl;
+
+
+
+        }
+
+
         crossroads.addCrossroad(insides);
     }
     ROS_INFO("PRZETORZYLISMY");
@@ -710,15 +960,15 @@ void process2(const anro1::mapRouteMessage::ConstPtr& msg)
 //ready2=true;
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "Nodes");     
-srand(time(NULL));     
-ros::NodeHandle n;     
+    ros::init(argc, argv, "Nodes");
+srand(time(NULL));
+ros::NodeHandle n;
 ros::Publisher chatter_pub = n.advertise<anro1::nodeMessage>("nodes_info", 10);//utworzenie kanalu do nadawania
 ros::Subscriber lightsSubscriber = n.subscribe("map_info_nodes", 1000, process);
-ros::Rate rate(10);
-ros::Publisher route_chatter = n.advertise<anro1::routemsg>("routes_info", 1);//utworzenie kanalu do nadawania     //ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami     //ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);     
+ros::Rate rate(100);
+ros::Publisher route_chatter = n.advertise<anro1::routemsg>("routes_info", 1);//utworzenie kanalu do nadawania     //ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami     //ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);
 ros::Subscriber routesSubscriber = n.subscribe("map_info_routes", 1000, process2);
-ros::Rate loop_rate(10);     time_t lasttick, thistick;
+ros::Rate loop_rate(2500);     time_t lasttick, thistick;
 
 while (ros::ok())
     {
@@ -731,7 +981,7 @@ while (ros::ok())
 time(&lasttick);
 while (ros::ok())
     {
-        ros::spinOnce();//pewnie mozna to usunac
+        //ros::spinOnce();//pewnie mozna to usunac
         time(&thistick);
         if (lasttick + 1 < thistick)
         {
@@ -739,7 +989,7 @@ while (ros::ok())
               crossroads.tick();
             //
         }
-        anro1::nodeMessage nodemsg = crossroads.giveMessage();  
+        anro1::nodeMessage nodemsg = crossroads.giveMessage();
       //  ROS_INFO("COSIDZIE");
             chatter_pub.publish(nodemsg);
       // anro1::routemsg routemsg = giveroutes(routes);

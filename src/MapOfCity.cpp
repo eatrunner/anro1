@@ -48,6 +48,8 @@ public:
       anro1::mapNodeMessage nodemsg;
       for(int i=0;i<crossroads.size();i++){
           anro1::mapNode node;
+          node.x = crossroads[i].origin.x;
+          node.y = crossroads[i].origin.y;
           anro1::side sideS;//przeciwnie do wskazowek zegara od poludnia
           for(int j=0;j<crossroads[i].S.size();j++){
               anro1::point p;
