@@ -69,6 +69,8 @@ find_package(catkin REQUIRED COMPONENTS
 	turnsVector.msg
 	lightsmsg.msg
 	lightsVector.msg
+        car.msg
+        mapMessage.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -215,6 +217,7 @@ target_link_libraries(MapOfCity ${catkin_LIBRARIES} ReadMatrix Crossroad  Point 
 
 add_executable(Model src/Model.cpp)
 target_link_libraries(Model ${catkin_LIBRARIES})
+add_dependencies(Model anro1_generate_messages_cpp)
 
 
 add_library(Crossroad src/Crossroad.cpp)
