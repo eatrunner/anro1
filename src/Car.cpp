@@ -87,3 +87,9 @@ anro1::car Car::getMsg(){
     carMsg.scale = scale;
     return carMsg;
 }
+
+void Car::setPointToGo(anro1::point pointToGo){
+    this->pointToGo = pointToGo;
+    vecX = pointToGo.x - point.x;
+    vecY = pointToGo.y - point.y;
+}

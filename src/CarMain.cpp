@@ -45,17 +45,17 @@ int main(int argc, char** argv){
   ros::NodeHandle nodeHandle;
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
+  ros::Rate loop_rate(2000);
 
 //  ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
 //  ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
 //  ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
-  ros::Rate rate(2000);
   srand(time(NULL));
 
   while(ros::ok()){
       ros::spinOnce();
       //car->move();
-      rate.sleep();
+      loop_rate.sleep();
   }
 
   return 0;
@@ -359,6 +359,22 @@ void turnCar(anro1::accessPoint accessPoint){
 
     SideAndPointEnum sideAndPoint = sideAndPoints[turnIndex];
 
+    car->setPointToGo(sideAndPoint.point);
+
+    double offsetX = fabs(car->pointToGo.x - car->point.x);
+    double offsetY = fabs(car->pointToGo.y - car->point.y);
+    ROS_INFO_STREAM(offsetX << " " << offsetY);
+
+    ros::Rate rate(1000);
+
+    while(offsetX >= eps || offsetY >= eps){
+        offsetX = car->pointToGo.x - car->point.x;
+        offsetY = car->pointToGo.y - car->point.y;
+        car->move();
+        carPublisher.publish(car->getMsg());
+        rate.sleep();
+    }
+
     switch(sideAndPoint.side){
     case LEFT:
         if(car->side > 0)
@@ -381,40 +397,6 @@ void turnCar(anro1::accessPoint accessPoint){
         car->point = sideAndPoint.point;
         car->setSide(car->side);
         break;
-
     }
-
-//    if(!points.empty()){
-//        if(car->side > 0)
-//            car->side -= 1;
-//        else
-//            car->side = 3;
-//        car->point = points[0];
-//        car->setSide(car->side);
-//        for(int i = 0 ; i < points.size() ; i++)
-//            ROS_INFO_STREAM("POINT LEFT: " << points[i].x << " " << points[i].y);
-//        return;
-//    }
-
-//    points = accessPoint.straight;
-//    if(!points.empty()){
-//        car->point = points[0];
-//        for(int i = 0 ; i < points.size() ; i++)
-//            ROS_INFO_STREAM("POINT STRAIGHT: " << points[i].x << " " << points[i].y);
-//        return;
-//    }
-
-//    points = accessPoint.right;
-//    if(!points.empty()){
-//        if(car->side < 3)
-//            car->side += 1;
-//        else
-//            car->side = 0;
-//        car->point = points[0];
-//        car->setSide(car->side);
-//        for(int i = 0 ; i < points.size() ; i++)
-//            ROS_INFO_STREAM("POINT RIGHT: " << points[i].x << " " << points[i].y);
-//        return;
-//    }
 
 }

@@ -29,6 +29,8 @@ public:
     double getDistanceY(double y);
     anro1::car getMsg();
 
+    void setPointToGo(anro1::point);
+
     /***********************************************************************
    *
    * Getters, setters
@@ -53,9 +55,10 @@ public:
     void setSide(int side);
 
     anro1::point point;
-    int vecX;
-    int vecY;
+    double vecX;
+    double vecY;
     int side;
+    anro1::point pointToGo;
 
 private:
     double x;
