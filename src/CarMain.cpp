@@ -7,6 +7,16 @@ public:
     anro1::point point;
 };
 
+enum Side{
+    LEFT,STRAIGHT,RIGHT
+};
+
+class SideAndPointEnum{
+public:
+    Side side;
+    anro1::point point;
+};
+
 class DistanceAndPoint{
 public:
     double distance;
@@ -40,6 +50,7 @@ int main(int argc, char** argv){
 //  ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
 //  ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
   ros::Rate rate(2000);
+  srand(time(NULL));
 
   while(ros::ok()){
       ros::spinOnce();
@@ -315,40 +326,95 @@ std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node node)
 }
 
 void turnCar(anro1::accessPoint accessPoint){
-    std::vector<anro1::point> points = accessPoint.left;
+    std::vector<anro1::point> pointsLeft = accessPoint.left;
+    std::vector<anro1::point> pointsRight = accessPoint.right;
+    std::vector<anro1::point> pointsStraight = accessPoint.straight;
+
+    std::vector<SideAndPointEnum> sideAndPoints;
+
+    for(int i = 0; i < pointsLeft.size() ; ++i){
+        SideAndPointEnum sideAndPoint;
+        sideAndPoint.point = pointsLeft[i];
+        sideAndPoint.side = LEFT;
+        sideAndPoints.push_back(sideAndPoint);
+    }
+
+    for(int i = 0; i < pointsRight.size() ; ++i){
+        SideAndPointEnum sideAndPoint;
+        sideAndPoint.point = pointsRight[i];
+        sideAndPoint.side = RIGHT;
+        sideAndPoints.push_back(sideAndPoint);
+    }
+
+    for(int i = 0; i < pointsStraight.size() ; ++i){
+        SideAndPointEnum sideAndPoint;
+        sideAndPoint.point = pointsStraight[i];
+        sideAndPoint.side = STRAIGHT;
+        sideAndPoints.push_back(sideAndPoint);
+    }
+
+    int turnIndex = rand() % sideAndPoints.size();
+
     ROS_INFO_STREAM("ACCP " << accessPoint.x << " " <<accessPoint.y);
-    if(!points.empty()){
+
+    SideAndPointEnum sideAndPoint = sideAndPoints[turnIndex];
+
+    switch(sideAndPoint.side){
+    case LEFT:
         if(car->side > 0)
             car->side -= 1;
         else
             car->side = 3;
-        car->point = points[0];
+        car->point = sideAndPoint.point;
         car->setSide(car->side);
-        for(int i = 0 ; i < points.size() ; i++)
-            ROS_INFO_STREAM("POINT LEFT: " << points[i].x << " " << points[i].y);
-        return;
-    }
+        break;
 
-    points = accessPoint.straight;
-    if(!points.empty()){
-        car->point = points[0];
-        for(int i = 0 ; i < points.size() ; i++)
-            ROS_INFO_STREAM("POINT STRAIGHT: " << points[i].x << " " << points[i].y);
-        return;
-    }
+    case STRAIGHT:
+        car->point = sideAndPoint.point;
+        break;
 
-    points = accessPoint.right;
-    if(!points.empty()){
+    case RIGHT:
         if(car->side < 3)
             car->side += 1;
         else
             car->side = 0;
-        car->point = points[0];
+        car->point = sideAndPoint.point;
         car->setSide(car->side);
-        for(int i = 0 ; i < points.size() ; i++)
-            ROS_INFO_STREAM("POINT RIGHT: " << points[i].x << " " << points[i].y);
-        return;
+        break;
+
     }
 
-}
+//    if(!points.empty()){
+//        if(car->side > 0)
+//            car->side -= 1;
+//        else
+//            car->side = 3;
+//        car->point = points[0];
+//        car->setSide(car->side);
+//        for(int i = 0 ; i < points.size() ; i++)
+//            ROS_INFO_STREAM("POINT LEFT: " << points[i].x << " " << points[i].y);
+//        return;
+//    }
 
+//    points = accessPoint.straight;
+//    if(!points.empty()){
+//        car->point = points[0];
+//        for(int i = 0 ; i < points.size() ; i++)
+//            ROS_INFO_STREAM("POINT STRAIGHT: " << points[i].x << " " << points[i].y);
+//        return;
+//    }
+
+//    points = accessPoint.right;
+//    if(!points.empty()){
+//        if(car->side < 3)
+//            car->side += 1;
+//        else
+//            car->side = 0;
+//        car->point = points[0];
+//        car->setSide(car->side);
+//        for(int i = 0 ; i < points.size() ; i++)
+//            ROS_INFO_STREAM("POINT RIGHT: " << points[i].x << " " << points[i].y);
+//        return;
+//    }
+
+}
