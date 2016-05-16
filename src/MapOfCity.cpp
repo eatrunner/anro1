@@ -59,8 +59,8 @@ void MapOfCity::setMaxX(double m)
 void MapOfCity::createRvizMap()
 { ros::NodeHandle n;
     visualization_msgs::Marker marker1;
-    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
-    ros::Rate loop_rate(10000);
+    ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
+    ros::Rate loop_rate(1000);
 
     while(marker_pub.getNumSubscribers() < 1)
     {
@@ -90,6 +90,8 @@ void MapOfCity::createRvizMap()
         marker1.lifetime = ros::Duration();
 
         marker_pub.publish(marker1);
+        loop_rate.sleep();
+
 
     }
 
@@ -149,6 +151,9 @@ void MapOfCity::createRvizMap()
         marker1.lifetime = ros::Duration();
 
         marker_pub.publish(marker1);
+        loop_rate.sleep();
+
+
     }
 
 }

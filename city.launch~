@@ -8,4 +8,6 @@
   </node>
   <node pkg="anro1" name="someName3" type="Model">
   </node>
+  <node pkg="anro1" name="someName4" type="Car">
+  </node>
 </launch>
