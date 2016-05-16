@@ -20,6 +20,7 @@ Car::Car(int id){
   scale = LANE_WIDTH;
   carNear = false;
   carNearId = 0;
+  isOnCrossroad = false;
 }
 
 Car::~Car(){
@@ -71,6 +72,19 @@ void Car::move(){
      point.y += vecY * speed;
      //ROS_INFO_STREAM(point.x << " " << point.y);
   }
+  if(isOnCrossroad){
+      double offsetX = fabs(pointToGo.x - point.x);
+      double offsetY = fabs(pointToGo.y - point.y);
+      double eps = 0.001;
+      ROS_INFO_STREAM(offsetX << " " << offsetY);
+      ROS_INFO_STREAM(vecX << " wektor " << vecY);
+      ROS_INFO_STREAM(pointToGo.x << " point to go " << pointToGo.y);
+      ROS_INFO_STREAM(point.x << " point " << point.y);
+      if(offsetX < eps && offsetY < eps){
+          isOnCrossroad = false;
+          setSide(side); //modyfikacja wektora
+      }
+  }
 }
 double Car::getDistanceX(double x){
     return (x - this->x) * this->vecX;
@@ -90,6 +104,10 @@ anro1::car Car::getMsg(){
 
 void Car::setPointToGo(anro1::point pointToGo){
     this->pointToGo = pointToGo;
+    ROS_INFO_STREAM(pointToGo.x << " point to go " << pointToGo.y);
     vecX = pointToGo.x - point.x;
     vecY = pointToGo.y - point.y;
+    double vecLength = sqrt(vecX * vecX + vecY * vecY);
+    vecX /= vecLength;
+    vecY /= vecLength;
 }

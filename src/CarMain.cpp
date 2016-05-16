@@ -360,20 +360,7 @@ void turnCar(anro1::accessPoint accessPoint){
     SideAndPointEnum sideAndPoint = sideAndPoints[turnIndex];
 
     car->setPointToGo(sideAndPoint.point);
-
-    double offsetX = fabs(car->pointToGo.x - car->point.x);
-    double offsetY = fabs(car->pointToGo.y - car->point.y);
-    ROS_INFO_STREAM(offsetX << " " << offsetY);
-
-    ros::Rate rate(1000);
-
-    while(offsetX >= eps || offsetY >= eps){
-        offsetX = car->pointToGo.x - car->point.x;
-        offsetY = car->pointToGo.y - car->point.y;
-        car->move();
-        carPublisher.publish(car->getMsg());
-        rate.sleep();
-    }
+    car->isOnCrossroad = true;
 
     switch(sideAndPoint.side){
     case LEFT:
@@ -381,12 +368,9 @@ void turnCar(anro1::accessPoint accessPoint){
             car->side -= 1;
         else
             car->side = 3;
-        car->point = sideAndPoint.point;
-        car->setSide(car->side);
         break;
 
     case STRAIGHT:
-        car->point = sideAndPoint.point;
         break;
 
     case RIGHT:
@@ -394,8 +378,6 @@ void turnCar(anro1::accessPoint accessPoint){
             car->side += 1;
         else
             car->side = 0;
-        car->point = sideAndPoint.point;
-        car->setSide(car->side);
         break;
     }
 

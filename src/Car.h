@@ -59,6 +59,7 @@ public:
     double vecY;
     int side;
     anro1::point pointToGo;
+    bool isOnCrossroad;
 
 private:
     double x;
