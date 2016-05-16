@@ -17,7 +17,7 @@ Car::Car(int id){
   this->id = id;
   speed = 0.001;
   moving = false;
-  scale = 0.15;
+  scale = LANE_WIDTH;
   carNear = false;
   carNearId = 0;
 }
@@ -66,11 +66,10 @@ bool Car::checkCoordinateY(double y, double offset){
   return fabs(this->y - y) < offset;
 }
 void Car::move(){
-  //ROS_INFO_STREAM(x << "  " << y);
   if(moving){
      point.x += vecX * speed;
      point.y += vecY * speed;
-     ROS_INFO_STREAM(point.x << " " << point.y);
+     //ROS_INFO_STREAM(point.x << " " << point.y);
   }
 }
 double Car::getDistanceX(double x){

@@ -245,7 +245,7 @@ void checkForTurn(std::vector<anro1::node> nodes){
             double x = fabs(accessPointsWithSide[j].x - car->point.x);
             double y = fabs(accessPointsWithSide[j].y - car->point.y);
             if(x <= eps && y <= eps)
-                turnCar(accessPointsWithSide[i]);
+                turnCar(accessPointsWithSide[j]);
         }
     }
 }
@@ -324,12 +324,16 @@ void turnCar(anro1::accessPoint accessPoint){
             car->side = 3;
         car->point = points[0];
         car->setSide(car->side);
+        for(int i = 0 ; i < points.size() ; i++)
+            ROS_INFO_STREAM("POINT LEFT: " << points[i].x << " " << points[i].y);
         return;
     }
 
     points = accessPoint.straight;
     if(!points.empty()){
         car->point = points[0];
+        for(int i = 0 ; i < points.size() ; i++)
+            ROS_INFO_STREAM("POINT STRAIGHT: " << points[i].x << " " << points[i].y);
         return;
     }
 
@@ -341,6 +345,8 @@ void turnCar(anro1::accessPoint accessPoint){
             car->side = 0;
         car->point = points[0];
         car->setSide(car->side);
+        for(int i = 0 ; i < points.size() ; i++)
+            ROS_INFO_STREAM("POINT RIGHT: " << points[i].x << " " << points[i].y);
         return;
     }
 
