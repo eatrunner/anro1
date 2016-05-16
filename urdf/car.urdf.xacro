@@ -6,6 +6,8 @@
   <xacro:property name="car_length" value="15" />
   <xacro:property name="car_width" value="${car_length/2}" />
   <xacro:property name="car_height" value="${car_length/5}" />
+  <xacro:property name="kickstand_height" value="${car_height*0.5}" />
+  <xacro:property name="car_top_height" value="${car_height/20}" />
   <xacro:property name="windows_height" value="${car_height*0.6}" />
  <xacro:property name= "windows_length" value="${car_length*0.4}" />
   <xacro:property name="wheel_radius" value="${car_height/2}" />
@@ -14,13 +16,19 @@
 
 
   <material name="car_color">
-    <color rgba="0.5 0 .8 1"/>
+    <color rgba="0.5 0.4 .8 1"/>
   </material>
 
   <material name="black">
     <color rgba="0 0 0 1"/>
   </material>
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
 
+  <material name="yellow">
+    <color rgba="1 1 0 1"/>
+  </material>
   <material name="white">
     <color rgba="1 1 1 1"/>
   </material>
@@ -54,7 +62,7 @@
   <link name="front_window">
     <visual>
       <geometry>
-        <box size="${windows_length/2} ${car_width-0.03} ${windows_height}"/>
+        <box size="${windows_length/2} ${car_width-car_width/30} ${windows_height}"/>
       </geometry>
       <material name="window"/>
     </visual>
@@ -62,13 +70,13 @@
   <joint name="front_window_to_windows" type="fixed">
     <parent link="windows"/>
     <child link="front_window"/>
-    <origin xyz="${windows_length/2} 0 -${windows_height/1.9}" rpy="0 ${pi/4} 0"/>
+    <origin xyz="${windows_length/2} 0 -${windows_height/1.9}" rpy="0 ${pi/3} 0"/>
   </joint>
 
   <link name="car_top">
     <visual>
       <geometry>
-        <box size="${windows_length} ${car_width} 0.05"/>
+        <box size="${windows_length} ${car_width} ${car_top_height}"/>
       </geometry>
       <material name="car_color"/>
     </visual>
@@ -76,7 +84,7 @@
   <joint name="top_to_body" type="fixed">
     <parent link="windows"/>
     <child link="car_top"/>
-    <origin xyz="0 0 ${(windows_height)/2}"/>
+    <origin xyz="0 0 ${(windows_height)/2 + car_top_height/2}"/>
   </joint>
 
  <xacro:macro name="wheel" params="side_fb side_rl factor_fb factor_rl">
@@ -98,10 +106,89 @@
     </joint>
  </xacro:macro>
 
+
+ <xacro:macro name="front_light" params="side_rl factor_rl">
+    <link name="${side_rl}_front_light">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="${wheel_radius/2}" length="${wheel_width/5}"/>
+        </geometry>
+        <material name="yellow"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </visual>
+    </link>
+    <joint name="${side_rl}_front_light_joint" type="fixed">
+      <parent link="car_body"/>
+      <child link="${side_rl}_front_light"/>
+      <origin xyz="${car_length/2} ${factor_rl*car_width/3} 0" rpy="0 ${pi/2} 0"/>
+    </joint>
+ </xacro:macro>
+
+ <xacro:macro name="back_light" params="side_rl factor_rl">
+    <link name="${side_rl}_back_light">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${wheel_radius/2} ${wheel_radius/2} ${wheel_radius/2} "/> 
+        </geometry>
+        <material name="red"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </visual>
+    </link>
+    <joint name="${side_rl}_back_light_joint" type="fixed">
+      <parent link="car_body"/>
+      <child link="${side_rl}_back_light"/>
+      <origin xyz="-${car_length/2} ${factor_rl*car_width/3} 0" rpy="0 ${pi/2} 0"/>
+    </joint>
+ </xacro:macro>
+
+ <xacro:macro name="spoiler_kickstand" params="side_rl factor_rl">
+    <link name="${side_rl}_kickstand">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${car_top_height*3} ${car_top_height} ${kickstand_height} "/> 
+        </geometry>
+        <material name="black"/>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </visual>
+    </link>
+    <joint name="${side_rl}_kickstand_joint" type="fixed">
+      <parent link="car_body"/>
+      <child link="${side_rl}_kickstand"/>
+      <origin xyz="-${car_length/2.2} ${factor_rl*car_width/2.5} ${car_height/2 + kickstand_height/2}" rpy="0 0 0"/>
+    </joint>
+ </xacro:macro>
+
+  <link name="spoiler">
+    <visual>
+      <geometry>
+        <box size="${windows_length/10} ${car_width} ${car_top_height}"/>
+      </geometry>
+      <material name="car_color"/>
+ <origin xyz="0 0 0" rpy="0 ${pi/12} 0" />
+    </visual>
+  </link>
+  <joint name="spoiler_to_body" type="fixed">
+    <parent link="car_body"/>
+    <child link="spoiler"/>
+    <origin xyz="-${car_length/2.2} 0 ${car_height/2 + kickstand_height}"/>
+  </joint>
+
+
  <xacro:wheel side_fb="front" side_rl="right" factor_fb= "1" factor_rl="-1"/>
  <xacro:wheel side_fb="front" side_rl="left" factor_fb="1" factor_rl="1"/>
  <xacro:wheel side_fb="rear" side_rl="right" factor_fb="-1" factor_rl="-1"/>
  <xacro:wheel side_fb="rear" side_rl="left" factor_fb="-1" factor_rl="1"/>
 
+ <xacro:front_light  side_rl="right"  factor_rl="-1"/>
+ <xacro:front_light  side_rl="left"  factor_rl="1"/>
+
+ <xacro:back_light  side_rl="right"  factor_rl="-1"/>
+ <xacro:back_light  side_rl="left"  factor_rl="1"/>
+
+ <xacro:spoiler_kickstand  side_rl="right"  factor_rl="-1"/>
+ <xacro:spoiler_kickstand  side_rl="left"  factor_rl="1"/>
 </robot>
 
