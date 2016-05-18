@@ -1020,7 +1020,7 @@ void process2(const anro1::mapRouteMessage::ConstPtr& msg)
 //ready2=true;
 int main(int argc, char **argv)
 {
-     vector<InSide> insides=createPoints(1,0,0,2);
+    /* vector<InSide> insides=createPoints(1,0,0,2);
 
 
      srand(time(NULL));
@@ -1039,9 +1039,9 @@ int main(int argc, char **argv)
           c.incrementTime();
         //
     }*/
-    }
+    
 
-   /* ros::init(argc, argv, "Nodes");
+    ros::init(argc, argv, "Nodes");
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::nodeMessage>("nodes_info", 10);//utworzenie kanalu do nadawania
     ros::Subscriber lightsSubscriber = n.subscribe("map_info_nodes", 1000, process);
@@ -1087,6 +1087,6 @@ int main(int argc, char **argv)
         // anro1::routemsg routemsg = giveroutes(routes);
         //route_chatter.publish(routemsg);
         loop_rate.sleep();
-    }*/
+    }
     return 0;
 }
