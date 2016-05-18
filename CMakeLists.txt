@@ -38,6 +38,7 @@ catkin_package(
   LIBRARIES anro1
   CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
   DEPENDS system_lib
+  EXPORTED_TARGETS anro1_generate_messages_cpp
 )
 
 
@@ -60,10 +61,13 @@ add_dependencies(listener anro1_generate_messages_cpp)
 
 add_executable(Car src/Car.cpp)
 target_link_libraries(Car ${catkin_LIBRARIES})
+add_dependencies(Car anro1_generate_messages_cpp)
 
 add_executable(Model src/Model.cpp)
 target_link_libraries(Model ${catkin_LIBRARIES})
+add_dependencies(Model anro1_generate_messages_cpp)
 
 add_executable(turnsTalker src/turnsTalker.cpp)
 target_link_libraries(turnsTalker ${catkin_LIBRARIES})
+add_dependencies(turnsTalker anro1_generate_messages_cpp)
 
