@@ -31,10 +31,12 @@ void nodesCallback(const anro1::nodeMessage::ConstPtr &msg);
 SideAndPoint* findSpawn(anro1::node);
 std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node);
 DistanceAndPoint* blindWay(anro1::node node);
+void setStartPoint(std::vector<anro1::node>);
 
 
 Car *car;
 bool isFirst = true;
+bool initiated = false;
 
 ros::Publisher carPublisher;
 int main(int argc, char** argv){
@@ -142,110 +144,123 @@ int main(int argc, char** argv){
 //}
 
 void nodesCallback(const anro1::nodeMessage::ConstPtr &msg){
-    static bool flag = false;
-    static bool flag2 = false;
-    if(!flag || !flag2){
-        DistanceAndPoint *dap = NULL;
-        std::vector<anro1::node> nodes = msg->nodes;
-        for(int i = 0 ; i < nodes.size() ; i++){
-            anro1::node node = nodes[i];
-            if(!flag){
-                SideAndPoint* spawnPoint = findSpawn(node);
-                if(spawnPoint){
-                    ROS_INFO("Spawn point found!");
-                    car->point = spawnPoint->point;
-                    car->side = spawnPoint->side;
-                    delete spawnPoint;
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag){
-                if(!dap)
-                    dap = blindWay(node);
-                else{
-                    DistanceAndPoint* temp = blindWay(node);
-                    if(temp && temp->distance < dap->distance){
-                        delete dap;
-                        dap = temp;
-                    }
-                    else
-                        delete temp;
-                }
-            }
-            std::vector<anro1::accessPoint> accessPoints = node.n;
-            ROS_INFO_STREAM("-------" << i << "----------");
-            for(int j = 0 ; j < accessPoints.size() ; j++){
-                anro1::accessPoint accessPoint = accessPoints[j];
-                ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node n");
-                std::vector<anro1::point> points = accessPoint.straight;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
-                points = accessPoint.left;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
-                points = accessPoint.right;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
+    // static bool flag = false;
+    // static bool flag2 = false;
+    // if(!flag || !flag2){
+    //     DistanceAndPoint *dap = NULL;
+    //     std::vector<anro1::node> nodes = msg->nodes;
+    //     for(int i = 0 ; i < nodes.size() ; i++){
+    //         anro1::node node = nodes[i];
+    //         if(!flag){
+    //             SideAndPoint* spawnPoint = findSpawn(node);
+    //             if(spawnPoint){
+    //                 ROS_INFO("Spawn point found!");
+    //                 car->point = spawnPoint->point;
+    //                 car->side = spawnPoint->side;
+    //                 delete spawnPoint;
+    //                 flag = true;
+    //                 break;
+    //             }
+    //         }
+    //         if(flag){
+    //             if(!dap)
+    //                 dap = blindWay(node);
+    //             else{
+    //                 DistanceAndPoint* temp = blindWay(node);
+    //                 if(temp && temp->distance < dap->distance){
+    //                     delete dap;
+    //                     dap = temp;
+    //                 }
+    //                 else
+    //                     delete temp;
+    //             }
+    //         }
+    //         std::vector<anro1::accessPoint> accessPoints = node.n;
+    //         ROS_INFO_STREAM("-------" << i << "----------");
+    //         for(int j = 0 ; j < accessPoints.size() ; j++){
+    //             anro1::accessPoint accessPoint = accessPoints[j];
+    //             ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node n");
+    //             std::vector<anro1::point> points = accessPoint.straight;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
+    //             points = accessPoint.left;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
+    //             points = accessPoint.right;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
 
-            }
-            accessPoints = node.e;
-            for(int j = 0 ; j < accessPoints.size() ; j++){
-                anro1::accessPoint accessPoint = accessPoints[j];
-                ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node e");
-                std::vector<anro1::point> points = accessPoint.straight;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
-                points = accessPoint.left;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
-                points = accessPoint.right;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
+    //         }
+    //         accessPoints = node.e;
+    //         for(int j = 0 ; j < accessPoints.size() ; j++){
+    //             anro1::accessPoint accessPoint = accessPoints[j];
+    //             ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node e");
+    //             std::vector<anro1::point> points = accessPoint.straight;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
+    //             points = accessPoint.left;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
+    //             points = accessPoint.right;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
 
-            }
-            accessPoints = node.s;
-            for(int j = 0 ; j < accessPoints.size() ; j++){
-                anro1::accessPoint accessPoint = accessPoints[j];
-                ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point s");
-                std::vector<anro1::point> points = accessPoint.straight;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
-                points = accessPoint.left;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
-                points = accessPoint.right;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
-            }
-            accessPoints = node.w;
-            for(int j = 0 ; j < accessPoints.size() ; j++){
-                anro1::accessPoint accessPoint = accessPoints[j];
-                ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node w");
-                std::vector<anro1::point> points = accessPoint.straight;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
-                points = accessPoint.left;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
-                points = accessPoint.right;
-                for(int l = 0 ; l < points.size() ; l++)
-                    ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
-            }
-        }
-        if(dap){
-            //ROS_INFO_STREAM("DAP " << dap->distance << " POINT TO GO " << dap->point.x << " " << dap->point.y);
-            car->point.y = nodes[1].w[0].y;
+    //         }
+    //         accessPoints = node.s;
+    //         for(int j = 0 ; j < accessPoints.size() ; j++){
+    //             anro1::accessPoint accessPoint = accessPoints[j];
+    //             ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point s");
+    //             std::vector<anro1::point> points = accessPoint.straight;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
+    //             points = accessPoint.left;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
+    //             points = accessPoint.right;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
+    //         }
+    //         accessPoints = node.w;
+    //         for(int j = 0 ; j < accessPoints.size() ; j++){
+    //             anro1::accessPoint accessPoint = accessPoints[j];
+    //             ROS_INFO_STREAM(accessPoint.x << " " << accessPoint.y << "access point node w");
+    //             std::vector<anro1::point> points = accessPoint.straight;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point straight");
+    //             points = accessPoint.left;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point left");
+    //             points = accessPoint.right;
+    //             for(int l = 0 ; l < points.size() ; l++)
+    //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
+    //         }
+    //     }
+    //     if(dap){
+    //         //ROS_INFO_STREAM("DAP " << dap->distance << " POINT TO GO " << dap->point.x << " " << dap->point.y);
+    //         // car->point.y = nodes[1].w[0].y;
+    //         setStartPoint(msg->nodes);
+    //         ROS_INFO_STREAM("DAP " << " POINT TO GO " << car->point.x << " " << car->point.y);
+    //         flag2 = true;
+    //         checkForTurn(msg->nodes);
+    //         car->setMoving(true);
+    //     }
+    //     return;
+    // }
+    if (!initiated) {
+            setStartPoint(msg->nodes);
             ROS_INFO_STREAM("DAP " << " POINT TO GO " << car->point.x << " " << car->point.y);
-            flag2 = true;
-            car->setSide(3);
+            //flag2 = true;
+             checkForTurn(msg->nodes);
+             ROS_INFO_STREAM("GOT HERE");
             car->setMoving(true);
-        }
-        return;
+            initiated = true;
     }
-    checkForTurn(msg->nodes);
-    car->move();
-    carPublisher.publish(car-> getMsg());
+
+    if (initiated) {
+        checkForTurn(msg->nodes);
+        car->move();
+        carPublisher.publish(car-> getMsg());
+    }
 }
 
 void checkForTurn(std::vector<anro1::node> nodes){
@@ -381,4 +396,40 @@ void turnCar(anro1::accessPoint accessPoint){
         break;
     }
 
+}
+
+void setStartPoint(std::vector<anro1::node> nodes) {
+    int randomNode = rand() % nodes.size(); //losuje node
+
+    std::vector<anro1::accessPoint> aps; //wektor WSZYSTKICH wjazdow do node
+    aps.insert(aps.end(), nodes[randomNode].n.begin(), nodes[randomNode].n.end());
+    aps.insert(aps.end(), nodes[randomNode].e.begin(), nodes[randomNode].e.end());
+    aps.insert(aps.end(), nodes[randomNode].w.begin(), nodes[randomNode].w.end());
+    aps.insert(aps.end(), nodes[randomNode].s.begin(), nodes[randomNode].s.end());
+
+    int randomAP = rand() % aps.size(); //losuje wjazd
+    car->point.x = aps[randomAP].x;
+    car->point.y = aps[randomAP].y;
+
+    //ustawia side
+    if(randomAP < nodes[randomNode].n.size()) {
+        //north
+        car->setSide(0);
+        return;
+    }
+    if(randomAP < nodes[randomNode].n.size() + nodes[randomNode].e.size()) {
+        //east
+        car->setSide(1);
+        return;
+    }
+    if(randomAP < nodes[randomNode].n.size() + nodes[randomNode].e.size() + nodes[randomNode].w.size()) {
+        //west
+        car->setSide(3);
+        return;
+    }
+    if(randomAP < nodes[randomNode].n.size() + nodes[randomNode].e.size() + nodes[randomNode].w.size() + nodes[randomNode].s.size()) {
+        //south
+        car->setSide(2);
+        return;
+    }
 }
