@@ -23,6 +23,10 @@
 #include <queue> 
 
 using namespace std;
+class MyException{
+
+};
+
 class Point
 {
 public:     double x, y;
@@ -95,6 +99,20 @@ public:     Entry(double ix, double iy) : Point(ix,iy),light(false)
     bool light;
 }
 ;
+class ModCounter{
+public:
+    int pos;
+    int mod;
+    ModCounter(int modulo){
+        pos=0;
+        mod=modulo;
+    }
+    void operator++(){
+        pos++;
+        pos=pos%mod;
+    }
+};
+
 class Side
 {
 public:     vector<Entry> entries;
@@ -300,7 +318,7 @@ public:     Side sides[4];
             if(sides[i].entries.size()==0)
                 continue;
             int outsSize = insides[rightIndex].outs.size();
-            //jesli naprzeciw 1 pas to break
+
             int breakEarlier = 0;
             int opposideIndex = i + 2;
             opposideIndex %= 4;
@@ -350,23 +368,32 @@ public:     Side sides[4];
         {
             int rightIndex = i + 1;
             rightIndex %= 4;
+            int leftIndex=i+3;
+            leftIndex%=4;
+            int opposideIndex=i+2;
+            opposideIndex%=4;
             for (int k = sides[i].entries.size()-1; k >= 0; k--)
             {
                 Entry* thisentry = &(sides[i].entries[k]);
                 if (thisentry->left.size() == 0 && thisentry->straight.size() == 0 && thisentry->right.size() == 0)
                 {
                     Point p;
-                    if(insides[rightIndex].outs.size()==0){//TODO
-                        int leftIndex=i+3;
-
-                        leftIndex %= 4;
-                        if(insides[leftIndex].outs.size()==0){
-                            cout<<"tak nie powinno byuc"<<endl;
+                    if(insides[opposideIndex].ins.size()==0&&insides[opposideIndex].outs.size()){
+                        if(insides[rightIndex].outs.size()!=0){
+                            p=insides[rightIndex].outs[insides[rightIndex].outs.size()-1];
+                            thisentry->right.push_back(p);
                             continue;
                         }
-                        p=insides[leftIndex].outs[insides[leftIndex].outs.size()-1];
-                        //thisentry->
-                        continue;
+                        if(insides[leftIndex].outs.size()!=0){
+                            p=insides[leftIndex].outs[insides[leftIndex].outs.size()-1];
+                            thisentry->left.push_back(p);
+                            continue;
+                        }
+                    }
+
+
+                    if(insides[rightIndex].outs.size()==0){//TODO
+                       continue;
                     }
 
                     if (insides[rightIndex].outs.size() >= k+1)
@@ -424,12 +451,6 @@ public:     Side sides[4];
     }
     bool goToState(LightState state, int side)
     {
-        /*for (int i = 0; i < sides[side].entries.size(); i++)
-        {
-            sides[side].entries[i].light = !sides[side].entries[i].light;
-        }*/
-
-        bool again=true;
         if (sides[side].entries.size()==0){
             return true;
         }
@@ -452,6 +473,7 @@ public:     Side sides[4];
             timeToChange = 1;
             break;
         }
+        return false;
     }
     anro1::node giveMessage()
     {
@@ -662,8 +684,15 @@ public:     Side sides[4];
         //side++;
         //side%=4;
         // }
-        goToState(lightstate[state], side);
-        state++;
+        if(goToState(lightstate[state], side)){
+            state = 0;
+            side++;
+            side = side % 4;
+        }
+        else{
+            state++;
+        }
+
         if (state>=lightstate.size())
         {
             state = 0;
@@ -681,11 +710,7 @@ public:     Side sides[4];
         time++;
         if (time > timeToChange)
         {
-            /*for(int i=0;i<4;i++){
-                for(int j=0;j<sides[i].entries.size();j++){
-                    sides[i].entries[j].light=!sides[i].entries[j].light;
-                }
-            }*/
+
             time = 0;
             changelights();
         }
