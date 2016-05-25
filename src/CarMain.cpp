@@ -28,6 +28,7 @@ double eps = 0.001;
 void turnCar(anro1::accessPoint accessPoint);
 void checkForTurn(std::vector<anro1::node> nodes);
 void nodesCallback(const anro1::nodeMessage::ConstPtr &msg);
+void carsCallback(const anro1::car& msg);
 SideAndPoint* findSpawn(anro1::node);
 std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node);
 DistanceAndPoint* blindWay(anro1::node node);
@@ -46,6 +47,7 @@ int main(int argc, char** argv){
   ros::init(argc, argv, std::string(1,c));
   ros::NodeHandle nodeHandle;
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
+  ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
   ros::Rate loop_rate(2000);
 
@@ -338,6 +340,33 @@ std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node node)
     accessPoints.push_back(node.s);
     accessPoints.push_back(node.w);
     return accessPoints;
+}
+
+void carsCallback(const anro1::car& msg){
+	static int foundCarId = -1;
+	
+	if ( car->getId() == msg.id)
+		return;
+		
+	if ( (fabs(car -> getX() - msg.x) < 2)  && fabs(car -> getY() == msg.y) && (car -> getVecX() > 0) )
+	{
+		car->setMoving(false);
+		foundCarId = msg.id;
+		return;
+	}
+	
+	if ( (fabs(car -> getY() - msg.y) < 2)  && fabs(car -> getX() == msg.x) && (car -> getVecY() > 0))
+	{
+		car->setMoving(false);
+		foundCarId = msg.id;
+		return;
+	}
+	
+	if ( msg.id == foundCarId)
+		{
+			car -> setMoving(true);
+			foundCarId = -1;
+		}
 }
 
 void turnCar(anro1::accessPoint accessPoint){
