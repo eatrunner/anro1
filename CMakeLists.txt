@@ -12,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   genmsg
+  sensor_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -239,3 +241,4 @@ add_executable(Car src/CarMain.cpp)
 target_link_libraries(Car ${catkin_LIBRARIES} CarClass)
 add_dependencies(Car anro1_generate_messages_cpp)
 add_library(CarClass src/Car.cpp)
+

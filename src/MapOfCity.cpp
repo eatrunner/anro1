@@ -60,7 +60,7 @@ void MapOfCity::createRvizMap()
 { ros::NodeHandle n;
     visualization_msgs::Marker marker1;
     ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
-    ros::Rate loop_rate(1000);
+    ros::Rate loop_rate(100);
 
     while(marker_pub.getNumSubscribers() < 1)
     {

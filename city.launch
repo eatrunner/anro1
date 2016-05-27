@@ -1,11 +1,15 @@
 <launch>
+<param name="robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro" />
+ 
+  <node pkg="anro1" name="someName1" type="MapOfCity"/>
+  
+  <node pkg="anro1" name="someName2" type="nodesAndRoutes"/>
+  <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
 
-  <node pkg="rviz" name="someName0" type="rviz">
-  </node>
-  <node pkg="anro1" name="someName1" type="MapOfCity">
-  </node>
-  <node pkg="anro1" name="someName2" type="nodesAndRoutes">
-  </node>
-  <node pkg="anro1" name="someName3" type="Model">
-  </node>
+
+  <node pkg="rviz" name="someName0" type="rviz"/>
+   <node pkg="anro1" name="someName3" type="Model"/>
+  <node pkg="anro1" name="someName333" type="Car"/>
+
+
 </launch>
