@@ -50,7 +50,7 @@ modelrviz.setPub(rviz_publisher);
 }
 
 void visualizeCar(const anro1::car& msg)
-{   ROS_INFO("Rendering car, id: [%d]", msg.id);
+{   ROS_INFO_STREAM("Rendering car, id:" << msg.id);
 
     visualization_msgs::Marker marker1;
     uint32_t shape = visualization_msgs::Marker::CUBE;
