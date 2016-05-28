@@ -485,6 +485,7 @@ public:     Side sides[4];
                 anro1::accessPoint ap;
                 ap.x = sides[i].entries[j].x;
                 ap.y = sides[i].entries[j].y;
+		ap.green = sides[i].entries[j].light;
                 //ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
