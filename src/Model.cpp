@@ -11,6 +11,7 @@
 #include "anro1/lightsVector.h"
 #include "anro1/lightsmsg.h"
 #include "anro1/point.h"
+#include "Constants.h"
 #include <sstream>
 void visualizeCar(const anro1::car& msg);
 void visualizeLights(const anro1::lightsmsg& msg);
@@ -67,10 +68,11 @@ int main(int argc, char **argv)
   modelrviz.setJointPub(joint_pub);
 
 
-  ros::Rate loop_rate(100);
+  ros::Rate loop_rate(RATE*1000);
   while(ros::ok())
   {
     ros::spinOnce();
+
     loop_rate.sleep();
   }
 
@@ -78,6 +80,7 @@ int main(int argc, char **argv)
 }
 
 void visualizeCar(const anro1::car& msg)
+
 { std::string name = "aaa/123_";
   geometry_msgs::TransformStamped odom_trans;
   sensor_msgs::JointState joint_state;
@@ -117,8 +120,6 @@ void visualizeCar(const anro1::car& msg)
 
 
 
-
-
   /*ROS_INFO("Rendering car, id: [%d]", msg.id);
 
          visualization_msgs::Marker marker1;
@@ -150,50 +151,49 @@ void visualizeCar(const anro1::car& msg)
 
 void visualizeLights(const anro1::lightsmsg& msg)
 {
-  int i=0;
-  int scale = 1;
-  ROS_INFO("LIGHTS");
-  ros::Rate rate(1000);
-  for(i=0;i<msg.lights.size();i++)
-  {
-    anro1::light light = msg.lights[i];
-    ROS_INFO("Rendering lights:[%d]",light.green);
-
-    visualization_msgs::Marker marker1;
-    uint32_t shape = visualization_msgs::Marker::SPHERE;
-    marker1.header.frame_id = "/my_frame";
-    marker1.header.stamp = ros::Time::now();
-    marker1.type = shape;
-    marker1.ns = "Model1";
-    marker1.id = i;
-    marker1.action = visualization_msgs::Marker::ADD;
-    marker1.pose.position.x = light.cords.x;
-    marker1.pose.position.y = light.cords.y;
-
-    marker1.pose.position.z = 3;
-    marker1.pose.orientation.x = 0.0;
-    marker1.pose.orientation.y = 0.0;
-    marker1.pose.orientation.z = 0.0;
-    marker1.pose.orientation.w = 1.0;
-    marker1.scale.x = scale;
-    marker1.scale.y = scale;
-    marker1.scale.z = scale;
-    marker1.color.r = 0.0f;
-    marker1.color.g = 0.0f;
-    marker1.color.b = 0.0f;
-    if(light.green)
+    int i=0;
+    int scale = 1;
+    for(i=0;i<msg.lights.size();i++)
     {
-      marker1.color.g = 1.0f;
+        anro1::light light = msg.lights[i];
+        ROS_INFO("Rendering lights:[%d]",light.green);
+
+            visualization_msgs::Marker marker1;
+            uint32_t shape = visualization_msgs::Marker::SPHERE;
+            marker1.header.frame_id = "/my_frame";
+            marker1.header.stamp = ros::Time::now();
+            marker1.type = shape;
+            marker1.ns = "Model1";
+            marker1.id = i;
+            marker1.action = visualization_msgs::Marker::ADD;
+            marker1.pose.position.x = light.cords.x;
+            marker1.pose.position.y = light.cords.y;
+
+            marker1.pose.position.z = 3;
+            marker1.pose.orientation.x = 0.0;
+            marker1.pose.orientation.y = 0.0;
+            marker1.pose.orientation.z = 0.0;
+            marker1.pose.orientation.w = 1.0;
+            marker1.scale.x = scale;
+            marker1.scale.y = scale;
+            marker1.scale.z = scale;
+            marker1.color.r = 0.0f;
+            marker1.color.g = 0.0f;
+            marker1.color.b = 0.0f;
+            if(light.green)
+            {
+
+                    marker1.color.g = 1.0f;
+            }
+            else
+            {<<<<<<< HEAD
+                    marker1.color.r = 1.0f;
+            }
+            marker1.color.a = 1.0;
+            marker1.lifetime = ros::Duration();
+
+            modelrviz.getPub().publish(marker1);
+
     }
-    else
-    {
-      marker1.color.r = 1.0f;
-    }
-    marker1.color.a = 1.0;
-    marker1.lifetime = ros::Duration();
 
-    modelrviz.getPub().publish(marker1);
-
-
-  }
 }

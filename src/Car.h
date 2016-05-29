@@ -27,6 +27,7 @@ public:
     bool checkCoordinateY(double y);
     double getDistanceX(double x);
     double getDistanceY(double y);
+    double getOrientation();
     anro1::car getMsg();
 
     void setPointToGo(anro1::point);

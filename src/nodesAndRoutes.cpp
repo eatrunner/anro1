@@ -14,6 +14,7 @@
 #include "anro1/route.h" 
 #include "anro1/routemsg.h"
 #include "anro1/side.h" 
+#include "Constants.h"
 #include <iostream> 
 #include <stdlib.h> 
 #include <vector> 
@@ -485,6 +486,7 @@ public:     Side sides[4];
                 anro1::accessPoint ap;
                 ap.x = sides[i].entries[j].x;
                 ap.y = sides[i].entries[j].y;
+		ap.green = sides[i].entries[j].light;
                 //ROS_INFO("WJAZD w msg [%d][%d]",(int)ap.x,(int)ap.y);
                 for (int k = 0; k < sides[i].entries[j].straight.size();k++)
                 {
@@ -1070,10 +1072,9 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::Publisher chatter_pub = n.advertise<anro1::nodeMessage>("nodes_info", 10);//utworzenie kanalu do nadawania
     ros::Subscriber lightsSubscriber = n.subscribe("map_info_nodes", 1000, process);
-    ros::Rate rate(1000);
     ros::Publisher route_chatter = n.advertise<anro1::routemsg>("routes_info", 1);//utworzenie kanalu do nadawania     //ros::Subscriber sub = n.subscribe("map_crossroad_info", 1, process);//subskrypcja kanalu z informacjami     //ros::Subscriber sub2 = n.subscribe("map_route_info", 1, process2);
     ros::Subscriber routesSubscriber = n.subscribe("map_info_routes", 1000, process2);
-    ros::Rate loop_rate(1000);
+    ros::Rate loop_rate(RATE);
     ros::Publisher light_chatter = n.advertise<anro1::lightsmsg>("lights_info", 100);
     time_t lasttick, thistick;
     while (ros::ok())

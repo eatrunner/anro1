@@ -1,5 +1,6 @@
 #include "Car.h"
 #include "boost/assign/std/vector.hpp"
+#include "anro1/lightsmsg.h"
 
 class SideAndPoint{
 public:
@@ -27,7 +28,7 @@ double eps = 0.001;
 
 void turnCar(anro1::accessPoint accessPoint);
 void checkForTurn(std::vector<anro1::node> nodes);
-void nodesCallback(const anro1::nodeMessage::ConstPtr &msg);
+void nodesCallback(const anro1::nodeMessage::ConstPtr& msg);
 void carsCallback(const anro1::car& msg);
 SideAndPoint* findSpawn(anro1::node);
 std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node);
@@ -49,16 +50,11 @@ int main(int argc, char** argv){
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
   ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
-  ros::Rate loop_rate(2000);
-
-//  ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
-//  ros::Subscriber turnsSubscriber = nodeHandle.subscribe("turns_info", 1000, turnsCallback);
-//  ros::Subscriber lightsSubscriber = nodeHandle.subscribe("lights_info", 1000, lightsCallback);
+  ros::Rate loop_rate(RATE);
   srand(time(NULL));
 
   while(ros::ok()){
       ros::spinOnce();
-      //car->move();
       loop_rate.sleep();
   }
 
@@ -237,17 +233,6 @@ void nodesCallback(const anro1::nodeMessage::ConstPtr &msg){
     //                 ROS_INFO_STREAM(points[l].x << "  " << points[l].y << "  point right");
     //         }
     //     }
-    //     if(dap){
-    //         //ROS_INFO_STREAM("DAP " << dap->distance << " POINT TO GO " << dap->point.x << " " << dap->point.y);
-    //         // car->point.y = nodes[1].w[0].y;
-    //         setStartPoint(msg->nodes);
-    //         ROS_INFO_STREAM("DAP " << " POINT TO GO " << car->point.x << " " << car->point.y);
-    //         flag2 = true;
-    //         checkForTurn(msg->nodes);
-    //         car->setMoving(true);
-    //     }
-    //     return;
-    // }
     if (!initiated) {
             setStartPoint(msg->nodes);
             ROS_INFO_STREAM("DAP " << " POINT TO GO " << car->point.x << " " << car->point.y);
@@ -272,8 +257,15 @@ void checkForTurn(std::vector<anro1::node> nodes){
         for(int j = 0 ; j < accessPointsWithSide.size() ; ++j){
             double x = fabs(accessPointsWithSide[j].x - car->point.x);
             double y = fabs(accessPointsWithSide[j].y - car->point.y);
-            if(x <= eps && y <= eps)
-                turnCar(accessPointsWithSide[j]);
+            if(x <= eps && y <= eps){ //znaleziono accesspoint
+                if(accessPointsWithSide[j].green){
+                    turnCar(accessPointsWithSide[j]);
+                    car->setMoving(true);
+                }
+                else{
+                    car->setMoving(false);
+                }
+            }
         }
     }
 }
