@@ -76,10 +76,6 @@ void Car::move(){
       double offsetX = fabs(pointToGo.x - point.x);
       double offsetY = fabs(pointToGo.y - point.y);
       double eps = 0.001;
-      ROS_INFO_STREAM(offsetX << " " << offsetY);
-      ROS_INFO_STREAM(vecX << " wektor " << vecY);
-      ROS_INFO_STREAM(pointToGo.x << " point to go " << pointToGo.y);
-      ROS_INFO_STREAM(point.x << " point " << point.y);
       if(offsetX < eps && offsetY < eps){
           isOnCrossroad = false;
           setSide(side); //modyfikacja wektora
@@ -108,7 +104,7 @@ double Car::getOrientation(){
     double orientVecY = 0;
     double num = vecX * orientVecX + vecY * orientVecY; //licznik wyrazenia
     double den = sqrt(vecX*vecX + vecY*vecY) * sqrt(orientVecX * orientVecX + orientVecY * orientVecY);
-    ROS_INFO_STREAM("COS = " << acos(num/den));
+    //ROS_INFO_STREAM("COS = " << acos(num/den));
     return acos(num/den);
 }
 

@@ -9,6 +9,7 @@
 #include "anro1/lightsVector.h"
 #include "anro1/lightsmsg.h"
 #include "anro1/point.h"
+#include "Constants.h"
 #include <sstream>
 void visualizeCar(const anro1::car& msg);
 void visualizeLights(const anro1::lightsmsg& msg);
@@ -40,7 +41,7 @@ int main(int argc, char **argv)
   ros::Subscriber lights_subscriber= n.subscribe("lights_info", 100, visualizeLights);
 
 modelrviz.setPub(rviz_publisher);
-  ros::Rate loop_rate(100);
+  ros::Rate loop_rate(RATE*1000);
     while(ros::ok()){
   ros::spinOnce();
     loop_rate.sleep();
@@ -83,8 +84,6 @@ void visualizeLights(const anro1::lightsmsg& msg)
 {
     int i=0;
     int scale = 1;
-    ROS_INFO("LIGHTS");
-    ros::Rate rate(1000);
     for(i=0;i<msg.lights.size();i++)
     {
         anro1::light light = msg.lights[i];
@@ -101,7 +100,7 @@ void visualizeLights(const anro1::lightsmsg& msg)
             marker1.pose.position.x = light.cords.x;
             marker1.pose.position.y = light.cords.y;
 
-            marker1.pose.position.z = 15;
+            marker1.pose.position.z = 3;
             marker1.pose.orientation.x = 0.0;
             marker1.pose.orientation.y = 0.0;
             marker1.pose.orientation.z = 0.0;
@@ -126,7 +125,6 @@ void visualizeLights(const anro1::lightsmsg& msg)
             marker1.lifetime = ros::Duration();
 
             modelrviz.getPub().publish(marker1);
-
 
     }
 }

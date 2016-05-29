@@ -50,7 +50,7 @@ int main(int argc, char** argv){
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
   ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
-  ros::Rate loop_rate(2000);
+  ros::Rate loop_rate(RATE);
   srand(time(NULL));
 
   while(ros::ok()){
@@ -258,16 +258,13 @@ void checkForTurn(std::vector<anro1::node> nodes){
             double x = fabs(accessPointsWithSide[j].x - car->point.x);
             double y = fabs(accessPointsWithSide[j].y - car->point.y);
             if(x <= eps && y <= eps){ //znaleziono accesspoint
-//                if(accessPointsWithSide[j].green){
-//                    turnCar(accessPointsWithSide[j]);
-//                    car->setMoving(true);
-//                    ROS_INFO("GREEN");
-//                }
-//                else{
-//                    car->setMoving(false);
-//                    ROS_INFO("REDDD");
-//                }
-                turnCar(accessPointsWithSide[j]);
+                if(accessPointsWithSide[j].green){
+                    turnCar(accessPointsWithSide[j]);
+                    car->setMoving(true);
+                }
+                else{
+                    car->setMoving(false);
+                }
             }
         }
     }
