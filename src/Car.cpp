@@ -13,14 +13,15 @@ bool isInIterval(double lower, double higher, double value){
     return value >= lower && value <= higher;
 }
 
-Car::Car(int id){
-  this->id = id;
-  speed = 0.001;
-  moving = false;
-  scale = LANE_WIDTH;
-  carNear = false;
-  carNearId = 0;
-  isOnCrossroad = false;
+Car::Car(int id, double eps, double speed){
+    this->id = id;
+    this->speed = speed;
+    this->eps = eps;
+    moving = false;
+    scale = LANE_WIDTH;
+    carNear = false;
+    carNearId = 0;
+    isOnCrossroad = false;
 }
 
 Car::~Car(){
@@ -50,37 +51,36 @@ void Car::setSide(int side){
 }
 
 bool Car::checkCoordinates(double x, double y){
-  double xOffset = fabs(this->x - x);
-  double yOffset = fabs(this->y - y);
-  return xOffset < speed/2 && yOffset < speed/2;
+    double xOffset = fabs(this->x - x);
+    double yOffset = fabs(this->y - y);
+    return xOffset < speed/2 && yOffset < speed/2;
 }
 bool Car::checkCoordinateX(double x){
-  return fabs(this->x - x) < speed / 2;
+    return fabs(this->x - x) < speed / 2;
 }
 bool Car::checkCoordinateX(double x, double offset){
-  return fabs(this->x - x) < offset;
+    return fabs(this->x - x) < offset;
 }
 bool Car::checkCoordinateY(double y){
-  return fabs(this->y - y) < speed / 2;
+    return fabs(this->y - y) < speed / 2;
 }
 bool Car::checkCoordinateY(double y, double offset){
-  return fabs(this->y - y) < offset;
+    return fabs(this->y - y) < offset;
 }
 void Car::move(){
-  if(moving){
-     point.x += vecX * speed;
-     point.y += vecY * speed;
-     //ROS_INFO_STREAM(point.x << " " << point.y);
-  }
-  if(isOnCrossroad){
-      double offsetX = fabs(pointToGo.x - point.x);
-      double offsetY = fabs(pointToGo.y - point.y);
-      double eps = 0.001;
-      if(offsetX < eps && offsetY < eps){
-          isOnCrossroad = false;
-          setSide(side); //modyfikacja wektora
-      }
-  }
+    if(moving){
+        point.x += vecX * speed;
+        point.y += vecY * speed;
+        //ROS_INFO_STREAM(point.x << " " << point.y);
+    }
+    if(isOnCrossroad){
+        double offsetX = fabs(pointToGo.x - point.x);
+        double offsetY = fabs(pointToGo.y - point.y);
+        if(offsetX < eps && offsetY < eps){
+            isOnCrossroad = false;
+            setSide(side); //modyfikacja wektora
+        }
+    }
 }
 double Car::getDistanceX(double x){
     return (x - this->x) * this->vecX;
@@ -96,6 +96,7 @@ anro1::car Car::getMsg(){
     carMsg.id = id;
     carMsg.scale = scale;
     carMsg.orientation = getOrientation();
+    carMsg.moving = moving;
     return carMsg;
 }
 

@@ -17,7 +17,7 @@
 
 class Car{
 public:
-    Car(int id);
+    Car(int id, double eps, double speed);
     ~Car();
     void move();
     bool checkCoordinates(double x, double y);
@@ -61,16 +61,17 @@ public:
     int side;
     anro1::point pointToGo;
     bool isOnCrossroad;
+    double speed;
 
 private:
     double x;
     double y;
     int id;
-    double speed;
     double scale;
     bool moving;
     bool carNear;
     int carNearId;
+    double eps;
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
     anro1::point point;
 };
 
-double eps = 0.001;
+double eps;
 
 void turnCar(anro1::accessPoint accessPoint);
 void checkForTurn(std::vector<anro1::node> nodes);
@@ -71,9 +71,10 @@ bool emergencySrv(anro1::EmergencyService::Request &req,anro1::EmergencyService:
 
 ros::Publisher carPublisher;
 int main(int argc, char** argv){
-
+  double speed = 0.01;
+  eps = speed * 1.1;
   char c = *argv[1];
-  car = new Car((int)c);
+  car = new Car((int)c, eps, speed);
   ros::init(argc, argv, std::string(1,c));
   ros::NodeHandle nodeHandle;
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
