@@ -1,6 +1,8 @@
 #include "Car.h"
 #include "boost/assign/std/vector.hpp"
 #include "anro1/lightsmsg.h"
+#include "anro1/EmergencyService.h"//Emergency
+#include "anro1/EmergencyMessage.h"//Emergency
 
 class SideAndPoint{
 public:
@@ -40,6 +42,33 @@ Car *car;
 bool isFirst = true;
 bool initiated = false;
 
+void emergencyMsg(const anro1::EmergencyMessage msg)//Emergency
+{
+	car->setMoving(msg.move);
+	if(msg.move)ROS_INFO("Emergency Start");
+	else ROS_INFO("Emergency Stop");
+}
+
+bool emergencySrv(anro1::EmergencyService::Request &req,anro1::EmergencyService::Response &res)//Emergency
+{
+	if(car->getId()==req.id)
+	{
+		if(!req.move)
+		{
+			if(req.move==car->isMoving())res.failure=true;
+			else ROS_INFO("Emergency Stop");
+		}
+		else
+		{
+			if(req.move==car->isMoving())res.failure=true;
+			else ROS_INFO("Emergency Start");
+		}
+		car->setMoving(req.move);
+		res.resid=req.id;
+	}
+	return true;
+}
+
 ros::Publisher carPublisher;
 int main(int argc, char** argv){
 
@@ -51,6 +80,8 @@ int main(int argc, char** argv){
   ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
   ros::Rate loop_rate(RATE);
+  ros::ServiceServer emergencyService=nodeHandle.advertiseService(argv[1],emergencySrv);//Emergency
+  ros::Subscriber emergencySubscriber = nodeHandle.subscribe("emergency_msg", 1000, emergencyMsg);//Emergency
   srand(time(NULL));
 
   while(ros::ok()){
