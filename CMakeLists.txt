@@ -73,14 +73,16 @@ find_package(catkin REQUIRED COMPONENTS
 	lightsVector.msg
         car.msg
         mapMessage.msg
+   EmergencyMessage.msg
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+ add_service_files(
+   FILES
+   EmergencyService.srv
 #   Service1.srv
 #   Service2.srv
-# )
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -240,5 +242,11 @@ target_link_libraries(nodesAndRoutes ${catkin_LIBRARIES})
 add_executable(Car src/CarMain.cpp)
 target_link_libraries(Car ${catkin_LIBRARIES} CarClass)
 add_dependencies(Car anro1_generate_messages_cpp)
+add_dependencies(Car anro1_gencpp)
 add_library(CarClass src/Car.cpp)
 
+
+add_executable(Emergency src/Emergency.cpp)
+target_link_libraries(Emergency ${catkin_LIBRARIES})
+add_dependencies(Emergency anro1_gencpp)
+add_dependencies(Emergency anro1_generate_messages_cpp)
