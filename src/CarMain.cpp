@@ -71,8 +71,8 @@ bool emergencySrv(anro1::EmergencyService::Request &req,anro1::EmergencyService:
 
 ros::Publisher carPublisher;
 int main(int argc, char** argv){
-  double speed = 0.01;
-  eps = speed * 1.1;
+  double speed = 0.005;
+  eps = speed * 0.55;
   char c = *argv[1];
   car = new Car((int)c, eps, speed);
   ros::init(argc, argv, std::string(1,c));
@@ -80,7 +80,7 @@ int main(int argc, char** argv){
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);
   ros::Subscriber carSubscriber = nodeHandle.subscribe("car_info", 1000, carsCallback);
   carPublisher = nodeHandle.advertise<anro1::car>("car_info", 1000);
-  ros::Rate loop_rate(RATE);
+  ros::Rate loop_rate(RATE*1000);
   ros::ServiceServer emergencyService=nodeHandle.advertiseService(argv[1],emergencySrv);//Emergency
   ros::Subscriber emergencySubscriber = nodeHandle.subscribe("emergency_msg", 1000, emergencyMsg);//Emergency
   srand(time(NULL));

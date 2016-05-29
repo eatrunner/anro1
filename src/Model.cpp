@@ -81,7 +81,8 @@ int main(int argc, char **argv)
 
 void visualizeCar(const anro1::car& msg)
 
-{ /*std::string name = "aaa/123_";
+{
+  std::string name = "pszemek_";
   geometry_msgs::TransformStamped odom_trans;
   sensor_msgs::JointState joint_state;
   odom_trans.header.frame_id = "/my_frame";
@@ -101,14 +102,14 @@ void visualizeCar(const anro1::car& msg)
   joint_state.position[3] = wheel;
 
   // update transform
-  // (moving in a circle with radius=2)
-   ROS_WARN("msgx: %f i msgy: %f",msg.x,msg.y);
+
   odom_trans.header.stamp = ros::Time::now();
   odom_trans.transform.translation.x = msg.x;
   odom_trans.transform.translation.y = msg.y;
   odom_trans.transform.translation.z = 0.4;
-  odom_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw (0,0,0);
-
+  odom_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw (0,0,msg.orientation);
+  //if(msg.moving)
+  wheel += degree;
   //send the joint state and transform
   static tf::TransformBroadcaster br;
   modelrviz.getJointPub().publish(joint_state);
@@ -116,9 +117,8 @@ void visualizeCar(const anro1::car& msg)
 
   // Create new robot state
 
-  wheel += 0.3*degree;
-
-*/
+ //ROS_INFO("wheels moving: %d",msg.moving);
+/*
 
   ROS_INFO("Rendering car, id: [%d]", msg.id);
 
@@ -146,13 +146,13 @@ void visualizeCar(const anro1::car& msg)
          marker1.color.a = 1.0;
          marker1.lifetime = ros::Duration();
 
-         modelrviz.getPub().publish(marker1);
+         modelrviz.getPub().publish(marker1);*/
 }
 
 void visualizeLights(const anro1::lightsmsg& msg)
 {
     int i=0;
-    int scale = 1;
+    double scale = LANE_WIDTH/2;
     for(i=0;i<msg.lights.size();i++)
     {
         anro1::light light = msg.lights[i];
@@ -169,7 +169,7 @@ void visualizeLights(const anro1::lightsmsg& msg)
             marker1.pose.position.x = light.cords.x;
             marker1.pose.position.y = light.cords.y;
 
-            marker1.pose.position.z = 3;
+            marker1.pose.position.z = LANE_WIDTH;
             marker1.pose.orientation.x = 0.0;
             marker1.pose.orientation.y = 0.0;
             marker1.pose.orientation.z = 0.0;
@@ -181,14 +181,9 @@ void visualizeLights(const anro1::lightsmsg& msg)
             marker1.color.g = 0.0f;
             marker1.color.b = 0.0f;
             if(light.green)
-            {
-
                     marker1.color.g = 1.0f;
-            }
             else
-            {
                     marker1.color.r = 1.0f;
-            }
             marker1.color.a = 1.0;
             marker1.lifetime = ros::Duration();
 
