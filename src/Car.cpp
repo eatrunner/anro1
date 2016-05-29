@@ -95,19 +95,12 @@ anro1::car Car::getMsg(){
     carMsg.y = point.y;
     carMsg.id = id;
     carMsg.scale = scale;
-    carMsg.orientation = getOrientation();
+    carMsg.orientation = atan2(vecY,vecX);
+    //ROS_INFO_STREAM("ORIENT "<< carMsg.orientation);
     carMsg.moving = moving;
     return carMsg;
 }
 
-double Car::getOrientation(){
-    double orientVecX = 1;
-    double orientVecY = 0;
-    double num = vecX * orientVecX + vecY * orientVecY; //licznik wyrazenia
-    double den = sqrt(vecX*vecX + vecY*vecY) * sqrt(orientVecX * orientVecX + orientVecY * orientVecY);
-    //ROS_INFO_STREAM("COS = " << acos(num/den));
-    return acos(num/den);
-}
 
 void Car::setPointToGo(anro1::point pointToGo){
     this->pointToGo = pointToGo;
