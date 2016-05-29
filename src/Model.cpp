@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 void visualizeCar(const anro1::car& msg)
 
-{ std::string name = "aaa/123_";
+{ /*std::string name = "aaa/123_";
   geometry_msgs::TransformStamped odom_trans;
   sensor_msgs::JointState joint_state;
   odom_trans.header.frame_id = "/my_frame";
@@ -118,9 +118,9 @@ void visualizeCar(const anro1::car& msg)
 
   wheel += 0.3*degree;
 
+*/
 
-
-  /*ROS_INFO("Rendering car, id: [%d]", msg.id);
+  ROS_INFO("Rendering car, id: [%d]", msg.id);
 
          visualization_msgs::Marker marker1;
          uint32_t shape = visualization_msgs::Marker::CUBE;
@@ -146,7 +146,7 @@ void visualizeCar(const anro1::car& msg)
          marker1.color.a = 1.0;
          marker1.lifetime = ros::Duration();
 
-         modelrviz.getPub().publish(marker1);*/
+         modelrviz.getPub().publish(marker1);
 }
 
 void visualizeLights(const anro1::lightsmsg& msg)
@@ -186,7 +186,7 @@ void visualizeLights(const anro1::lightsmsg& msg)
                     marker1.color.g = 1.0f;
             }
             else
-            {<<<<<<< HEAD
+            {
                     marker1.color.r = 1.0f;
             }
             marker1.color.a = 1.0;
@@ -195,5 +195,4 @@ void visualizeLights(const anro1::lightsmsg& msg)
             modelrviz.getPub().publish(marker1);
 
     }
-
 }

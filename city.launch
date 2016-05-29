@@ -11,10 +11,10 @@
   <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
 </group>
 
-  <node pkg="rviz" name="someName0" type="rviz"/>
+  <node pkg="rviz" name="someName0" type="rviz" args="-d $(find anro1)/default.rviz" required="true"/>
    <node pkg="anro1" name="someName3" type="Model"/>
   <node pkg="anro1" name="someName333" type="Car"/>
-
+  <node pkg="anro1" name="someName66333" type="Car"/>
 
 
 </launch>
