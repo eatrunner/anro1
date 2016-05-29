@@ -9,7 +9,7 @@
   <xacro:property name="kickstand_height" value="${car_height*0.5}" />
   <xacro:property name="car_top_height" value="${car_height/12}" />
   <xacro:property name="windows_height" value="${car_height*0.6}" />
- <xacro:property name= "windows_length" value="${car_length*0.4}" />
+  <xacro:property name="windows_length" value="${car_length*0.4}" />
   <xacro:property name="wheel_radius" value="${car_height/2}" />
   <xacro:property name="wheel_width" value="${car_width/5}" />
   <xacro:property name="pi" value="3.1415" />
@@ -37,7 +37,7 @@
   </material>
 
 
-  <link name="car_body">
+  <link name="$(arg robotname)_car_body">
     <visual>
       <geometry>
         <box size="${car_length} ${car_width} ${car_height}"/>
@@ -46,34 +46,34 @@
     </visual>
   </link>
 
-  <link name="windows">
+  <link name="$(arg robotname)_windows">
     <visual>
       <geometry>
         <box size="${windows_length} ${car_width} ${windows_height}"/>
       </geometry>
-      <material name="window"/>
+      <material name="$(arg robotname)_window"/>
     </visual>
   </link>
-  <joint name="windows_to_body" type="fixed">
-    <parent link="car_body"/>
-    <child link="windows"/>
+  <joint name="$(arg robotname)_windows_to_body" type="fixed">
+    <parent link="$(arg robotname)_car_body"/>
+    <child link="$(arg robotname)_windows"/>
     <origin xyz="0 0 ${(car_height + windows_height)/2}" rpy="0 0 0"/>
   </joint>
-  <link name="front_window">
+  <link name="$(arg robotname)_front_window">
     <visual>
       <geometry>
         <box size="${windows_length/2} ${car_width-car_width/30} ${windows_height}"/>
       </geometry>
-      <material name="window"/>
+      <material name="$(arg robotname)_window"/>
     </visual>
   </link>
-  <joint name="front_window_to_windows" type="fixed">
-    <parent link="windows"/>
-    <child link="front_window"/>
+  <joint name="$(arg robotname)_front_window_to_windows" type="fixed">
+    <parent link="$(arg robotname)_windows"/>
+    <child link="$(arg robotname)_front_window"/>
     <origin xyz="${windows_length/2} 0 -${windows_height/1.9}" rpy="0 ${pi/3} 0"/>
   </joint>
 
-  <link name="car_top">
+  <link name="$(arg robotname)_car_top">
     <visual>
       <geometry>
         <box size="${windows_length} ${car_width} ${car_top_height}"/>
@@ -81,14 +81,14 @@
       <material name="car_color"/>
     </visual>
   </link>
-  <joint name="top_to_body" type="fixed">
-    <parent link="windows"/>
-    <child link="car_top"/>
+  <joint name="$(arg robotname)_top_to_body" type="fixed">
+    <parent link="$(arg robotname)_windows"/>
+    <child link="$(arg robotname)_car_top"/>
     <origin xyz="0 0 ${(windows_height)/2 + car_top_height/2}"/>
   </joint>
 
  <xacro:macro name="wheel" params="side_fb side_rl factor_fb factor_rl">
-    <link name="${side_rl}_${side_fb}_wheel">
+    <link name="$(arg robotname)_${side_rl}_${side_fb}_wheel">
       <visual>
         <geometry>
           <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
@@ -97,17 +97,17 @@
         <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
       </visual>
     </link>
-    <joint name="${side_rl}_${side_fb}_wheel_joint" type="continuous">
+    <joint name="$(arg robotname)_${side_rl}_${side_fb}_wheel_joint" type="continuous">
       <axis xyz="0 1 0" rpy="0 0 0" />
-      <parent link="car_body"/>
-      <child link="${side_rl}_${side_fb}_wheel"/>
+      <parent link="$(arg robotname)_car_body"/>
+      <child link="$(arg robotname)_${side_rl}_${side_fb}_wheel"/>
       <origin xyz="${factor_fb*car_length/3} ${factor_rl*car_width/2} -${car_height/1.3-wheel_radius}" rpy="0 0 0"/>
     </joint>
  </xacro:macro>
 
 
  <xacro:macro name="rim" params="side_fb side_rl angle factor_rl">
-    <link name="${side_rl}_${side_fb}_${angle}_rim">
+    <link name="$(arg robotname)_${side_rl}_${side_fb}_${angle}_rim">
     <visual>
       <origin xyz="0 0 0" rpy="0 ${angle* pi/4} 0" />
       <geometry>
@@ -116,16 +116,16 @@
       <material name="white"/>
     </visual>
     </link>
-    <joint name="${side_rl}_${side_fb}_${angle}_rim_joint" type="fixed">
-      <parent link="${side_rl}_${side_fb}_wheel"/>
-      <child link="${side_rl}_${side_fb}_${angle}_rim"/>
+    <joint name="$(arg robotname)_${side_rl}_${side_fb}_${angle}_rim_joint" type="fixed">
+      <parent link="$(arg robotname)_${side_rl}_${side_fb}_wheel"/>
+      <child link="$(arg robotname)_${side_rl}_${side_fb}_${angle}_rim"/>
       <origin xyz=" 0 ${factor_rl*wheel_width/2} 0" rpy="0 0 0"/>
     </joint>
  </xacro:macro>
 
 
  <xacro:macro name="front_light" params="side_rl factor_rl">
-    <link name="${side_rl}_front_light">
+    <link name="$(arg robotname)_${side_rl}_front_light">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
@@ -134,15 +134,15 @@
         <material name="yellow"/>
       </visual>
     </link>
-    <joint name="${side_rl}_front_light_joint" type="fixed">
-      <parent link="car_body"/>
-      <child link="${side_rl}_front_light"/>
+    <joint name="$(arg robotname)_${side_rl}_front_light_joint" type="fixed">
+      <parent link="$(arg robotname)_car_body"/>
+      <child link="$(arg robotname)_${side_rl}_front_light"/>
       <origin xyz="${car_length/2} ${factor_rl*car_width/3} 0" rpy="0 ${pi/2} 0"/>
     </joint>
  </xacro:macro>
 
  <xacro:macro name="back_light" params="side_rl factor_rl">
-    <link name="${side_rl}_back_light">
+    <link name="$(arg robotname)_${side_rl}_back_light">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
@@ -151,15 +151,15 @@
         <material name="red"/>
       </visual>
     </link>
-    <joint name="${side_rl}_back_light_joint" type="fixed">
-      <parent link="car_body"/>
-      <child link="${side_rl}_back_light"/>
+    <joint name="$(arg robotname)_${side_rl}_back_light_joint" type="fixed">
+      <parent link="$(arg robotname)_car_body"/>
+      <child link="$(arg robotname)_${side_rl}_back_light"/>
       <origin xyz="-${car_length/2} ${factor_rl*car_width/3} 0" rpy="0 0 0"/>
     </joint>
  </xacro:macro>
 
  <xacro:macro name="spoiler_kickstand" params="side_rl factor_rl">
-    <link name="${side_rl}_kickstand">
+    <link name="$(arg robotname)_${side_rl}_kickstand">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
@@ -168,14 +168,14 @@
         <material name="black"/>
       </visual>
     </link>
-    <joint name="${side_rl}_kickstand_joint" type="fixed">
-      <parent link="car_body"/>
-      <child link="${side_rl}_kickstand"/>
+    <joint name="$(arg robotname)_${side_rl}_kickstand_joint" type="fixed">
+      <parent link="$(arg robotname)_car_body"/>
+      <child link="$(arg robotname)_${side_rl}_kickstand"/>
       <origin xyz="-${car_length/2.2} ${factor_rl*car_width/2.5} ${car_height/2 + kickstand_height/2}" rpy="0 0 0"/>
     </joint>
  </xacro:macro>
 
-  <link name="spoiler">
+  <link name="$(arg robotname)_spoiler">
     <visual>
       <geometry>
         <box size="${windows_length/10} ${car_width} ${car_top_height}"/>
@@ -184,9 +184,9 @@
  <origin xyz="0 0 0" rpy="0 ${pi/12} 0" />
     </visual>
   </link>
-  <joint name="spoiler_to_body" type="fixed">
-    <parent link="car_body"/>
-    <child link="spoiler"/>
+  <joint name="$(arg robotname)_spoiler_to_body" type="fixed">
+    <parent link="$(arg robotname)_car_body"/>
+    <child link="$(arg robotname)_spoiler"/>
     <origin xyz="-${car_length/2.2} 0 ${car_height/2 + kickstand_height}"/>
   </joint>
 

@@ -1,15 +1,20 @@
 <launch>
-<param name="robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro" />
+<arg name="robot1" value="aaa/123"/>
+<param name="robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro robotname:=$(arg robot1)" />
  
   <node pkg="anro1" name="someName1" type="MapOfCity"/>
   
   <node pkg="anro1" name="someName2" type="nodesAndRoutes"/>
-  <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
+ <group ns="robot1">
+    <param name="tf_prefix" value="aaa" />
 
+  <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
+</group>
 
   <node pkg="rviz" name="someName0" type="rviz"/>
    <node pkg="anro1" name="someName3" type="Model"/>
   <node pkg="anro1" name="someName333" type="Car"/>
+
 
 
 </launch>

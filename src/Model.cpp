@@ -78,23 +78,23 @@ int main(int argc, char **argv)
 }
 
 void visualizeCar(const anro1::car& msg)
-{
+{ std::string name = "aaa/123_";
   geometry_msgs::TransformStamped odom_trans;
   sensor_msgs::JointState joint_state;
   odom_trans.header.frame_id = "/my_frame";
-  odom_trans.child_frame_id = "car_body";
+  odom_trans.child_frame_id = "/" + name+ "car_body";
 
 
   joint_state.header.stamp = ros::Time::now();
   joint_state.name.resize(4);
   joint_state.position.resize(4);
-  joint_state.name[0] ="left_front_wheel_joint";
+  joint_state.name[0] =name + "left_front_wheel_joint";
   joint_state.position[0] = wheel;
-  joint_state.name[1] ="right_front_wheel_joint";
+  joint_state.name[1] =name+ "right_front_wheel_joint";
   joint_state.position[1] = wheel;
-  joint_state.name[2] ="left_rear_wheel_joint";
+  joint_state.name[2] =name + "left_rear_wheel_joint";
   joint_state.position[2] = wheel;
-  joint_state.name[3] ="right_rear_wheel_joint";
+  joint_state.name[3] =name+ "right_rear_wheel_joint";
   joint_state.position[3] = wheel;
 
   // update transform
