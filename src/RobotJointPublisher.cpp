@@ -57,13 +57,19 @@ RobotJointPublisher rjp;
 
 int main(int argc, char **argv)
 {
-  std::string ns = ros::this_node::getNamespace();
-  rjp.setNs(ns[0]);
-  ros::init(argc, argv, "rjp"+std::string(1, rjp.getNs()));
+  ros::init(argc, argv, "rjp");
+  std::string ns(ros::this_node::getNamespace());
+  if(ns.empty())
+      return 0;
+  char c = ns.at(1);
+  rjp.setNs(c);
+  ROS_INFO("char at: %c",c);
   ros::NodeHandle n;
-
+  std::string s(1, c);
+  s = ns;
   ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 10);
-  //::Publisher joint_pub2 = n.advertise<sensor_msgs::JointState>("/"+sns[1], 100);
+  //ros::Publisher joint_pub2 = n.advertise<sensor_msgs::JointState>(std::string(1, rjp.getNs()), 100);
+  ros::Publisher joint_pub2 = n.advertise<sensor_msgs::JointState>("/"+s+s+s+"ocosoch", 100);
   ros::Subscriber cars_subscriber= n.subscribe("/car_info", 10, visualizeCar);
   rjp.setJointPub(joint_pub);
 
@@ -80,8 +86,8 @@ int main(int argc, char **argv)
 
 void visualizeCar(const anro1::car& msg)
 {
-// if(msg.id!=rjp.getNs())
-  // return;
+ if(msg.id!=ros::this_node::getNamespace()[3])
+   return;
   std::string name = std::string(1, msg.id)+"/bumblebee_";
 
   geometry_msgs::TransformStamped odom_trans;
@@ -107,7 +113,7 @@ void visualizeCar(const anro1::car& msg)
   odom_trans.transform.translation.y = msg.y;
   odom_trans.transform.translation.z = 0.4;
   odom_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw (0,0,msg.orientation);
-  //if(msg.moving)
+  if(msg.moving)
   wheel += degree;
   //send the joint state and transform
   static tf::TransformBroadcaster br;
