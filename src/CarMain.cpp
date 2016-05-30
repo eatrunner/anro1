@@ -367,29 +367,42 @@ std::vector<std::vector<anro1::accessPoint> >  getAccessPoints(anro1::node node)
 }
 
 void carsCallback(const anro1::car& msg){
-	static int foundCarId = -1;
 	
 	if ( car->getId() == msg.id)
 		return;
 		
-	if ( (fabs(car -> getX() - msg.x) < 2)  && fabs(car -> getY() == msg.y) && (car -> getVecX() > 0) )
+	if ( (msg.x -car -> point.x < 2.6) && (msg.x -car -> point.x > 0) && (fabs(car -> point.y - msg.y) < 0.2) && (car -> getVecX() > 0) )
 	{
-		car->setMoving(false);
-		foundCarId = msg.id;
+		car->setCarNear(true);
+		car->setCarNearId(msg.id);
 		return;
 	}
 	
-	if ( (fabs(car -> getY() - msg.y) < 2)  && fabs(car -> getX() == msg.x) && (car -> getVecY() > 0))
+	if ( (car -> point.x - msg.x < 2.6) && (car -> point.x - msg.x > 0)  && (fabs(car -> point.y - msg.y) < 0.2) && (car -> getVecX() < 0) )
 	{
-		car->setMoving(false);
-		foundCarId = msg.id;
+		car->setCarNear(true);
+		car->setCarNearId(msg.id);
 		return;
 	}
 	
-	if ( msg.id == foundCarId)
+	if (( msg.y - car -> point.y < 2.6) && (msg.y - car -> point.y > 0)  && (fabs(car -> point.x - msg.x) < 0.2) && (car -> getVecY() > 0))
+	{
+		car->setCarNear(true);
+		car->setCarNearId(msg.id);
+		return;
+	}
+	
+	if (( car -> point.y - msg.y < 2.6) && (car -> point.y - msg.y > 0)  && (fabs(car -> point.x - msg.x) < 0.2) && (car -> getVecY() < 0))
+	{
+		car->setCarNear(true);
+		car->setCarNearId(msg.id);
+		return;
+	}
+	
+	if ( msg.id == car->getCarNearId())
 		{
-			car -> setMoving(true);
-			foundCarId = -1;
+			car -> setCarNear(false);
+			car-> setCarNearId(-1);
 		}
 }
 

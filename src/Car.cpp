@@ -68,7 +68,7 @@ bool Car::checkCoordinateY(double y, double offset){
     return fabs(this->y - y) < offset;
 }
 void Car::move(){
-    if(moving){
+    if(moving && !carNear){
         point.x += vecX * speed;
         point.y += vecY * speed;
         //ROS_INFO_STREAM(point.x << " " << point.y);
