@@ -74,7 +74,7 @@ int main(int argc, char** argv){
   double speed = 0.005;
   eps = speed * 0.55;
   char c = *argv[1];
-  car = new Car((int)c, eps, speed);
+  car = new Car(c, eps, speed);
   ros::init(argc, argv, std::string(1,c));
   ros::NodeHandle nodeHandle;
   ros::Subscriber nodesSubscriber = nodeHandle.subscribe("nodes_info", 1000, nodesCallback);

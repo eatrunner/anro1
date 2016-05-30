@@ -6,10 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
         - /Axes1
         - /Marker1
-        - /Marker1/Status1
       Splitter Ratio: 0.5
     Tree Height: 565
   - Class: rviz/Selection
@@ -62,164 +60,164 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        aaa/123_car_body:
+        bumblebee_car_body:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_car_top:
+        bumblebee_car_top:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_front_window:
+        bumblebee_front_window:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_back_light:
+        bumblebee_left_back_light:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_1_rim:
+        bumblebee_left_front_1_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_2_rim:
+        bumblebee_left_front_2_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_3_rim:
+        bumblebee_left_front_3_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_4_rim:
+        bumblebee_left_front_4_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_light:
+        bumblebee_left_front_light:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_front_wheel:
+        bumblebee_left_front_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_kickstand:
+        bumblebee_left_kickstand:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_rear_1_rim:
+        bumblebee_left_rear_1_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_rear_2_rim:
+        bumblebee_left_rear_2_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_rear_3_rim:
+        bumblebee_left_rear_3_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_rear_4_rim:
+        bumblebee_left_rear_4_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_left_rear_wheel:
+        bumblebee_left_rear_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_back_light:
+        bumblebee_right_back_light:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_1_rim:
+        bumblebee_right_front_1_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_2_rim:
+        bumblebee_right_front_2_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_3_rim:
+        bumblebee_right_front_3_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_4_rim:
+        bumblebee_right_front_4_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_light:
+        bumblebee_right_front_light:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_front_wheel:
+        bumblebee_right_front_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_kickstand:
+        bumblebee_right_kickstand:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_rear_1_rim:
+        bumblebee_right_rear_1_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_rear_2_rim:
+        bumblebee_right_rear_2_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_rear_3_rim:
+        bumblebee_right_rear_3_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_rear_4_rim:
+        bumblebee_right_rear_4_rim:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_right_rear_wheel:
+        bumblebee_right_rear_wheel:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_spoiler:
+        bumblebee_spoiler:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        aaa/123_windows:
+        bumblebee_windows:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
       Name: RobotModel
       Robot Description: robot_description
-      TF Prefix: ""
+      TF Prefix: a
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -235,10 +233,182 @@ Visualization Manager:
       Marker Topic: visualization_marker
       Name: Marker
       Namespaces:
-        Model: true
+        MapCrossroads: true
+        MapLanes: true
         Model1: true
       Queue Size: 100
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        bumblebee_car_body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_car_top:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_front_window:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_back_light:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_1_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_2_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_3_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_4_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_light:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_front_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_kickstand:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_rear_1_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_rear_2_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_rear_3_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_rear_4_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_left_rear_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_back_light:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_1_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_2_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_3_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_4_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_light:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_front_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_kickstand:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_rear_1_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_rear_2_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_rear_3_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_rear_4_rim:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_right_rear_wheel:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_spoiler:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bumblebee_windows:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: b
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -263,7 +433,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 28.1646
+      Distance: 44.1992
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -275,10 +445,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.815398
+      Pitch: 0.0453979
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.185395
+      Yaw: 5.19358
     Saved: ~
 Window Geometry:
   Displays:
@@ -297,4 +467,4 @@ Window Geometry:
     collapsed: false
   Width: 1200
   X: 55
-  Y: 30
+  Y: 14

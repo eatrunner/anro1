@@ -217,7 +217,7 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(MapOfCity src/MapOfCity.cpp)
-target_link_libraries(MapOfCity ${catkin_LIBRARIES} ReadMatrix Crossroad  Point Route Lane)
+target_link_libraries(MapOfCity ${catkin_LIBRARIES} ReadMatrix Crossroad Point Route Lane)
 
 add_executable(Model src/Model.cpp)
 target_link_libraries(Model ${catkin_LIBRARIES})
@@ -245,6 +245,9 @@ add_dependencies(Car anro1_generate_messages_cpp)
 add_dependencies(Car anro1_gencpp)
 add_library(CarClass src/Car.cpp)
 
+add_executable(RobotJointPublisher src/RobotJointPublisher.cpp)
+add_dependencies(RobotJointPublisher anro1_generate_messages_cpp)
+target_link_libraries(RobotJointPublisher ${catkin_LIBRARIES})
 
 add_executable(Emergency src/Emergency.cpp)
 target_link_libraries(Emergency ${catkin_LIBRARIES})

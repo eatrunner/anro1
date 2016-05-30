@@ -1,14 +1,29 @@
 <launch>
-<arg name="robot1" value="pszemek"/>
-<param name="robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro robotname:=$(arg robot1)" />
- 
+<arg name="robot_name1" value="bumblebee"/>
+
   <node pkg="anro1" name="someName1" type="MapOfCity"/>
-  
   <node pkg="anro1" name="someName2" type="nodesAndRoutes"/>
-  <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
-
-  <node pkg="rviz" name="someName0" type="rviz" args="-d $(find anro1)/default.rviz" required="true"/>
-
   <node pkg="anro1" name="someName3" type="Model"/>
+  <param name="/robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro robotname:=$(arg robot_name1)" />
+
+<group ns="a">
+<param name="tf_prefix" value="a" />
+  <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
+<node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
+</group>
+
+<group ns="b">
+<param name="tf_prefix" value="b" />
+   <node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
+<node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
+</group>
+<group ns="c">
+<param name="tf_prefix" value="c" />
+   <node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
+<node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
+</group>
+
+<node pkg="rviz" name="someName0" type="rviz" args="-d $(find anro1)/default.rviz" required="true"/>
+
 
 </launch>
