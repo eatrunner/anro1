@@ -66,7 +66,7 @@ public:
 private:
     double x;
     double y;
-    int id;
+    char id;
     double scale;
     bool moving;
     bool carNear;

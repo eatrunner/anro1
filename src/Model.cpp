@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "Model.h"
 #include <cstdlib>
+#include <string>
 #include <visualization_msgs/Marker.h>
 #include "anro1/car.h"
 #include "anro1/light.h"
@@ -58,8 +59,8 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "model");
   ros::NodeHandle n;
   ros::Publisher rviz_publisher = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
-  ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 100);
-
+  ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("b/joint_states", 100);
+  //ros::Publisher joint_pub2 = n.advertise<sensor_msgs::JointState>("robot2/joint_states", 100);
 
   ros::Subscriber cars_subscriber= n.subscribe("car_info", 1000, visualizeCar);
   ros::Subscriber lights_subscriber= n.subscribe("lights_info", 100, visualizeLights);
@@ -81,24 +82,27 @@ int main(int argc, char **argv)
 
 void visualizeCar(const anro1::car& msg)
 
-{
-  std::string name = "pszemek_";
+{return;
+  ROS_INFO("Rendering car, id: %c", msg.id);
+  std::string name = "default_name";
+
+  name = std::string(1, msg.id)+"/bumblebee_";
   geometry_msgs::TransformStamped odom_trans;
   sensor_msgs::JointState joint_state;
   odom_trans.header.frame_id = "/my_frame";
-  odom_trans.child_frame_id = "/" + name+ "car_body";
+  odom_trans.child_frame_id =  name+ "car_body";
 
 
   joint_state.header.stamp = ros::Time::now();
   joint_state.name.resize(4);
   joint_state.position.resize(4);
-  joint_state.name[0] =name + "left_front_wheel_joint";
+  joint_state.name[0] ="bumblebee_left_front_wheel_joint";
   joint_state.position[0] = wheel;
-  joint_state.name[1] =name+ "right_front_wheel_joint";
+  joint_state.name[1] ="bumblebee_right_front_wheel_joint";
   joint_state.position[1] = wheel;
-  joint_state.name[2] =name + "left_rear_wheel_joint";
+  joint_state.name[2] ="bumblebee_left_rear_wheel_joint";
   joint_state.position[2] = wheel;
-  joint_state.name[3] =name+ "right_rear_wheel_joint";
+  joint_state.name[3] ="bumblebee_right_rear_wheel_joint";
   joint_state.position[3] = wheel;
 
   // update transform
@@ -112,7 +116,8 @@ void visualizeCar(const anro1::car& msg)
   wheel += degree;
   //send the joint state and transform
   static tf::TransformBroadcaster br;
-  modelrviz.getJointPub().publish(joint_state);
+  if(msg.id=='b')modelrviz.getJointPub().publish(joint_state);
+  //else joint_pub2.publish(joint_state);
   br.sendTransform(odom_trans);
 
   // Create new robot state

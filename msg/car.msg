@@ -1,4 +1,4 @@
-int64 id
+char id
 float64 x
 float64 y
 float64 scale
