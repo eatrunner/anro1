@@ -61,8 +61,6 @@ int main(int argc, char **argv)
   ros::Publisher rviz_publisher = n.advertise<visualization_msgs::Marker>("visualization_marker", 100);
   ros::Publisher joint_pub = n.advertise<sensor_msgs::JointState>("b/joint_states", 100);
   //ros::Publisher joint_pub2 = n.advertise<sensor_msgs::JointState>("robot2/joint_states", 100);
-
-  ros::Subscriber cars_subscriber= n.subscribe("car_info", 1000, visualizeCar);
   ros::Subscriber lights_subscriber= n.subscribe("lights_info", 100, visualizeLights);
 
   modelrviz.setPub(rviz_publisher);
@@ -80,79 +78,6 @@ int main(int argc, char **argv)
   return 0;
 }
 
-void visualizeCar(const anro1::car& msg)
-
-{return;
-  ROS_INFO("Rendering car, id: %c", msg.id);
-  std::string name = "default_name";
-
-  name = std::string(1, msg.id)+"/bumblebee_";
-  geometry_msgs::TransformStamped odom_trans;
-  sensor_msgs::JointState joint_state;
-  odom_trans.header.frame_id = "/my_frame";
-  odom_trans.child_frame_id =  name+ "car_body";
-
-
-  joint_state.header.stamp = ros::Time::now();
-  joint_state.name.resize(4);
-  joint_state.position.resize(4);
-  joint_state.name[0] ="bumblebee_left_front_wheel_joint";
-  joint_state.position[0] = wheel;
-  joint_state.name[1] ="bumblebee_right_front_wheel_joint";
-  joint_state.position[1] = wheel;
-  joint_state.name[2] ="bumblebee_left_rear_wheel_joint";
-  joint_state.position[2] = wheel;
-  joint_state.name[3] ="bumblebee_right_rear_wheel_joint";
-  joint_state.position[3] = wheel;
-
-  // update transform
-
-  odom_trans.header.stamp = ros::Time::now();
-  odom_trans.transform.translation.x = msg.x;
-  odom_trans.transform.translation.y = msg.y;
-  odom_trans.transform.translation.z = 0.4;
-  odom_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw (0,0,msg.orientation);
-  //if(msg.moving)
-  wheel += degree;
-  //send the joint state and transform
-  static tf::TransformBroadcaster br;
-  if(msg.id=='b')modelrviz.getJointPub().publish(joint_state);
-  //else joint_pub2.publish(joint_state);
-  br.sendTransform(odom_trans);
-
-  // Create new robot state
-
- //ROS_INFO("wheels moving: %d",msg.moving);
-/*
-
-  ROS_INFO("Rendering car, id: [%d]", msg.id);
-
-         visualization_msgs::Marker marker1;
-         uint32_t shape = visualization_msgs::Marker::CUBE;
-         marker1.header.frame_id = "/my_frame";
-         marker1.header.stamp = ros::Time::now();
-         marker1.type = shape;
-         marker1.ns = "Model";
-         marker1.id = msg.id;
-         marker1.action = visualization_msgs::Marker::ADD;
-         marker1.pose.position.x = msg.x;
-         marker1.pose.position.y = msg.y;
-         marker1.pose.position.z = 0;
-         marker1.pose.orientation.x = 0.0;
-         marker1.pose.orientation.y = 0.0;
-         marker1.pose.orientation.z = 0.0;
-         marker1.pose.orientation.w = 1.0;
-         marker1.scale.x = msg.scale;
-         marker1.scale.y = msg.scale;
-         marker1.scale.z = msg.scale;
-         marker1.color.r = 0.3f;
-         marker1.color.g = 0.0f;
-         marker1.color.b = 0.5f;
-         marker1.color.a = 1.0;
-         marker1.lifetime = ros::Duration();
-
-         modelrviz.getPub().publish(marker1);*/
-}
 
 void visualizeLights(const anro1::lightsmsg& msg)
 {

@@ -1,40 +1,41 @@
 <launch>
 <arg name="robot_name1" value="bumblebee"/>
 
-  <node pkg="anro1" name="someName1" type="MapOfCity"/>
-  <node pkg="anro1" name="someName2" type="nodesAndRoutes"/>
-  <node pkg="anro1" name="someName3" type="Model"/>
+  <node pkg="anro1" name="MapOfCity" type="MapOfCity"/>
+  <node pkg="anro1" name="nodesAndRoutes" type="nodesAndRoutes"/>
+  <node pkg="anro1" name="Model" type="Model"/>
   <param name="/robot_description" command="$(find xacro)/xacro.py $(find anro1)/urdf/car.urdf.xacro robotname:=$(arg robot_name1)" />
 
 <group ns="aaaa">
 <param name="tf_prefix" value="a" />
   <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
-  <node pkg="anro1" name="lol"  type="RobotJointPublisher" />
+  <node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
 </group>
 
 <group ns="bbbb">
 <param name="tf_prefix" value="b" />
-   <node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
-<node pkg="anro1" name="wtf"  type="RobotJointPublisher" />
+   <node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
+<node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
 </group>
 
 <group ns="cccc">
 <param name="tf_prefix" value="c" />
-<node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
+<node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
 <node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
 </group>
+
 <group ns="dddd">
 <param name="tf_prefix" value="d" />
-<node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
+<node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
 <node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
 </group>
+
 <group ns="eeee">
 <param name="tf_prefix" value="e" />
-<node pkg="robot_state_publisher" name="robot_state_publisher2"  type="state_publisher" />
+<node pkg="robot_state_publisher" name="robot_state_publisher"  type="state_publisher" />
 <node pkg="anro1" name="robot_joint_publisher"  type="RobotJointPublisher" />
 </group>
 
-<node pkg="rviz" name="someName0" type="rviz" args="-d $(find anro1)/default.rviz"/>
-
+<node pkg="rviz" name="Rviz" type="rviz" args="-d $(find anro1)/default.rviz"/>
 
 </launch>

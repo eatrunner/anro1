@@ -51,7 +51,7 @@
       <geometry>
         <box size="${windows_length} ${car_width} ${windows_height}"/>
       </geometry>
-      <material name="$(arg robotname)_window"/>
+      <material name="window"/>
     </visual>
   </link>
   <joint name="$(arg robotname)_windows_to_body" type="fixed">
@@ -64,7 +64,7 @@
       <geometry>
         <box size="${windows_length/2} ${car_width-car_width/30} ${windows_height}"/>
       </geometry>
-      <material name="$(arg robotname)_window"/>
+      <material name="window"/>
     </visual>
   </link>
   <joint name="$(arg robotname)_front_window_to_windows" type="fixed">

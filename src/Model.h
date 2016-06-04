@@ -18,8 +18,6 @@ class Model{
 public:
     Model();
     ~Model();
-
-    void visualizeCar(const anro1::car& msg);
     ros::Publisher getPub();
     void setPub(ros::Publisher& pub);
    ros::Publisher getJointPub();
@@ -28,7 +26,7 @@ public:
   // void setTfBroadcaster(tf::TransformBroadcaster& broad);
 
 private:
-    ros::Subscriber cars_subscriber;
+
     ros::Publisher rviz_publisher;
     ros::Publisher joint_pub;
    // tf::TransformBroadcaster tfbroadcaster;
